@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_employee_event,employee.event,model_employee_event,,1,1,1,1
+access_employee_accomodation_history,employee.accomodation.history,model_employee_accomodation_history,,1,1,1,1
+access_employee_transportation_history,employee.transportation.history,model_employee_transportation_history,,1,1,1,1
+access_employee_accident_history,employee.accident.history,model_employee_accident_history,,1,1,1,1
+access_employee_vacation_history,employee.vacation.history,model_employee_vacation_history,,1,1,1,1
+access_employee_training_history,employee.training.history,model_employee_training_history,,1,1,1,1
+access_employee_hse_incident_history,employee.hse.incident.history,model_employee_hse_incident_history,,1,1,1,1
+access_employee_career_progression,employee.career.progression.history,model_employee_career_progression,,1,1,1,1
