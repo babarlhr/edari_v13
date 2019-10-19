@@ -1,0 +1,22 @@
+.o_state {
+    text-align:center !important;
+    font-weight: bold !important;
+    margin-right: 10px !important;
+    margin-left: 10px !important;
+}
+.pending {
+    background-color:grey !important;
+    color:white !important;
+}
+.hold {
+    background-color:yellow !important;
+    color:black !important;
+}
+.done {
+    background-color:green !important;
+    color:white !important;
+}
+.cancelled {
+    background-color:red !important;
+    color:white !important;
+}

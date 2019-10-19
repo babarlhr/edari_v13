@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Group to make menu invisible -->
+    <record model="res.groups" id="group_visible_contacts">
+        <field name="name">Visible Contacts</field>
+    </record>
+    
+    <!-- Make menu invisible -->
+    <record id="contacts.menu_contacts" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6,0,[ref('group_visible_contacts')])]"/>
+    </record>
+    
+    <!-- Customers -->
+    <menuitem name="Customers"
+        id="menu_customers"
+        sequence="4"
+        web_icon="contacts,static/description/icon.png"
+        groups="supplier_customer.group_customer"/>
+    
+    <menuitem id="res_partner_menu_customers"
+        name="Customers"
+        action="base.action_partner_form"
+        parent="supplier_customer.menu_customers"
+        sequence="1"/>
+        
+    <menuitem id="res_partner_menu_config_customer"
+        name="Configuration"
+        parent="menu_customers"
+        sequence="2"/>
+
+    <menuitem id="menu_partner_category_form_customer"
+        action="base.action_partner_category_form"
+        name="Contact Tags"
+        sequence="1" parent="res_partner_menu_config_customer"/>
+
+    <menuitem id="menu_partner_title_contact_customers"
+        action="base.action_partner_title_contact"
+        name="Contact Titles" parent="res_partner_menu_config_customer"
+        sequence="3"/>
+
+    <menuitem id="res_partner_industry_menu_customers" name="Sectors of Activity"
+        action="base.res_partner_industry_action" parent="res_partner_menu_config_customer"
+        sequence="4"/>
+
+    <menuitem id="menu_localisation_customers" name="Localization"
+        parent="res_partner_menu_config_customer" sequence="5"/>
+
+    <menuitem id="menu_config_bank_accounts_customers"
+        name="Bank Accounts"
+        parent="res_partner_menu_config_customer"
+        sequence="6"/>
+        
+    <menuitem id="menu_localisation_customer" name="Localization"
+        parent="res_partner_menu_config_customer" sequence="5"/>
+
+    <menuitem id="menu_country_partner_customer"
+        action="base.action_country" parent="menu_localisation_customer"
+        sequence="1"/>
+
+    <menuitem id="menu_country_group_customer"
+        action="base.action_country_group"
+        name="Country Group" parent="menu_localisation_customer"
+        sequence="3"/>
+
+    <menuitem id="menu_country_state_partner_customer"
+        action="base.action_country_state"
+        parent="menu_localisation_customer"
+        sequence="2"/>
+
+    <menuitem id="menu_config_bank_accounts_customer"
+        name="Bank Accounts"
+        parent="res_partner_menu_config_customer"
+        sequence="6"/>
+
+    <menuitem id="menu_action_res_bank_form_customer"
+        action="base.action_res_bank_form"
+        parent="menu_config_bank_accounts_customer"
+        sequence="1"/>
+
+    <menuitem id="menu_action_res_partner_bank_form_customer"
+        action="base.action_res_partner_bank_account_form"
+        parent="menu_config_bank_accounts_customer"
+        sequence="2"/>
+    
+    <!-- Suppliers -->
+    <menuitem name="Suppliers"
+        id="menu_suppliers"
+        sequence="3"
+        web_icon="contacts,static/description/icon.png"
+        groups="supplier_customer.group_supplier"/>
+        
+    <menuitem id="res_partner_menu_supplier"
+        name="Suppliers"
+        action="base.action_partner_supplier_form"
+        parent="supplier_customer.menu_suppliers"
+        sequence="1"/>
+        
+    <menuitem id="res_partner_menu_config_suppliers"
+        name="Configuration"
+        parent="menu_suppliers"
+        sequence="2"/>
+    
+    <menuitem id="menu_partner_category_form_suppliers"
+        action="base.action_partner_category_form"
+        name="Contact Tags"
+        sequence="1" parent="res_partner_menu_config_suppliers"/>
+
+    <menuitem id="menu_partner_title_contact_suppliers"
+        action="base.action_partner_title_contact"
+        name="Contact Titles" parent="res_partner_menu_config_suppliers"
+        sequence="3"/>
+
+    <menuitem id="res_partner_industry_menu_suppliers" name="Sectors of Activity"
+        action="base.res_partner_industry_action" parent="res_partner_menu_config_suppliers"
+        sequence="4"/>
+
+    <menuitem id="menu_localisation_suppliers" name="Localization"
+        parent="res_partner_menu_config_suppliers" sequence="5"/>
+
+    <menuitem id="menu_country_partner_suppliers"
+        action="base.action_country" parent="menu_localisation_suppliers"
+        sequence="1"/>
+
+    <menuitem id="menu_country_group_suppliers"
+        action="base.action_country_group"
+        name="Country Group" parent="menu_localisation_suppliers"
+        sequence="3"/>
+
+    <menuitem id="menu_country_state_partner_suppliers"
+        action="base.action_country_state"
+        parent="menu_localisation_suppliers"
+        sequence="2"/>
+
+    <menuitem id="menu_config_bank_accounts_suppliers"
+        name="Bank Accounts"
+        parent="res_partner_menu_config_suppliers"
+        sequence="6"/>
+
+    <menuitem id="menu_action_res_bank_form_suppliers"
+        action="base.action_res_bank_form"
+        parent="menu_config_bank_accounts_suppliers"
+        sequence="1"/>
+
+    <menuitem id="menu_action_res_partner_bank_form_suppliers"
+        action="base.action_res_partner_bank_account_form"
+        parent="menu_config_bank_accounts_suppliers"
+        sequence="2"/>
+    
+</odoo>

@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="view_partner_form_vendor_as_individual" model="ir.ui.view">
+        <field name="name">res.partner.form.vendor.as.individual</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/div[2]/h1" position="after">
+                <br/><label for="name_in_passport" attrs="{'invisible': [('company_type', '!=', 'person')]}">Name as per Passport/Emirates ID: </label>
+                <field name="name_in_passport" placeholder="Name as per Passport/Emirates ID" attrs="{'invisible': [('company_type', '!=', 'person')]}"/>
+            </xpath>
+            <field name="vat" position="after">
+                <field name="nationality" attrs="{'invisible': [('company_type', '!=', 'person')]}"/>
+                <field name="date_of_birth" attrs="{'invisible': [('company_type', '!=', 'person')]}"/>
+                <field name="uae_visa_held" attrs="{'invisible': [('company_type', '!=', 'person')]}"/>
+                <field name="education_level" attrs="{'invisible': [('company_type', '!=', 'person')]}"/>
+                <field name="university" attrs="{'invisible': [('company_type', '!=', 'person')]}"/>
+                <field name="uni_country" attrs="{'invisible': [('company_type', '!=', 'person')]}"/>
+                <field name="year_of_graduation" attrs="{'invisible': [('company_type', '!=', 'person')]}"/>
+            </field>
+            <xpath expr="//form/sheet/group/group/field[@name='category_id']" position="after">
+                <field name="client_email" attrs="{'invisible': [('company_type', '!=', 'person')]}"/>
+                <field name="marital_status" attrs="{'invisible': [('company_type', '!=', 'person')]}"/>
+                <field name="children_dependent" attrs="{'invisible': [('company_type', '!=', 'person')]}"/>
+            </xpath>
+            
+            <xpath expr="//notebook/page[1]" position="after">
+                <page string="Dependents" attrs="{'invisible': [('company_type', '!=', 'person')]}">
+                    <field name="dependent_ids" mode="kanban" context="{'default_vendor_id': active_id}">
+                        <kanban>
+                            <field name="name"/>
+                            <field name="name_in_passport"/>
+                            <field name="nationality"/>
+                            <field name="date_of_birth"/>
+                            <field name="relationship"/>
+                            <templates>
+                                <t t-name="kanban-box">
+                                    <div class="oe_kanban_global_click">
+                                        <div class="oe_kanban_details">
+                                            <h5><strong>Name:</strong> <field name="name"/></h5>
+                                            <div><strong>Name in Passport:</strong> <field name="name_in_passport"/></div>
+                                            <div><strong>DOB:</strong> <field name="date_of_birth"/></div>
+                                            <div><strong>Nationality:</strong> <field name="nationality"/></div>
+                                            <div><strong>Relationship:</strong> <field name="relationship"/></div>
+                                            <div><strong>Gender:</strong> <field name="gender"/></div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </templates>
+                        </kanban>
+                        <form string="Dependents">
+                            <sheet>
+                                <field name="relationship" required="1" widget="radio" options="{'horizontal': true}"/>
+                                <field name="vendor_id" invisible="1"/>
+                                <hr/>
+                                <group>
+                                    <group>
+                                        <field name="name" string="Name"/>
+                                        <field name="name_in_passport"/>
+                                        <field name="date_of_birth"/>
+                                        <field name="nationality"/>
+                                        <field name="gender"/>
+                                        <field name="comment" placeholder="internal note..."/>
+                                    </group>
+                                </group>
+                            </sheet>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="CV Uploads" attrs="{'invisible': [('company_type', '!=', 'person')]}">
+                    <field name="cv_upload_ids" context="{'default_cv_vendor_id': active_id}">
+                        <tree>
+                            <field name="person_id"/>
+                            <field name="document"/>
+                            <field name="relationship"/>
+                            <field name="document_ids" widget="many2many_tags"/>
+                            <field name="document_count"/>
+                            <field name="last_upload"/>
+                        </tree>
+                        <form>
+                            <field name="cv_vendor_id" invisible="1"/>
+                            <group col="4">
+                                <field name="person_id" domain="[('id', '=', cv_vendor_id)]"/>
+                                <field name="document"/>
+                                <field name="relationship"/>
+                                <field name="document_count"/>
+                                <field name="last_upload"/>
+                            </group>
+                            <group>
+                                <field name="document_ids">
+                                    <tree editable="bottom">
+                                        <field name="name" string="Name"/>
+                                        <field string="Docs" name="datas" filename="store_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                        <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                        <field name="create_date" string="Uploaded On"/>
+                                        <field name="type" invisible="1"/>
+                                        <field name="vendor_document_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//notebook" position="after">
+                <notebook attrs="{'invisible': [('company_type', '!=', 'person')]}">
+                    <page string="Passport">
+                        <group col="4">
+                            <button name="add_passport_dependents_info" type="object" string="Get Dependents Info" class="oe_highlight"/>
+                        </group>
+                        <field name="passport_upload_ids">
+                            <tree>
+                                <field name="person_id"/>
+                                <field name="document"/>
+                                <field name="relationship"/>
+                                <field name="date_of_birth"/>
+                                <field name="gender"/>
+                                <field name="passport_number"/>
+                                <field name="issue_date"/>
+                                <field name="expiry_date"/>
+                                <field name="passport_issue_country_id"/>
+                                <field name="document_ids" widget="many2many_tags"/>
+                                <field name="document_count"/>
+                                <field name="last_upload"/>
+                            </tree>
+                            <form>
+                                <group col="4">
+                                    <field name="relationship"/>
+                                    <field name="person_id"/>
+                                    <field name="document"/>
+                                    <field name="date_of_birth"/>
+                                    <field name="gender"/>
+                                    <field name="passport_number"/>
+                                    <field name="issue_date"/>
+                                    <field name="expiry_date"/>
+                                    <field name="passport_issue_country_id"/>
+                                    <field name="document_count"/>
+                                    <field name="last_upload"/>
+                                </group>
+                                <group>
+                                    <field name="document_ids">
+                                        <tree editable="bottom">
+                                            <field name="name" string="Name"/>
+                                            <field string="Docs" name="datas" filename="store_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                            <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                            <field name="create_date" string="Uploaded On"/>
+                                            <field name="type" invisible="1"/>
+                                            <field name="p_vendor_document_id" invisible="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page string="Emirates ID">
+                        <group col="4">
+                            <button name="add_emirate_dependents_info" type="object" string="Get Dependents Info" class="oe_highlight"/>
+                        </group>
+                        <field name="emirates_upload_ids">
+                            <tree create="false">
+                                <field name="person"/>
+                                <field name="document"/>
+                                <field name="relationship"/>
+                                <field name="emirate_id_no"/>
+                                <field name="issue_date"/>
+                                <field name="expiry_date"/>
+                                <field name="nationality"/>
+                                <field name="document_ids" widget="many2many_tags"/>
+                                <field name="document_count"/>
+                                <field name="last_upload"/>
+                            </tree>
+                            <form>
+                                <group col="4">
+                                    <field name="person"/>
+                                    <field name="document"/>
+                                    <field name="relationship"/>
+                                    <field name="emirate_id_no"/>
+                                    <field name="issue_date"/>
+                                    <field name="expiry_date"/>
+                                    <field name="nationality"/>
+                                    <field name="document_count"/>
+                                    <field name="last_upload"/>
+                                </group>
+                                <group>
+                                    <field name="document_ids">
+                                        <tree editable="bottom">
+                                            <field name="name" string="Name"/>
+                                            <field string="Docs" name="datas" filename="store_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                            <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                            <field name="create_date" string="Uploaded On"/>
+                                            <field name="type" invisible="1"/>
+                                            <field name="e_vendor_document_id" invisible="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page string="Education Certificate" attrs="{'invisible': [('company_type', '!=', 'person')]}">
+                        <group col="4">
+                            <field name="edu_degree_attested"/>
+                            <field name="edu_mofa_attestation"/>
+                        </group>
+                        <field name="edu_upload_ids" context="{'default_active_id': active_id, 'default_edu_vendor_id': active_id}">
+                            <tree>
+                                <field name="person"/>
+                                <field name="edu_relationship"/>
+                                <field name="document"/>
+                                <field name="edu_university"/>
+                                <field name="edu_year_of_graduation"/>
+                                <field name="edu_country_id"/>
+                                <field name="edu_degree_type"/>
+                                <field name="edu_degree_attested"/>
+                                <field name="edu_mofa_attestation"/>
+                                <field name="document_ids" widget="many2many_tags"/>
+                                <field name="document_count"/>
+                                <field name="last_upload"/>
+                            </tree>
+                            <form>
+                                <field name="edu_vendor_id" invisible="1"/>
+                                <group col="4">
+                                    <field name="edu_relationship"/>
+                                    <field name="person" domain="[('id', '=', edu_vendor_id)]"/>
+                                    <field name="document"/>
+                                    <field name="edu_university"/>
+                                    <field name="edu_year_of_graduation"/>
+                                    <field name="edu_country_id"/>
+                                    <field name="edu_degree_type"/>
+                                    <field name="edu_degree_attested"/>
+                                    <field name="edu_mofa_attestation"/>
+                                    <field name="document_count"/>
+                                    <field name="last_upload"/>
+                                </group>
+                                <group>
+                                    <field name="document_ids">
+                                        <tree editable="bottom">
+                                            <field name="name" string="Name"/>
+                                            <field string="Docs" name="datas" filename="store_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                            <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                            <field name="create_date" string="Uploaded On"/>
+                                            <field name="type" invisible="1"/>
+                                            <field name="edu_vendor_document_id" invisible="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page string="Medical Insurance Card/Policy">
+                        <div>
+                            <label for="insur_required"/>
+                            <field name="insur_required" class="oe_inline" style="width: 150px;"/>
+                        </div>
+                        <div>
+                            <label for="insur_for_dependents_required"/>
+                            <field name="insur_for_dependents_required" class="oe_inline" style="width: 150px;"/>
+                        </div>
+                        <group>
+                            <field name="insur_notes"/>
+                        </group>
+                        <field name="insurance_upload_ids" context="{'default_insur_vendor_id': active_id}">
+                            <tree>
+                                <field name="document"/>
+                                <field name="person"/>
+                                <field name="relationship"/>
+                                <field name="insurer"/>
+                                <field name="policy_no"/>
+                                <field name="issue_date"/>
+                                <field name="expiry_date"/>
+                                <field name="document_ids" widget="many2many_tags"/>
+                                <field name="document_count"/>
+                                <field name="last_upload"/>
+                            </tree>
+                            <form>
+                                <field name="insur_vendor_id" invisible="1"/>
+                                <group col="4">
+                                    <field name="relationship"/>
+                                    <field name="person" domain="[('relationship', '=', relationship), ('vendor_id', '=', insur_vendor_id)]"/>
+                                    <field name="document"/>
+                                    <field name="insurer"/>
+                                    <field name="policy_no"/>
+                                    <field name="issue_date"/>
+                                    <field name="expiry_date"/>
+                                    <field name="document_count"/>
+                                    <field name="last_upload"/>
+                                </group>
+                                <group>
+                                    <field name="document_ids">
+                                        <tree editable="bottom">
+                                            <field name="name" string="Name"/>
+                                            <field string="Docs" name="datas" filename="store_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                            <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                            <field name="create_date" string="Uploaded On"/>
+                                            <field name="type" invisible="1"/>
+                                            <field name="insur_vendor_document_id" invisible="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page string="Visa">
+                        <group col="4">
+                            <field name="visa_required"/>
+                            <field name="labour_card_required"/>
+                            <field name="family_visa_required"/>
+                        </group>
+                        <field name="visa_upload_ids" context="{'default_visa_vendor_id': active_id}">
+                            <tree>
+                                <field name="person"/>
+                                <field name="document"/>
+                                <field name="relationship"/>
+                                <field name="visa_uid"/>
+                                <field name="visa_issue_date"/>
+                                <field name="visa_expiry_date"/>
+                                <field name="document_ids" widget="many2many_tags"/>
+                                <field name="document_count"/>
+                                <field name="last_upload"/>
+                            </tree>
+                            <form>
+                                <field name="visa_vendor_id" invisible="1"/>
+                                <group col="4">
+                                    <field name="relationship"/>
+                                    <field name="person" domain="[('relationship', '=', relationship), ('vendor_id', '=', visa_vendor_id)]"/>
+                                    <field name="document"/>
+                                    <field name="visa_uid"/>
+                                    <field name="visa_issue_date"/>
+                                    <field name="visa_expiry_date"/>
+                                    <field name="document_count"/>
+                                    <field name="last_upload"/>
+                                </group>
+                                <group>
+                                    <field name="document_ids">
+                                        <tree editable="bottom">
+                                            <field name="name" string="Name"/>
+                                            <field string="Docs" name="datas" filename="store_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                            <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                            <field name="create_date" string="Uploaded On"/>
+                                            <field name="type" invisible="1"/>
+                                            <field name="visa_vendor_document_id" invisible="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page string="Visa Process">
+                        <group col="4">
+                            <field name="vp_application_type"/>
+                            <field name="vp_labour_card_required"/>
+                            <field name="vp_basic"/>
+                            <field name="vp_house_allowance"/>
+                            <field name="other_allowance"/>
+                            <field name="probation_period"/>
+                            <field name="attested_degree"/>
+                            <field name="vp_profession"/>
+                        </group>
+                        <field name="vp_upload_ids" context="{'default_vp_vendor_id': active_id}">
+                            <tree>
+                                <field name="person"/>
+                                <field name="document"/>
+                                <field name="relationship"/>
+                                <field name="document_ids" widget="many2many_tags"/>
+                                <field name="document_count"/>
+                                <field name="last_upload"/>
+                            </tree>
+                            <form>
+                                <field name="vp_vendor_id" invisible="1"/>
+                                <group col="4">
+                                    <field name="relationship"/>
+                                    <field name="person" domain="[('id', '=', vp_vendor_id)]"/>
+                                    <field name="document"/>
+                                    <field name="document_count"/>
+                                    <field name="last_upload"/>
+                                </group>
+                                <group>
+                                    <field name="document_ids">
+                                        <tree editable="bottom">
+                                            <field name="name" string="Name"/>
+                                            <field string="Docs" name="datas" filename="store_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                            <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                            <field name="create_date" string="Uploaded On"/>
+                                            <field name="type" invisible="1"/>
+                                            <field name="vp_vendor_document_id" invisible="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page string="Employment Contract">
+                        <group col="4">
+                            <field name="emp_contract_name"/>
+                            <field name="emp_nationality"/>
+                            <field name="emp_passport_no"/>
+                        </group>
+                        <field name="emp_upload_ids" context="{'default_emp_vendor_id': active_id}">
+                            <tree>
+                                <field name="relationship"/>
+                                <field name="document_name"/>
+                                <field name="document"/>
+                                <field name="contract_date"/>
+                                <field name="job_title"/>
+                                <field name="client_name"/>
+                                <field name="client_contract"/>
+                                <field name="site_location"/>
+                                <field name="basic_salary"/>
+                                <field name="housing_allowance"/>
+                                <field name="other_allowances"/>
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                                <field name="duration"/>
+                                <field name="probation_period"/>
+                                <field name="medical"/>
+                                <field name="annual_ticket"/>
+                                <field name="medical_cost"/>
+                                <field name="special_provision"/>
+                                <field name="annual_ticket_cost"/>
+                                <field name="annual_ticket_cost"/>
+                                <field name="document_ids" widget="many2many_tags"/>
+                                <field name="document_count"/>
+                                <field name="last_upload"/>
+                            </tree>
+                            <form>
+                                <field name="emp_vendor_id" invisible="1"/>
+                                <group col="4">
+                                    <field name="relationship"/>
+                                    <field name="document_name"/>
+                                    <field name="document"/>
+                                    <field name="contract_date"/>
+                                    <field name="job_title"/>
+                                    <field name="client_name"/>
+                                    <field name="client_contract"/>
+                                    <field name="site_location"/>
+                                    <field name="basic_salary"/>
+                                    <field name="housing_allowance"/>
+                                    <field name="other_allowances"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="duration"/>
+                                    <field name="probation_period"/>
+                                    <field name="medical"/>
+                                    <field name="annual_ticket"/>
+                                    <field name="medical_cost"/>
+                                    <field name="special_provision"/>
+                                    <field name="annual_ticket_cost"/>
+                                    <field name="annual_ticket_cost"/>
+                                    <field name="document_count"/>
+                                    <field name="last_upload"/>
+                                </group>
+                                <group>
+                                    <field name="document_ids">
+                                        <tree editable="bottom">
+                                            <field name="name" string="Name"/>
+                                            <field string="Docs" name="datas" filename="store_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                            <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                            <field name="create_date" string="Uploaded On"/>
+                                            <field name="type" invisible="1"/>
+                                            <field name="ag_vendor_document_id" invisible="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page string="Commercial Agreement">
+                        <group col="4">
+                            <field name="commercial_contract_name"/>
+                            <field name="commercial_nationality"/>
+                            <field name="commercial_passport_no"/>
+                        </group>
+                        <field name="commercial_upload_ids" context="{'default_commercial_vendor_id': active_id}">
+                            <tree>
+                                <field name="relationship"/>
+                                <field name="document_name"/>
+                                <field name="document"/>
+                                <field name="contract_date"/>
+                                <field name="charge_rate"/>
+                                <field name="job_title"/>
+                                <field name="client_name"/>
+                                <field name="client_contract"/>
+                                <field name="site_location"/>
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                                <field name="duration"/>
+                                <field name="probation_period"/>
+                                <field name="document_ids" widget="many2many_tags"/>
+                                <field name="document_count"/>
+                                <field name="last_upload"/>
+                            </tree>
+                            <form>
+                                <field name="commercial_vendor_id" invisible="1"/>
+                                <group col="4">
+                                    <field name="relationship"/>
+                                    <field name="document_name"/>
+                                    <field name="document"/>
+                                    <field name="contract_date"/>
+                                    <field name="charge_rate"/>
+                                    <field name="job_title"/>
+                                    <field name="client_name"/>
+                                    <field name="client_contract"/>
+                                    <field name="site_location"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="duration"/>
+                                    <field name="probation_period"/>
+                                    <field name="document_count"/>
+                                    <field name="last_upload"/>
+                                </group>
+                                <group>
+                                    <field name="document_ids">
+                                        <tree editable="bottom">
+                                            <field name="name" string="Name"/>
+                                            <field string="Docs" name="datas" filename="store_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                            <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                            <field name="create_date" string="Uploaded On"/>
+                                            <field name="type" invisible="1"/>
+                                            <field name="ag_vendor_document_id" invisible="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+            
+        </field>
+    </record>
+    
+</odoo>

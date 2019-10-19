@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="purchase_order_form_approval" model="ir.ui.view">
+        <field name="name">purchase.order.form.view.approval</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="is_app_manager" invisible="1"/>
+                <button type="object" string="SEND FOR APPROVAL"
+                    class="oe_highlight" name="button_sent_to_approve"
+                    groups="base.group_user"
+                    states="select_manager"/>
+            </xpath>
+            <xpath expr="//sheet/div[hasclass('oe_title')]" position="after">
+                <group>
+                    <field name="description"/>
+                </group>
+            </xpath>
+            <field name="partner_id" position="after">
+                <field name="supplier_criteria" string="Supplier selection criteria"/>
+            </field>
+            <field name="partner_ref" position="after">
+                <field name="partner_bill_to_id"/>
+                <field name="tags" widget="many2many_tags"/>
+            </field>
+            <field name="date_order" position="after">
+                <field name="submission_date"/>
+                <field name="procurment_manager"/>
+                <field name="procurment_officer"/>
+<!--                <field name="requesting_operating_unit_id"/>-->
+                <field name="billing_poc_id"/>
+                <field name="billing_poc_email"/>
+                <field name="billing_poc_phone"/>
+                <field name="delivery_poc_id"/>
+            </field>
+            <field name="state" position="before">
+                <field name="is_approver_1" invisible="1"/>
+                <field name="is_approver_2" invisible="1"/>
+            </field>
+            <xpath expr="//notebook" position="inside">
+                <page string="Attachments">
+                    <group>
+                        <group>
+                            <field nolabel="1" name="doc_ids" context="{'default_purchase_id': active_id, 'default_res_model': 'purchase.order', 'default_type': 'binary'}">
+                                <tree editable="bottom">
+                                    <field string="Attachments" name="datas" filename="store_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                    <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                    <field name="name" string="Description"/>
+                                    <field name="type" invisible="1"/>
+                                    <field name="purchase_id" invisible="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                </page>
+                <page string="Special Conditions">
+                    <field name="special_conditions"/>
+                </page>
+            </xpath>
+            <xpath expr="//notebook" position="after">
+                <div width="100%" attrs="{'invisible': [('is_app_manager', '=' , False)]}">
+
+                    <label for="approver_1" style="width: 14%;"/>
+                    <field name="approver_1" 
+                        options="{'no_create_edit': True, 'no_create':True, 'no_open': True}"
+                        class="oe_inline"
+                        attrs="{'required': [('is_app_manager', '=' , True)], 'readonly': [('state','in', ['done', 'purchase'])]}"
+                        style="min-width: 25% !important;margin-right:5px !important; "
+                    />
+                    <field name="approver_1_state"
+                     class="oe_inline mt8 o_state done" readonly="1" style="min-width: 10% !important; " 
+                     attrs="{'invisible' : [('approver_1_state', '!=', 'done')]}"/>
+                    <field name="approver_1_state"
+                     class="oe_inline mt8 o_state pending" readonly="1" style="min-width: 10% !important; "
+                     attrs="{'invisible' : [('approver_1_state', '!=', 'pending')]}"
+                     />
+                    <field name="approver_1_state"
+                     class="oe_inline mt8 o_state cancelled" readonly="1" style="min-width: 10% !important; "
+                     attrs="{'invisible' : [('approver_1_state', '!=', 'cancelled')]}"
+                     />
+                     <field name="approver_1_state"
+                     class="oe_inline mt8 o_state hold" readonly="1" style="min-width: 10% !important; "
+                     attrs="{'invisible' : [('approver_1_state', '!=', 'hold')]}"
+                     />
+                    <field name="approver_1_approved_date"  class="oe_inline mt8" readonly="1" style="min-width: 10% !important;margin-right:5px !important; "/>
+                    <br/>
+
+                    <label for="approver_2" style="width: 14%;" />
+                    <field name="approver_2" 
+                        options="{'no_create_edit': True, 'no_create':True, 'no_open': True}"
+                        class="oe_inline"
+                        attrs="{'required': [('is_app_manager', '=' , True)], 'readonly': [('state','in', ['done', 'purchase'])]}"
+                        style="min-width: 25% !important;margin-right:5px !important; "
+                    />
+                    <field name="approver_2_state" class="oe_inline mt8 o_state pending" readonly="1" style="min-width: 10% !important; "
+                    attrs="{'invisible' : [('approver_2_state', '!=', 'pending')]}"
+                    />
+                    <field name="approver_2_state" class="oe_inline mt8 o_state done" readonly="1" style="min-width: 10% !important; "
+                    attrs="{'invisible' : [('approver_2_state', '!=', 'done')]}"
+                    />
+                    <field name="approver_2_state" class="oe_inline mt8 o_state hold" readonly="1" style="min-width: 10% !important; "
+                    attrs="{'invisible' : [('approver_2_state', '!=', 'hold')]}"
+                    />
+                    <field name="approver_2_state" class="oe_inline mt8 o_state cancelled" readonly="1" style="min-width: 10% !important; "
+                    attrs="{'invisible' : [('approver_2_state', '!=', 'cancelled')]}"
+                    />
+                    <field name="approver_2_approved_date"  class="oe_inline mt8" readonly="1" style="min-width: 10% !important;margin-right:5px !important; "/>
+                    <br/>
+                </div>
+                <br/>
+                <br/>
+                <br/>
+                <div attrs="{'invisible': [('is_app_manager', '=' , False)]}">
+                    <div class="row" attrs="{'invisible': ['|',('is_approver_1','=',False),('state','!=','approval_1')]}">
+                        <group>
+                            <field name="comments"/>
+                        </group>
+                        <div class="col-md-4 text-center" style="min-height: 50px !important;padding-top: 12px;">
+                            <button string="Revise" type="object" name="set_state_hold" class="btn-warning" />
+                        </div>
+                        <div class="col-md-4 text-center" style="min-height: 50px !important;padding-top: 12px;">
+                            <button string="Cancel &amp; Reject" type="object" name="set_state_cancel" class="btn-danger" />
+                        </div>
+                        <div class="col-md-4 text-center" style="min-height: 50px !important;padding-top: 12px;">
+                            <button string="Approved &amp; Next" type="object" name="set_state_approved" class="btn-success" />
+                        </div>
+                    </div>
+                    <div class="row" attrs="{'invisible': ['|',('is_approver_2','=',False),('state','!=','approval_2')]}">
+                        <group>
+                            <field name="comments"/>
+                        </group>
+                        <div class="col-md-4 text-center" style="min-height: 50px !important;padding-top: 12px;">
+                            <button string="Revise" type="object" name="set_state_hold" class="btn-warning" />
+                        </div>
+                        <div class="col-md-4 text-center" style="min-height: 50px !important;padding-top: 12px;">
+                            <button string="Cancel &amp; Reject" type="object" name="set_state_cancel" class="btn-danger" />
+                        </div>
+                        <div class="col-md-4 text-center" style="min-height: 50px !important;padding-top: 12px;">
+                            <button string="Approved &amp; Next" type="object" name="set_state_approved" class="btn-success" />
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+            <field name="activity_ids" position="replace"/>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+	
+	<record id="view_partner_form_ext_fields_bank" model="ir.ui.view">
+        <field name="name">res.partner.form.ext.fields.bank</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form"/>
+        <field name="arch" type="xml">
+			<xpath expr="//group[@name='banks']" position="replace">
+			</xpath>
+            <xpath expr="//notebook/page[@name='accounting']" position="inside">
+				<group string="Bank Accounts" name="banks" groups="account.group_account_invoice">
+					<field name="bank_ids" nolabel="1">
+						<tree editable="bottom">
+							<field name="sequence" widget="handle"/>
+							<field name="bank_id"/>
+							<field name="acc_number"/>
+							<field name="acc_holder_name" invisible="0"/>
+							<field name="iban"/>
+							<field name="branch_name"/>
+							<field name="swift"/>
+						</tree>
+					</field>
+					<button type="action" class="btn-link" name="59" context="{'search_default_partner_id': active_id, 'default_partner_id': active_id, 'form_view_ref': 'account.view_company_partner_bank_form'}" string="View accounts detail" colspan="2"/>
+				</group>
+			</xpath>
+            <xpath expr="//notebook/page[@name='accounting']" position="inside">
+                <group>
+                    <field name="b_upload_ids">
+                        <tree>
+                            <field name="vendor_doc_type"/>
+                            <field name="name"/>
+                            <field name="document_ids" widget="many2many_tags"/>
+                            <field name="document_count"/>
+                            <field name="last_upload"/>
+                        </tree>
+                        <form>
+                            <group col="4">
+                                <field name="vendor_doc_type"/>
+                                <field name="name"/>
+                                <field name="document_count"/>
+                                <field name="last_upload"/>
+                            </group>
+                            <group>
+                                <field name="document_ids">
+                                    <tree editable="bottom">
+                                        <field name="name" string="Name"/>
+                                        <field string="Docs" name="datas" filename="store_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                        <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                        <field name="create_date" string="Uploaded On"/>
+                                        <field name="type" invisible="1"/>
+                                        <field name="b_vendor_document_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </form>
+                    </field>
+                </group>
+            </xpath>
+        </field>
+    </record>
+	
+	
+    <record id="view_company_partner_bank_form_ext" model="ir.ui.view">
+        <field name="name">company.res.partner.bank.form.ext</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='bank_id']" position="after">
+                <field name="branch_name"/>
+            </xpath>
+            <xpath expr="//field[@name='acc_number']" position="after">
+                <field name="iban"/>
+                <field name="swift"/>
+            </xpath>
+        </field>
+    </record>
+
+	<record id="view_partner_form_vendor_as_company" model="ir.ui.view">
+        <field name="name">res.partner.form.vendor.as.company</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/div[2]/h1" position="after">
+                <br/><label for="trading_as" attrs="{'invisible': [('company_type', '!=', 'company')]}">Trading As: </label>
+                <field name="trading_as" placeholder="e.g Abbreviated as ..." attrs="{'invisible': [('company_type', '!=', 'company')]}"/>
+            </xpath>
+			<xpath expr="//notebook" position="inside">
+                <page string="Document Uploads" attrs="{'invisible': [('company_type', '!=', 'company')]}">
+                    <field name="upload_ids">
+                        <tree>
+                            <field name="vendor_doc_type"/>
+                            <field name="name"/>
+                            <field name="issue_date"/>
+                            <field name="expiry_date"/>
+                            <field name="issued_by"/>
+                            <field name="country_of_issue"/>
+                            <field name="document_ids" widget="many2many_tags"/>
+                            <field name="document_count"/>
+                            <field name="last_upload"/>
+                        </tree>
+                        <form>
+                            <group col="4">
+                                <field name="vendor_doc_type"/>
+                                <field name="name"/>
+                                <field name="issue_date"/>
+                                <field name="expiry_date"/>
+                                <field name="issued_by"/>
+                                <field name="country_of_issue"/>
+                                <field name="document_count"/>
+                                <field name="last_upload"/>
+                            </group>
+                            <group>
+                                <field name="document_ids">
+                                    <tree editable="bottom">
+                                        <field name="name" string="Name"/>
+                                        <field string="Docs" name="datas" filename="store_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                        <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                        <field name="create_date" string="Uploaded On"/>
+                                        <field name="type" invisible="1"/>
+                                        <field name="vendor_document_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+				<page string="Contract" attrs="{'invisible': [('company_type', '!=', 'company')]}">
+                    <field name="contract_doc_ids">
+                        <tree>
+                            <field name="vendor_doc_type"/>
+                            <field name="name"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="doc_signed"/>
+                            <field name="document_ids" widget="many2many_tags"/>
+                            <field name="document_count"/>
+                            <field name="last_upload"/>
+                        </tree>
+                        <form>
+                            <group col="4">
+                                <field name="vendor_doc_type"/>
+                                <field name="name"/>
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                                <field name="doc_signed"/>
+                                <field name="document_count"/>
+                                <field name="last_upload"/>
+                            </group>
+                            <group>
+                                <field name="document_ids">
+                                    <tree editable="bottom">
+                                        <field name="name" string="Name"/>
+                                        <field string="Docs" name="datas" filename="store_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                        <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                        <field name="create_date" string="Uploaded On"/>
+                                        <field name="type" invisible="1"/>
+                                        <field name="contract_document_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//div[hasclass('o_address_format')]/field[@name='zip']" position="attributes">
+                <attribute name="placeholder">PO Box</attribute>
+            </xpath>
+            <field name="vat" position="after">
+                <field name="registeration_no" attrs="{'invisible': [('company_type', '!=', 'company')]}"/>
+            </field>
+            <field name="vat" position="attributes">
+                <attribute name="string">VAT Number</attribute>
+            </field>
+		</field>
+	</record>
+
+</odoo>
