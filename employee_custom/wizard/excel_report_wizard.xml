@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="view_hr_employee_report_excel" model="ir.ui.view">
+        <field name="name">hr.employee.report.form</field>
+        <field name="model">hr.employee.report</field>
+        <field name="arch" type="xml">
+            <form string="HR Employee Report">
+                <group>
+                    <field name="excel_file" readonly="1" filename="file_name"/>
+                    <field name="file_name" invisible="1"/>
+                </group>
+                <footer>
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hr_employee_report_form" model="ir.actions.act_window">
+        <field name="name">HR Employee Report </field>
+        <field name="view_id" ref="view_hr_employee_report_excel"/>
+        <field name="view_mode">form</field>
+        <field name="res_model">hr.employee.report</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="hr_employee_view_wizard" model="ir.ui.view">
+        <field name="name">HR Employee Wizard</field>
+        <field name="model">hr.employee.report.wizard.new</field>
+        <field name="arch" type="xml">
+            <form string="HR Employee Wizard">
+                <group>
+                    <field name="employee_ids" widget="many2many_tags" invisible="True"/>
+                </group>
+                <footer>
+                    <button name="generate_hr_employee_report" type="object"
+                            string="Generate Report" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_highlight" special="cancel" />
+                </footer>
+
+            </form>
+        </field>
+    </record>
+    
+    <act_window
+            id="action_hr_employee_wizard"
+            name="Generate Report"
+            binding_model="hr.employee"
+            res_model="hr.employee.report.wizard.new"
+            binding_views="list"
+            view_mode="form"
+            target="new"
+            context="{'default_employee_ids': active_ids}"
+            view_id="hr_employee_view_wizard"
+    />
+
+</odoo>

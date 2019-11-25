@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_employee_filter_custom" model="ir.ui.view">
+        <field name="name">hr.employee.search.custom</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="iqama_name" string="Name in Iqama"/>
+                <field name="iqama_no" string="Iqama No"/>
+            </field>
+        </field>
+    </record>
+
+
+    <record id="view_employee_form_emp_ext_view" model="ir.ui.view">
+        <field name="name">hr.employee.form.emp.ext.view</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/div[2]/h1" position="after">
+                <h3>
+                    <field name="name_ar" placeholder="Employee's Name (Arabic)" required="False"/>
+                </h3>
+            </xpath>
+            <xpath expr="//notebook/page[@name='public']" position="attributes">
+                <attribute name="string">General</attribute>
+            </xpath>
+            <field name="address_id" position="before">
+                <field name="user_id" string="Related User"/>
+            </field>
+            <xpath expr="//notebook/page[@name='hr_settings']" position="replace">
+            </xpath>
+            <xpath expr="//notebook/page[@name='public']/div/div" position="inside">
+                <group string="Genaral">
+                    <field name="join_date" />
+                    <field name="line_manager" />
+                    <field name="senior_manager" />
+                    <field name="contract_signing_date" />
+                </group>
+                <group string="Medical Insurance">
+                    <field name="medical_insur" />
+                    <field name="medical_insur_no" />
+                    <field name="MI_carrier" />
+                    <field name="MI_poloicy_type" />
+                    <field name="blood_type" />
+                    <field name="next_to_kin" />
+                    <field name="medical_history" />
+                </group>
+                <group string="Driving Details">
+                    <field name="driver_licence_no" />
+                    <field name="driver_licence_class" />
+                    <field name="vehicle_id" />
+                    <field name="vehicle_plate_no" />
+                </group>
+                <group string="Iqama Details">
+                    <field name="iqama_no" />
+                    <field name="iqama_name" />
+                    <field name="iqama_expiry" />
+                    <field name="iqama_profession" />
+                    <field name="iqama_profession_ar" />
+                </group>
+            </xpath>
+            <field name="job_id" position="after">
+                <field name="job_location" />
+            </field>
+            <xpath expr="//sheet/group/group/field[@name='work_phone']" position="after">
+                <field name="local_address" />
+                <field name="personal_mob" widget="phone"/>
+                <field name="personal_email" widget="email"/>
+                <field name="language_spoken" />
+                <field name="home_company_address" />
+                <field name="company_identification" />
+            </xpath>
+            <xpath expr="//notebook/page[@name='personal_information']/group/group[2]/field[@name='place_of_birth']" position="before">
+                <field name="dob_hijri" />
+            </xpath>
+            <xpath expr="//form/sheet/notebook/page[@name='personal_information']/group/group[2]/field[@name='passport_id']" position="after">
+                <field name="name_in_passport" />
+                <field name="passport_expiry" />
+            </xpath>
+            <xpath expr="//notebook/page[@name='personal_information']/group/group[6]/field[@name='visa_expire']" position="after">
+                <field name="visa_type" />
+                <field name="visa_category" />
+            </xpath>
+            
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page string="Medical Records">
+                    <group>
+                        <group>
+                            <field name="med_ins_policy_no" />
+                            <field name="primary_hosp_home" />
+                            <field name="primary_hosp_local" />
+                            <field name="primary_care_physician_home" />
+                            <field name="primary_care_physician_local" />
+                        </group>
+                        <group>
+                            <field name="contact_details_home" />
+                            <field name="contact_details_local" />
+                            <field name="policy_exipry" />
+                            <field name="carrier" />
+                            <field name="class_c" />
+                        </group>
+                    </group>
+                    <field name="emp_event_ids">
+                        <tree string="Events" editable="bottom">
+                            <field name="event_date" string="Event Date"/>
+                            <field name="event_desc" />
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </tree>
+                    </field>
+                </page>
+                
+                <page string="IT">
+                    <group>
+                        <group>
+                            <field name="computer_tag" />
+                            <field name="compute_id" />
+                        </group>
+                        <group>
+                            <field name="phone_tag" />
+                            <field name="mobile_id" widget="many2many_tags"/>
+                            <field name="imie_tag" />
+                        </group>
+                    </group>
+                </page>
+                
+                <page string="Accomodation History">
+                    <field name="emp_event_accomodation_ids">
+                        <tree string="Accomodation History" editable="bottom">
+                            <field name="event_date" string="Event Date"/>
+                            <field name="event_desc" />
+                            <field name="attachment_ids" widget="many2many_binary" string="Attach a file"/>
+                        </tree>
+                    </field>
+                </page>
+                
+                <page string="Transportation History">
+                    <field name="emp_event_transportation_ids">
+                        <tree string="Transportaion History" editable="bottom">
+                            <field name="event_date" string="Event Date"/>
+                            <field name="event_desc" />
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </tree>
+                    </field>
+                </page>
+                
+                <page string="Accident History">
+                    <field name="emp_event_accident_ids">
+                        <tree string="Accident History" editable="bottom">
+                            <field name="event_date" string="Event Date"/>
+                            <field name="event_desc" />
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Vacation History">
+                    <field name="emp_event_vacation_ids">
+                        <tree string="Vacation History" editable="bottom">
+                            <field name="event_date" string="Event Date"/>
+                            <field name="event_desc" />
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Training">
+                    <field name="emp_event_training_ids">
+                        <tree string="Training" editable="bottom">
+                            <field name="event_date" string="Event Date"/>
+                            <field name="event_desc" />
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+            
+            <xpath expr="/form/sheet" position="inside">
+                <notebook>
+                    <page string="HSE Incident History">
+                        <field name="emp_event_hse_incident_ids">
+                            <tree string="HSE Incident History" editable="bottom">
+                                <field name="event_date" string="Event Date"/>
+                                <field name="event_desc" />
+                                <field name="attachment_ids" widget="many2many_binary"/>
+                            </tree>
+                        </field>
+                    </page>
+                    
+                    <page string="Career Progression">
+                        <field name="emp_event_career_ids">
+                            <tree string="Career Progression" editable="bottom">
+                                <field name="event_date" string="Event Date"/>
+                                <field name="event_desc" />
+                                <field name="attachment_ids" widget="many2many_binary"/>
+                            </tree>
+                        </field>
+                    </page>
+                    
+                    <page string="Received Badges" attrs="{'invisible': [('user_id', '=', False)]}">
+                        <field name="has_badges" invisible="1"/>
+                        <button string="Grant a Badge" type="action" name="%(hr_gamification.action_reward_wizard)d"/> to reward this employee for a good action
+                        <div class="oe_view_nocontent" attrs="{'invisible': [('has_badges', '=', True)]}">
+                            <p class="oe_view_nocontent_create">
+                                Click to grant this employee his first badge
+                            </p><p class="oe_grey">
+                                Badges are rewards of good work. Give them to people you believe deserve it.
+                            </p>
+                        </div>
+                        <field name="badge_ids" mode="kanban" widget="many2many"/>
+                    </page>
+                    
+                    <page name="hr_settings" string="HR Settings" groups="hr.group_hr_user">
+                        <group>
+                            <group string='Status' name="active_group">
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+                    </page>
+                    
+                    <page string="Docs to Upload" name='docs_to_upload'>
+                        <field nolabel="1" name="docs_ids" context="{'default_employee_ext_id': active_id, 'default_res_model': 'hr.employee'}">
+                            <tree editable="bottom">
+                                <field string="Attachment" name="datas" filename="datas_fname" attrs="{'invisible':[('type','=','url')]}" widget="binary"/>
+                                <field name="store_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
+                                <field name="doc_type" string="Doc Type" required="True"/>
+                                <field name="name" string="Description"/>
+                                <field name="type" invisible="1"/>
+                                <field name="employee_ext_id" invisible="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>

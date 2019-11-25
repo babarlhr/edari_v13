@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!--    <record id="res_users_view_form_preference_karma" model="ir.ui.view">-->
+<!--        <field name="name">res.users.form.preference.forum.karma</field>-->
+<!--        <field name="model">res.users</field>-->
+<!--        <field name="inherit_id" ref="website_forum.res_users_view_form_preference"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <field name="karma" position="attributes">-->
+<!--                <attribute name="invisible">True</attribute>-->
+<!--            </field>-->
+<!--        </field>-->
+<!--    </record>-->
+</odoo>
