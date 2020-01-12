@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+    <!--===================== [Job Position Extension Form View-START] ====================-->
+
+    <record id="jobs_form_view_extension" model="ir.ui.view"> 
+        <field name="name">jobs_form_view_extension</field> 
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_hr_job_form"/>
+        <field name="type">form</field> 
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='address_id']" position="after">
+                <field name="customer"/>
+            </xpath>
+
+        </field> 
+    </record>
+
+    <!--********************* [Job Position Extension Form View-ENDS] *********************-->
+    
+</data>
+</odoo>

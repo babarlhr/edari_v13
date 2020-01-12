@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+    <!--===================== [] ====================-->
+
+    <record id="customers_form_view_extension" model="ir.ui.view"> 
+        <field name="name">customers_form_view_extension</field> 
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="type">form</field> 
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="trade_license_no"/>
+            </xpath>
+
+        </field> 
+    </record>
+
+    <!--********************* [] *********************-->
+    
+</data>
+</odoo>
