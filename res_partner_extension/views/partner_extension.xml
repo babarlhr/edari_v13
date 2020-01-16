@@ -13,8 +13,51 @@
         <field name="arch" type="xml">
             
             <xpath expr="//field[@name='vat']" position="after">
+                <field name="trading_as"/>
                 <field name="trade_license_no"/>
             </xpath>
+
+            <xpath expr="//page[1]" position="after">
+                   <page name="document_page" string="Documents">
+                           <field name="document_tree" >
+                                <tree editable="bottom">
+                                    <field name="name" required="1"/>
+                                    <field name="document_number"/>
+                                    <field name="issue_date"/>
+                                    <field name="expiry_date"/>
+                                    <field name="issued_by"/>
+                                    <field name="place_of_issue"/>
+                                    <field name="country_of_issue"/>
+                                    <field name="upload_doc"/>
+                                    <field name="doc_count"/>
+                                </tree>
+                            </field>
+                   </page>
+
+                   <page name="billing_detail" string="Billing Details">
+                        <group>
+                            <group>
+                                <field name="trade_license_no"/>
+                                <field name="branch_name"/>
+                                <field name="beneficiary_name"/>
+                                <field name="account_number"/>
+                                <field name="iban"/>
+                                <field name="swift_or_route"/>
+                                        
+                            </group>
+                            <group>
+                                <field name="vat"/>
+                                <field name="vat_reg_no"/>
+                                <field name="billing_address"/>
+                                <field name="address_line_1"/>
+                                <field name="address_line_2"/>
+                                <field name="city_emirate"/>
+                                <field name="po_box"/>
+                                
+                            </group>
+                        </group>
+                   </page>
+             </xpath>
 
         </field> 
     </record>

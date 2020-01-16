@@ -14,12 +14,35 @@
             
             <xpath expr="//field[@name='address_id']" position="after">
                 <field name="customer"/>
+                <field name="hiring_manager"/>
+                <field name="job_type"/>
+                <field name="anticipated_start_date"/>
+                <field name="budget"/>
+                <field name="contract_length"/>
             </xpath>
 
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button class="oe_stat_button" name="so_smart_button"
                                     string="Get Sale Orders" type="object"
                                     icon="fa-bars"/>
+            </xpath>
+        </field> 
+    </record>
+
+    <record id="hr_job_survey_form_view_extension" model="ir.ui.view"> 
+        <field name="name">hr_job_survey_form_view_extension</field> 
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_job_survey"/>
+        <field name="type">form</field> 
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="visa_entity"/>
+                <field name="annual_leaves"/>
+                <field name="sick_leaves"/>
+                <field name="probation_period"/>
+                <field name="notice_period"/>
+                <field name="working_days"/>
             </xpath>
         </field> 
     </record>
