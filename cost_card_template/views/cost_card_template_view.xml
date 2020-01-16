@@ -32,11 +32,14 @@
                         </group>
                         <field name="template_tree">
                             <tree editable="bottom">
-                                <field name="sequence" />
+                                <field name="handle" widget='handle'/>
+                                <field name="sequence"/>
                                 <field name="service_name" required="1"/>
+                                <field name="code" />
                                 <field name="service_category" />
                                 <field name="chargable" />
                                 <field name="account_head" />
+                                <field name="fixed" />
                                 <field name="computation_formula" />
                             </tree>
                         </field>

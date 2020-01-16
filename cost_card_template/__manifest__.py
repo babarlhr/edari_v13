@@ -5,12 +5,17 @@
     'summary': """
         Erpify""",
     'author': "Erpify",
-    'website': "http://www.erpify.biz/",
+    'website': "https://odoo.ie",
     'category': 'Uncategorized',
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','product','hr','account',],
+    'depends': [
+    'base',
+    'product',
+    'hr',
+    'account',
+    ],
 
     # always loaded
     'data': [
