@@ -34,35 +34,36 @@ class CostCardTemplateTree(models.Model):
 
 	tree_link = fields.Many2one('costcard.template')
 
-	@api.model
-	def create(self, vals):
-		vals['sequence'] = self.env['ir.sequence'].next_by_code('cost.card.seq')
-		new_record = super(CostCardTemplateTree, self).create(vals)
-		new_record.check_if_space()
-		new_record.check_if_import()
-		new_record.check_specific_code_strings()
+	# @api.model
+	# def create(self, vals):
+	# 	# vals['sequence'] = self.env['ir.sequence'].next_by_code('cost.card.seq')
+	# 	new_record = super(CostCardTemplateTree, self).create(vals)
+	# 	new_record.check_if_space()
+	# 	new_record.check_if_import()
+	# 	new_record.check_specific_code_strings()
+	# 	return new_record
 
-	# @api.multi
-	def write(self, vals):
-		rec = super(CostCardTemplateTree, self).write(vals)
-		self.check_if_space()
-		self.check_if_import()
-		self.check_specific_code_strings()
-		return rec
-
-
-	def check_if_space(self):
-		if self.computation_formula:
-			if ' ' in self.code:
-				raise ValidationError("No blank spaces allowed in code.")
-
-	def check_specific_code_strings(self):
-		if self.code in ['salary', 'compute_result']:
-			raise ValidationError("You cannot use '%s' keyword as code." % (self.code))
+	# # @api.multi
+	# def write(self, vals):
+	# 	rec = super(CostCardTemplateTree, self).write(vals)
+	# 	self.check_if_space()
+	# 	self.check_if_import()
+	# 	self.check_specific_code_strings()
+	# 	return True
 
 
+	# def check_if_space(self):
+	# 	if self.computation_formula:
+	# 		if ' ' in self.computation_formula:
+	# 			raise ValidationError("No blank spaces allowed in computation formula.")
 
-	def check_if_import(self):
-		if self.computation_formula:
-			if 'import' in self.computation_formula:
-				raise ValidationError("No 'import' key word allowed in computation formula.")
+	# def check_specific_code_strings(self):
+	# 	if self.code in ['salary', 'compute_result']:
+	# 		raise ValidationError("You cannot use '%s' keyword as code." % (self.code))
+
+
+
+	# def check_if_import(self):
+	# 	if self.computation_formula:
+	# 		if 'import' in self.computation_formula:
+	# 			raise ValidationError("No 'import' key word allowed in computation formula.")
