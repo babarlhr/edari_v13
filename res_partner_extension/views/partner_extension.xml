@@ -5,7 +5,7 @@
 
     <!--===================== [] ====================-->
 
-    <record id="customers_form_view_extension" model="ir.ui.view"> 
+    <!-- <record id="customers_form_view_extension" model="ir.ui.view"> 
         <field name="name">customers_form_view_extension</field> 
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
@@ -58,7 +58,7 @@
              </xpath>
 
         </field> 
-    </record>
+    </record> -->
 
     <!--********************* [] *********************-->
     
