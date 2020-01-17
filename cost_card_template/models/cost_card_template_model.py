@@ -53,8 +53,8 @@ class CostCardTemplateTree(models.Model):
 
 	def check_if_space(self):
 		if self.computation_formula:
-			if ' ' in self.computation_formula:
-				raise ValidationError("No blank spaces allowed in computation formula.")
+			if ' ' in self.code:
+				raise ValidationError("No blank spaces allowed in code.")
 
 	def check_specific_code_strings(self):
 		if self.code in ['salary', 'compute_result']:
