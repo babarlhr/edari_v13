@@ -37,7 +37,7 @@
                    <page name="billing_detail" string="Billing Details">
                         <group>
                             <group>
-                                <field name="trade_license_no"/>
+                                <field name="trade_license_no_bill"/>
                                 <field name="branch_name"/>
                                 <field name="beneficiary_name"/>
                                 <field name="account_number"/>
