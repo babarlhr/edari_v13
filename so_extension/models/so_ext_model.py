@@ -106,6 +106,7 @@ class SaleOrderExt(models.Model):
 			code_dict = {}
 
 			salary = self.per_month_gross_salary
+			no_months = self.no_of_months
 			# order_lines_list = []
 			# for y in self.order_line:
 			# 	print ("XXXXXXXXXXXXXXXXXX")
