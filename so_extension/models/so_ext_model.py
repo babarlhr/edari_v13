@@ -36,9 +36,9 @@ class SaleOrderExt(models.Model):
 
 
 	def create_journal_entry(self):
-		self.create_journal_entry_form()
 		line_ids = self.generate_entry_lines()
-		self.invoice_id.line_ids = line_ids
+		self.create_journal_entry_form(line_ids)
+		# self.invoice_id.line_ids = line_ids
 		# self.create_journal_entry_form(line_ids)
 
 	def generate_entry_lines(self):
@@ -62,26 +62,30 @@ class SaleOrderExt(models.Model):
 	# def create_entry_lines(self,account,debit,credit,entry_id,name):
 	def create_entry_lines(self,account,debit,credit,name):
 		if debit > 0 or credit > 0:
-			# self.env['account.move.line'].create({
+			# move_line = self.env['account.move.line'].create({
 			return{
 					'account_id':account,
 					'partner_id':self.partner_id.id,
 					'name':name,
 					'debit':debit,
 					'credit':credit,
-					'move_id':self.invoice_id.id,
+					# 'move_id':self.invoice_id.id,
 					}
 
-	def create_journal_entry_form(self):
+
+	def create_journal_entry_form(self, line_ids):
+	# def create_journal_entry_form(self):
 		journal_entries = self.env['account.move']
 		journal = self.env['account.journal'].search([], limit=1)
 		journal_entries_lines = self.env['account.move.line']
 
-		if not self.invoice_id:   
+		if not self.invoice_id:
+			# print (line_ids)
+			# print ("LLLLLLLLLLLLLLLLLLLLLLLLLLL")
 			create_journal_entry = journal_entries.create({
 					'journal_id': journal.id,
 					'date':self.date_invoice,
-					# 'line_ids': line_ids,
+					'line_ids': line_ids,
 					'ref' : self.name,
 					# 'ref' : "Test",
 					})
@@ -173,6 +177,10 @@ class SaleOrderExt(models.Model):
 			self.order_line = None
 
 	def create_edari_fee(self):
+		edari_service_charges = self.env['product.product'].search([('name','=','Edari Service Fee')])
+		for x in self.order_line:
+			if x.product_id.id == edari_service_charges.id:
+				x.unlink()
 		charable_sum = 0
 		for x in self.order_line:
 			if x.chargable:
@@ -189,7 +197,8 @@ class SaleOrderExt(models.Model):
 				'product_id':edari_service_charges.id,
 				'name':"Service Charges",
 				'code':"SC",
-				'product_uom_qty':1,
+				# 'product_uom_qty':1,
+				'product_uom_qty':self.no_of_months,
 				'price_unit':price,
 				'order_id':self.id,
 				'costcard_type':'manual',
@@ -223,6 +232,11 @@ class SOLineExt(models.Model):
 
 	@api.onchange('manual_amount')
 	def get_manual_price_unit(self):
+		if self.costcard_type == 'manual':
+			self.product_uom_qty = self.order_id.no_of_months
+		else:
+			self.product_uom_qty = 1
+
 		if self.order_id.no_of_months>0:
 			self.price_unit = self.manual_amount/self.order_id.no_of_months
 		else:
