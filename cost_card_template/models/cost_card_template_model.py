@@ -30,7 +30,17 @@ class CostCardTemplateTree(models.Model):
 	sequence = fields.Char(string="Sequence", readonly=True)
 	code = fields.Char(string="Code")
 	computation_formula = fields.Text(string="Computation Formula")
-	fixed = fields.Boolean(string="Fixed")
+	# fixed = fields.Boolean(string="Fixed")
+	payment_type = fields.Selection([
+        ('upfront','Upfront'),
+        ('end','End'),
+        ('interval','Interval')
+        ], string='Payment Type', default='upfront')
+	costcard_type = fields.Selection([
+        ('fixed','Fixed'),
+        ('manual','Manual'),
+        ('calculation','Calculation'),
+        ], string='Type', default='fixed')
 
 	tree_link = fields.Many2one('costcard.template')
 

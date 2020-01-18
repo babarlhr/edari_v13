@@ -36,22 +36,27 @@ class SaleOrderExt(models.Model):
 
 
 	def create_journal_entry(self):
+		self.create_journal_entry_form()
 		line_ids = self.generate_entry_lines()
-		self.create_journal_entry_form(line_ids)
+		self.invoice_id.line_ids = line_ids
+		# self.create_journal_entry_form(line_ids)
 
 	def generate_entry_lines(self):
 
 		# Untaxed amounts
 		print ("Check1")
 		move_lines_list = []
-		credit_account = self.env['account.account'].search([], limit=1)
-		move_lines_list.append(self.create_entry_lines(credit_account.id,self.amount_untaxed,0,'Untaxed amount credit'))
-		move_lines_list.append(self.create_entry_lines(self.partner_id.property_account_receivable_id.id,0,self.amount_untaxed,'Untaxed amount Debit'))
+		# credit_account = self.env['account.account'].search([], limit=1)
+		debit_account = self.partner_id.property_account_receivable_id.id
+		move_lines_list.append(self.create_entry_lines(debit_account,self.amount_untaxed,0,'Untaxed amount credit'))
+		for x in self.order_line:
+
+			move_lines_list.append(self.create_entry_lines(x.product_id.property_account_income_id.id,0,x.price_subtotal,'Untaxed amount Debit'))
 
 		if self.amount_tax > 0:
 		# taxes
-			move_lines_list.append(self.create_entry_lines(credit_account.id,self.amount_tax,0,'Untaxed amount credit'))
-			move_lines_list.append(self.create_entry_lines(self.partner_id.property_account_receivable_id.id,0,self.amount_tax,'Untaxed amount Debit'))
+			move_lines_list.append(self.create_entry_lines(debit_account,self.amount_tax,0,'Taxed amount credit'))
+			move_lines_list.append(self.create_entry_lines(self.partner_id.property_account_receivable_id.id,0,self.amount_tax,'Taxed amount Debit'))
 		return move_lines_list
 
 	# def create_entry_lines(self,account,debit,credit,entry_id,name):
@@ -64,11 +69,10 @@ class SaleOrderExt(models.Model):
 					'name':name,
 					'debit':debit,
 					'credit':credit,
-					# 'move_id':entry_id,
+					'move_id':self.invoice_id.id,
 					}
 
-
-	def create_journal_entry_form(self,line_ids):
+	def create_journal_entry_form(self):
 		journal_entries = self.env['account.move']
 		journal = self.env['account.journal'].search([], limit=1)
 		journal_entries_lines = self.env['account.move.line']
@@ -77,7 +81,7 @@ class SaleOrderExt(models.Model):
 			create_journal_entry = journal_entries.create({
 					'journal_id': journal.id,
 					'date':self.date_invoice,
-					'line_ids': line_ids,
+					# 'line_ids': line_ids,
 					'ref' : self.name,
 					# 'ref' : "Test",
 					})
@@ -90,12 +94,6 @@ class SaleOrderExt(models.Model):
 			self.invoice_id.journal_id = journal.id
 			self.invoice_id.date = self.date_invoice
 			self.invoice_id.ref = self.name
-
-
-
-		
-
-
 
 	# @api.onchange('template')
 	def get_order_lines(self):
@@ -127,27 +125,33 @@ class SaleOrderExt(models.Model):
 					exec(expression)
 				except Exception as e:
 					raise ValidationError('Error..!\n'+str(e))
-				print ("XXXXXXXXXXXXXXXXXXXXXXXXXX")
-				print (compute_result)
-				print ("XXXXXXXXXXXXXXXXXXXXXXXXXX")
 				qty = 0
-				if x.fixed:
+				# if x.costcard_type in ['fixed','manual']:
+				if x.costcard_type:
 					qty = 1
+				# if x.costcard_type == 'manual':
 				else:
 					qty = self.no_of_months
+					# compute_result = 0
 
 				# order_lines_list.append({
 				self.order_line.create({
 					'product_id':x.service_name.id,
 					# 'sale_order_template_id':self.id,
 					'order_id':self.id,
-					'product_uom_qty':self.no_of_months,
+					# 'product_uom_qty':self.no_of_months,
+					'product_uom_qty':qty,
 					'price_unit':compute_result,
 					'code':x.code,
 					'name':x.code,
+					'costcard_type':x.costcard_type,
 					'chargable':x.chargable,
 					})
-				code_dict[x.code] = self.no_of_months*compute_result
+				# if x.costcard_type == 'fixed':
+				# 	code_dict[x.code] = compute_result
+				# else:
+				# # if x.costcard_type == 'fixed':
+				code_dict[x.code] = qty*compute_result
 				globals().update(code_dict)
 				del compute_result
 				# print (order_lines_list)
@@ -157,29 +161,40 @@ class SaleOrderExt(models.Model):
 			for x in code_dict.keys():
 				del x
 
-			charable_sum = 0
 			for x in self.order_line:
-				if x.chargable:
-					charable_sum += x.price_subtotal
-			if charable_sum > 0:
-				edari_service_charges = self.env['product.product'].search([('name','=','Edari Service Fee')])
-				price = 0
-				if self.percentage > 0:
-					price = charable_sum*(self.percentage/100)
-				else:
-					price = charable_sum
-				self.order_line.create({
-					'product_id':edari_service_charges.id,
-					'name':"Service Charges",
-					'code':"SC",
-					'product_uom_qty':1,
-					'price_unit':price,
-					'order_id':self.id,
-					})
+				if x.costcard_type == 'calculation':
+					print ('XXXXXXXXXXXXXXXXXXX')
+					print (x.code)
+					x.unlink()
+
 
 
 		else:
 			self.order_line = None
+
+	def create_edari_fee(self):
+		charable_sum = 0
+		for x in self.order_line:
+			if x.chargable:
+				# charable_sum += x.price_subtotal
+				charable_sum += x.price_unit
+		if charable_sum > 0:
+			edari_service_charges = self.env['product.product'].search([('name','=','Edari Service Fee')])
+			price = 0
+			if self.percentage > 0:
+				price = charable_sum*(self.percentage/100)
+			else:
+				price = charable_sum
+			self.order_line.create({
+				'product_id':edari_service_charges.id,
+				'name':"Service Charges",
+				'code':"SC",
+				'product_uom_qty':1,
+				'price_unit':price,
+				'order_id':self.id,
+				'costcard_type':'manual',
+				})
+
 
 
 	@api.model
@@ -204,10 +219,24 @@ class SOLineExt(models.Model):
 
 	code = fields.Char(string="Code")
 	chargable = fields.Boolean(string="Chargable")
+	manual_amount = fields.Float(string="Manual Amount")
+
+	@api.onchange('manual_amount')
+	def get_manual_price_unit(self):
+		if self.order_id.no_of_months>0:
+			self.price_unit = self.manual_amount/self.order_id.no_of_months
+		else:
+			self.price_unit = 0
 
 	payment_type = fields.Selection([
         ('upfront','Upfront'),
         ('end','End'),
         ('interval','Interval')
         ], string='Payment Type', default='upfront')
+
+	costcard_type = fields.Selection([
+        ('fixed','Fixed'),
+        ('manual','Manual'),
+        ('calculation','Calculation'),
+        ], string='Type', default='manual')
     

@@ -14,7 +14,8 @@
             
             <xpath expr="//header" position="inside">
                 <button name="get_order_lines" string="Get Order Lines" type="object" class="oe_highlight"/>
-                <!-- <button name="create_invoice" string="Create Invoice" type="object" class="oe_highlight"/> -->
+                <button name="create_invoice" string="Create Invoice" type="object" class="oe_highlight"/>
+                <button name="create_edari_fee" string="Create Edari Fee" type="object" class="oe_highlight"/>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="no_of_months"/>
@@ -34,8 +35,27 @@
             </xpath>
 
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
-                <field name="code"/>
-                <field name="payment_type"/>
+                <field name="code" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
+                <field name="payment_type" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
+                <field name="costcard_type" invisible="1"/>
+                <field name="manual_amount" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
+            </xpath>
+
+            <!-- Making tree fields readonly -->
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="attributes">
+                <attribute name="attrs">{'readonly': [('costcard_type','=', 'fixed')]}</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_uom_qty']" position="attributes">
+                <attribute name="attrs">{'readonly': [('costcard_type','=', 'fixed')]}</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="attributes">
+                <attribute name="attrs">{'readonly': [('costcard_type','=', 'fixed')]}</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='tax_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('costcard_type','=', 'fixed')]}</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('costcard_type','=', 'fixed')]}</attribute>
             </xpath>
 
         </field> 
@@ -45,3 +65,8 @@
     
 </data>
 </odoo>
+
+
+                <!-- <xpath expr="//field[@name='origin']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('customer','=', True)]}</attribute>
+                </xpath> -->
