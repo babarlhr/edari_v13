@@ -22,6 +22,7 @@ class SaleOrderExt(models.Model):
 	invoice_amount = fields.Float(string="Invoice Amount")
 	percentage = fields.Float(string="Percentage %")
 	invoice_id = fields.Many2one('account.move', string="Invoice")
+	candidate_name = fields.Char(string="Candidate Name")
 
 
 	@api.onchange('contract_start_date','interval')
@@ -37,8 +38,28 @@ class SaleOrderExt(models.Model):
 
 	def create_journal_entry(self):
 		line_ids = self.generate_entry_lines()
-		self.create_journal_entry_form(line_ids)
+		self.create_journal_entry_form()
+		e_lines = []
+		for x in line_ids:
+			je_line_rec = self.env['account.move.line'].create({
+				'account_id':x['account_id'],
+				'partner_id':x['partner_id'],
+				'name':x['name'],
+				'debit':x['debit'],
+				'credit':x['credit'],
+				'move_id':self.invoice_id.id,
+				})
+			e_lines.append(je_line_rec.id)
+		if e_lines:
+			self.invoice_id.line_ids = [(6,0,e_lines)]
+		# self.create_journal_entry_form(line_ids)
+
+		# e_lines = []
+		# for x in line_ids:
+		# 	e_lines.append((0,0,x))
+
 		# self.invoice_id.line_ids = line_ids
+		# self.invoice_id.line_ids = e_lines
 		# self.create_journal_entry_form(line_ids)
 
 	def generate_entry_lines(self):
@@ -73,8 +94,8 @@ class SaleOrderExt(models.Model):
 					}
 
 
-	def create_journal_entry_form(self, line_ids):
-	# def create_journal_entry_form(self):
+	# def create_journal_entry_form(self, line_ids):
+	def create_journal_entry_form(self):
 		journal_entries = self.env['account.move']
 		journal = self.env['account.journal'].search([], limit=1)
 		journal_entries_lines = self.env['account.move.line']
@@ -85,7 +106,7 @@ class SaleOrderExt(models.Model):
 			create_journal_entry = journal_entries.create({
 					'journal_id': journal.id,
 					'date':self.date_invoice,
-					'line_ids': line_ids,
+					# 'line_ids': line_ids,
 					'ref' : self.name,
 					# 'ref' : "Test",
 					})
@@ -147,6 +168,7 @@ class SaleOrderExt(models.Model):
 					'product_uom_qty':qty,
 					'price_unit':compute_result,
 					'code':x.code,
+					'categ_id':x.service_name.categ_id.id,
 					'name':x.code,
 					'costcard_type':x.costcard_type,
 					'chargable':x.chargable,
@@ -229,6 +251,7 @@ class SOLineExt(models.Model):
 	code = fields.Char(string="Code")
 	chargable = fields.Boolean(string="Chargable")
 	manual_amount = fields.Float(string="Manual Amount")
+	categ_id = fields.Many2one('product.category', string="Product Category")
 
 	@api.onchange('manual_amount')
 	def get_manual_price_unit(self):

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    	<record id="cost_card_report_template" model="report.paperformat">
+            <field name="name">European A4 low margin</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">4</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">10</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <report
+            id="cost_card" 
+            model="sale.order"
+            name="cost_card_report.cost_card"
+            file="cost_card_report.cost_card"
+            report_type="qweb-html"
+            paperformat="cost_card_report_template"
+            string="Cost Card Report"/>
+
+    </data>
+</openerp>
