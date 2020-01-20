@@ -13,7 +13,7 @@
     
     # Author Information
     'author' : 'ERPify Inc.',
-    'maintainer': 'ERPify',  
+    'maintainer': 'ERPify ERP',  
     'website': 'erpify.biz',
     
     # Technical Information
