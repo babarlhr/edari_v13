@@ -32,7 +32,7 @@ class CostCardPdf(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         record = self.env['sale.order'].browse(docids)
 
-        company = self.env['res.company'].search([])
+        company = self.env['res.company'].search([('id','=',1)])
 
         categ_list = []
         for y in record.order_line:
