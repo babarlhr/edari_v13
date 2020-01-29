@@ -10,6 +10,7 @@ class CostCardTemplate(models.Model):
 
 	template_name = fields.Char(string="Template Name")
 	job_position = fields.Many2one('hr.job', string="Job Position")
+	customer = fields.Many2one('res.partner', string="Customer")
 	
 	active = fields.Boolean(string="Active", default=True)
 
@@ -31,6 +32,12 @@ class CostCardTemplateTree(models.Model):
 	code = fields.Char(string="Code")
 	computation_formula = fields.Text(string="Computation Formula")
 	# fixed = fields.Boolean(string="Fixed")
+	leave_type = fields.Many2one('hr.leave.type', string="Leave Type")
+	leave_deductable = fields.Boolean(string="Leave Deductable")
+	leave_deduct_type = fields.Selection([
+        ('accrued','Accrued'),
+        ('non_accrued','Non-Accrued'),
+        ], string='Leave Deductable Type', default='accrued')
 	payment_type = fields.Selection([
         ('upfront','Upfront'),
         ('end','End'),
@@ -43,6 +50,13 @@ class CostCardTemplateTree(models.Model):
         ], string='Type', default='fixed')
 
 	tree_link = fields.Many2one('costcard.template')
+
+	@api.onchange('service_name')
+	def get_service_categ(self):
+		if self.service_name:
+			self.service_category = self.service_name.categ_id.id
+		else:
+			self.service_category = None
 
 	# @api.model
 	# def create(self, vals):

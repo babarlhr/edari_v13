@@ -18,6 +18,8 @@
                 <button name="create_edari_fee" string="Create Edari Fee" type="object" class="oe_highlight"/>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="applicant" options="{'no_create_edit':True}"/>
+                <field name="contract" options="{'no_create_edit':True}"/>
                 <field name="no_of_months"/>
                 <field name="per_month_gross_salary"/>
                 <field name="job_pos" options="{'no_create_edit': True}"/>
@@ -27,19 +29,24 @@
                 <field name="candidate_name" readonly="0"/>
             </xpath>
             <xpath expr="//field[@name='payment_term_id']" position="after">
-                <field name="interval"/>
+                <!-- <field name="interval"/> -->
                 <field name="contract_start_date"/>
                 <field name="contract_end_date"/>
                 <field name="date_invoice"/>
                 <field name="invoice_amount"/>
                 <field name="percentage"/>
+                <field name="month_days_deduction"/>
+                <field name="monthly_deduction"/>
             </xpath>
 
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
                 <field name="code" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
                 <field name="payment_type" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
+                <field name="leave_type" invisible="1"/>
+                <field name="leave_deductable" invisible="1"/>
+                <field name="leave_deduct_type" invisible="1"/>
                 <field name="costcard_type" invisible="1"/>
-                <field name="manual_amount" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
+                <field name="manual_amount" attrs="{'readonly':[('costcard_type','!=','manual')]}"/>
                 <field name="categ_id" invisible="0"/>
             </xpath>
 

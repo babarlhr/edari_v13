@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from openerp import models, fields, api
 from datetime import timedelta,datetime,date
-from odoo.exceptions import Warning, ValidationError
-
+from odoo.exceptions import Warning, ValidationError, UserError
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -14,111 +13,159 @@ class SaleOrderExt(models.Model):
 	per_month_gross_salary = fields.Float(string="Per Month Gross Salary")
 	template = fields.Many2one('costcard.template', string="Template")
 	job_pos = fields.Many2one('hr.job', string="Job Position")
-	version = fields.Integer(string="Version No")
-	interval = fields.Integer(string="Interval")
+	version = fields.Char(string="Version No")
+	# interval = fields.Integer(string="Interval")
 	contract_start_date = fields.Date(string="Contract Start Date")
 	contract_end_date = fields.Date(string="Contract End Date")
 	date_invoice = fields.Date(string="Invoice Date")
 	invoice_amount = fields.Float(string="Invoice Amount")
 	percentage = fields.Float(string="Percentage %")
 	invoice_id = fields.Many2one('account.move', string="Invoice")
+	applicant = fields.Many2one('hr.applicant', string="Applicant")
+	contract = fields.Many2one('hr.contract', string="Contract")
 	candidate_name = fields.Char(string="Candidate Name")
+	month_days_deduction = fields.Boolean(string="Month Days Deduction")
+	monthly_deduction = fields.Boolean(string="Monthly Deduction")
 
 
-	@api.onchange('contract_start_date','interval')
+	@api.onchange('contract_start_date','no_of_months')
 	def get_contract_end_date(self):
-		if self.contract_start_date and self.interval:
-			self.contract_end_date = self.contract_start_date + (relativedelta(months = self.interval))
+		if self.contract_start_date and self.no_of_months:
+			self.contract_end_date = self.contract_start_date + (relativedelta(months = self.no_of_months))
 		else:
 			self.contract_end_date = self.contract_start_date
 
+	@api.onchange('partner_id')
+	def test_func(self):
+		print (self.partner_id.id)
+
+
+	# def create_invoice(self):
+	#   self.create_journal_entry()
+	#   print ("Create Journal Entry")
+
+	# new way of creating invoice START
+	def prepare_invoice(self):
+		journal = self.env['account.move'].with_context(force_company=self.company_id.id, default_type='out_invoice')._get_default_journal()
+		if not journal:
+			raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (self.company_id.name, self.company_id.id))
+
+		invoice_vals = {
+			# 'ref': self.client_order_ref or '',
+			'ref': self.name,
+			'type': 'out_invoice',
+			'narration': self.note,
+			'currency_id': self.pricelist_id.currency_id.id,
+			'campaign_id': self.campaign_id.id,
+			'medium_id': self.medium_id.id,
+			'source_id': self.source_id.id,
+			'invoice_user_id': self.user_id and self.user_id.id,
+			'team_id': self.team_id.id,
+			'partner_id': self.partner_invoice_id.id,
+			'partner_shipping_id': self.partner_shipping_id.id,
+			'fiscal_position_id': self.fiscal_position_id.id or self.partner_invoice_id.property_account_position_id.id,
+			'invoice_origin': self.name,
+			'invoice_date':self.date_invoice,
+			'invoice_payment_term_id': self.payment_term_id.id,
+			'invoice_payment_ref': self.reference,
+			'sale_order_id': self.id,
+			'transaction_ids': [(6, 0, self.transaction_ids.ids)],
+			'invoice_line_ids': [],
+		}
+		return invoice_vals
+
+
+		# old method to create invoice
+		# self.create_journal_entry()
+
 	def create_invoice(self):
-		self.create_journal_entry()
+		invoice_vals_list = []
+		invoice_vals = self.prepare_invoice()
+		# for line in self.order_line:
 
-
-	def create_journal_entry(self):
-		line_ids = self.generate_entry_lines()
-		self.create_journal_entry_form()
-		e_lines = []
-		for x in line_ids:
-			je_line_rec = self.env['account.move.line'].create({
-				'account_id':x['account_id'],
-				'partner_id':x['partner_id'],
-				'name':x['name'],
-				'debit':x['debit'],
-				'credit':x['credit'],
-				'move_id':self.invoice_id.id,
-				})
-			e_lines.append(je_line_rec.id)
-		if e_lines:
-			self.invoice_id.line_ids = [(6,0,e_lines)]
-		# self.create_journal_entry_form(line_ids)
-
-		# e_lines = []
-		# for x in line_ids:
-		# 	e_lines.append((0,0,x))
-
-		# self.invoice_id.line_ids = line_ids
-		# self.invoice_id.line_ids = e_lines
-		# self.create_journal_entry_form(line_ids)
-
-	def generate_entry_lines(self):
+		######################################################################################
+		edari_product = self.env['product.product'].search([('name','=','Edari Service Fee')],limit=1)
 
 		# Untaxed amounts
 		print ("Check1")
 		move_lines_list = []
-		# credit_account = self.env['account.account'].search([], limit=1)
-		debit_account = self.partner_id.property_account_receivable_id.id
-		move_lines_list.append(self.create_entry_lines(debit_account,self.amount_untaxed,0,'Untaxed amount credit'))
-		for x in self.order_line:
+		credit_sum = 0
 
-			move_lines_list.append(self.create_entry_lines(x.product_id.property_account_income_id.id,0,x.price_subtotal,'Untaxed amount Debit'))
+		lines_not_to_add = []
+		if self.date_invoice >= self.contract_start_date and self.date_invoice < self.contract_start_date + (relativedelta(months = 1)):
+			lines_not_to_add = ['end']
 
-		if self.amount_tax > 0:
-		# taxes
-			move_lines_list.append(self.create_entry_lines(debit_account,self.amount_tax,0,'Taxed amount credit'))
-			move_lines_list.append(self.create_entry_lines(self.partner_id.property_account_receivable_id.id,0,self.amount_tax,'Taxed amount Debit'))
-		return move_lines_list
+		elif self.date_invoice >= self.contract_start_date+ (relativedelta(months = 1)) and self.date_invoice < self.contract_end_date - (relativedelta(months = 1)):
+			lines_not_to_add = ['end','upfront']
 
-	# def create_entry_lines(self,account,debit,credit,entry_id,name):
-	def create_entry_lines(self,account,debit,credit,name):
-		if debit > 0 or credit > 0:
-			# move_line = self.env['account.move.line'].create({
-			return{
-					'account_id':account,
-					'partner_id':self.partner_id.id,
-					'name':name,
-					'debit':debit,
-					'credit':credit,
-					# 'move_id':self.invoice_id.id,
-					}
-
-
-	# def create_journal_entry_form(self, line_ids):
-	def create_journal_entry_form(self):
-		journal_entries = self.env['account.move']
-		journal = self.env['account.journal'].search([], limit=1)
-		journal_entries_lines = self.env['account.move.line']
-
-		if not self.invoice_id:
-			# print (line_ids)
-			# print ("LLLLLLLLLLLLLLLLLLLLLLLLLLL")
-			create_journal_entry = journal_entries.create({
-					'journal_id': journal.id,
-					'date':self.date_invoice,
-					# 'line_ids': line_ids,
-					'ref' : self.name,
-					# 'ref' : "Test",
-					})
-
-			self.invoice_id = create_journal_entry.id
-			journal_entry = create_journal_entry
 		else:
-			
-			journal_entry = self.invoice_id
-			self.invoice_id.journal_id = journal.id
-			self.invoice_id.date = self.date_invoice
-			self.invoice_id.ref = self.name
+			lines_not_to_add = ['upfront']
+
+		for line in self.order_line:
+			amount = 0
+			if line.payment_type == 'interval':
+				amount = line.price_unit
+			else:
+				amount = line.price_subtotal
+
+			if not line.payment_type in lines_not_to_add:
+
+				# qty in months check
+				start_plus_qty = self.date_invoice+(relativedelta(months = line.product_uom_qty))
+				print 
+				# if int(str(start_plus_qty)[5:7]) <= int(str(self.contract_end_date)[5:7]):
+				months_differ = relativedelta(start_plus_qty, self.contract_end_date)
+				if months_differ.months <= 0:
+				# if int(str(start_plus_qty)[5:7]) <= int(str(self.contract_end_date)[5:7]):
+					if not line.product_id == edari_product.id:
+						# Calculate leave balance
+						balance = amount
+						if line.leave_deductable:
+							temp = self.calculate_leave_balance(balance)
+							print ("LLLLLLLLLLLLLLLLLLLLLLLLL")
+							print (temp)
+							print (balance)
+							balance -= temp
+							print (balance)
+							print ("LLLLLLLLLLLLLLLLLLLLLLLLL")
+						invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name))
+						credit_sum += balance
+			if line.product_id == edari_product.id:
+				invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(credit_sum,'Edari Service Fee'))
+		#=====================================================================================#
+
+
+		# invoice_vals['invoice_line_ids'].append((0, 0, line.prepare_invoice_line()))
+		# invoice_vals['sale_order_id'] = self.id
+		
+		if not invoice_vals['invoice_line_ids']:
+			raise UserError('There is no invoiceable line. If a product has a Delivered quantities invoicing policy, please make sure that a quantity has been delivered.')
+
+		invoice_vals_list.append(invoice_vals)
+
+		# 3) Create invoices.
+		moves = self.env['account.move'].with_context(default_type='out_invoice').create(invoice_vals_list)
+
+		
+	# new way of creating invoice ENDS
+
+	##################### Function to calculate leave balance total START #####################
+	def calculate_leave_balance(self, balance):
+		temp = balance
+		no_of_leaves = 0
+		for line in self.order_line:
+			if line.leave_type:
+				employee = self.env['hr.employee'].search([('id','=',self.contract.employee_id.id)])
+				leaves = self.env['hr.leave'].search([('employee_id','=',employee.id)])
+				for x in leaves:
+					if self.date_invoice >= x.request_date_from and self.date_invoice <= x.request_date_to:
+						no_of_leaves = x.number_of_days
+		return (balance/22)*no_of_leaves
+
+
+
+
+	##################### Function to calculate leave balance total ENDS  #####################
 
 	# @api.onchange('template')
 	def get_order_lines(self):
@@ -132,8 +179,8 @@ class SaleOrderExt(models.Model):
 			no_months = self.no_of_months
 			# order_lines_list = []
 			# for y in self.order_line:
-			# 	print ("XXXXXXXXXXXXXXXXXX")
-			# 	code_dict[y.code] = y.price_subtotal
+			#   print ("XXXXXXXXXXXXXXXXXX")
+			#   code_dict[y.code] = y.price_subtotal
 
 			template_tree_recs = self.env['costcard.template.tree'].search([('tree_link','=',self.template.id)], order='handle')
 			# for x in self.template.template_tree:
@@ -151,12 +198,13 @@ class SaleOrderExt(models.Model):
 				except Exception as e:
 					raise ValidationError('Error..!\n'+str(e))
 				qty = 0
-				# if x.costcard_type in ['fixed','manual']:
-				if x.costcard_type:
-					qty = 1
+				# if x.costcard_type in ['fixed','calculation']:
+				if x.costcard_type in ['manual']:
+				# if x.costcard_type:
+					qty = self.no_of_months
 				# if x.costcard_type == 'manual':
 				else:
-					qty = self.no_of_months
+					qty = 1
 					# compute_result = 0
 
 				# order_lines_list.append({
@@ -167,6 +215,9 @@ class SaleOrderExt(models.Model):
 					# 'product_uom_qty':self.no_of_months,
 					'product_uom_qty':qty,
 					'price_unit':compute_result,
+					'leave_type':x.leave_type.id,
+					'leave_deductable':x.leave_deductable,
+					'leave_deduct_type':x.leave_deduct_type,
 					'code':x.code,
 					'categ_id':x.service_name.categ_id.id,
 					'name':x.code,
@@ -174,7 +225,7 @@ class SaleOrderExt(models.Model):
 					'chargable':x.chargable,
 					})
 				# if x.costcard_type == 'fixed':
-				# 	code_dict[x.code] = compute_result
+				#   code_dict[x.code] = compute_result
 				# else:
 				# # if x.costcard_type == 'fixed':
 				code_dict[x.code] = qty*compute_result
@@ -226,23 +277,30 @@ class SaleOrderExt(models.Model):
 				'costcard_type':'manual',
 				})
 
-
-
 	@api.model
 	def create(self, vals):
 		new_record = super(SaleOrderExt, self).create(vals)
-		records = self.env['sale.order'].search([], order='version desc')
-		if records:
-			# print (records[0].)
-			new_record.version = records[0].version+1
+		if new_record.job_pos:
+			print (new_record.job_pos.name)
+			records = self.env['sale.order'].search([('job_pos','=',new_record.job_pos.id),('state','not in',['cancel','done'])])
+			rec_len = len(records)
+			if records:
+				new_record.version = "V"+str(rec_len)
+				print (new_record.version)
+			else:
+				new_record.version = "V1"
+				print (new_record.version)
+
+		new_record.get_contract_end_date()
+				
 		
 		return new_record
 
-
-	# @api.multi
-	# def write(self, vals):
-	# 	rec = super(SaleOrderExt, self).write(vals)
-	# 	return rec
+	def write(self, vals):
+		rec = super(SaleOrderExt, self).write(vals)
+		if 'per_month_gross_salary' in vals:
+			self.applicant.salary_expected = vals['per_month_gross_salary']
+		return rec
 
 
 class SOLineExt(models.Model):
@@ -252,28 +310,60 @@ class SOLineExt(models.Model):
 	chargable = fields.Boolean(string="Chargable")
 	manual_amount = fields.Float(string="Manual Amount")
 	categ_id = fields.Many2one('product.category', string="Product Category")
+	leave_type = fields.Many2one('hr.leave.type', string="Leave Type")
+	leave_deductable = fields.Boolean(string="Leave Deductable")
+	leave_deduct_type = fields.Selection([
+        ('accrued','Accrued'),
+        ('non_accrued','Non-Accrued'),
+        ], string='Leave Deductable Type', default='accrued')
+
+
+
+	def prepare_invoice_line(self,amount,name):
+		"""
+		Prepare the dict of values to create the new invoice line for a sales order line.
+		:param qty: float quantity to invoice
+		"""
+		self.ensure_one()
+
+		return {
+			'display_type': self.display_type,
+			'sequence': self.sequence,
+			'name': name,
+			'product_id': self.product_id.id,
+			'product_uom_id': self.product_uom.id,
+			'quantity': self.product_uom_qty,
+			'discount': self.discount,
+			# 'price_unit': self.price_unit,
+			'price_unit': amount,
+			'tax_ids': [(6, 0, self.tax_id.ids)],
+			'analytic_account_id': self.order_id.analytic_account_id.id,
+			'analytic_tag_ids': [(6, 0, self.analytic_tag_ids.ids)],
+			'sale_line_ids': [(4, self.id)],
+		}
 
 	@api.onchange('manual_amount')
 	def get_manual_price_unit(self):
-		if self.costcard_type == 'manual':
+		print ("XXXXXXXXXXXXXXXXXXXXXX")
+		print (self.costcard_type)
+		print ("XXXXXXXXXXXXXXXXXXXXXX")
+		if self.costcard_type == 'manual' and self.order_id.no_of_months>0:
 			self.product_uom_qty = self.order_id.no_of_months
-		else:
-			self.product_uom_qty = 1
-
-		if self.order_id.no_of_months>0:
 			self.price_unit = self.manual_amount/self.order_id.no_of_months
 		else:
+			self.product_uom_qty = 1
 			self.price_unit = 0
 
+
 	payment_type = fields.Selection([
-        ('upfront','Upfront'),
-        ('end','End'),
-        ('interval','Interval')
-        ], string='Payment Type', default='upfront')
+		('upfront','Upfront'),
+		('end','End'),
+		('interval','Interval')
+		], string='Payment Type', default='upfront')
 
 	costcard_type = fields.Selection([
-        ('fixed','Fixed'),
-        ('manual','Manual'),
-        ('calculation','Calculation'),
-        ], string='Type', default='manual')
-    
+		('fixed','Fixed'),
+		('manual','Manual'),
+		('calculation','Calculation'),
+		], string='Type', default='manual')
+	
