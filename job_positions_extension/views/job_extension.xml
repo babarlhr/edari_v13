@@ -19,12 +19,15 @@
                 <field name="anticipated_start_date"/>
                 <field name="budget"/>
                 <field name="contract_length"/>
+                <field name="template" options="{'no_create_edit':True}"/>
             </xpath>
 
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button class="oe_stat_button" name="so_smart_button"
-                                    string="Get Sale Orders" type="object"
-                                    icon="fa-bars"/>
+                                    string="Create Estimate" type="object"
+                                    icon="fa-bars">
+                    <!-- <field name="so_count" widget="statinfo" string="Cost Cards"/> -->
+                </button>
             </xpath>
         </field> 
     </record>
