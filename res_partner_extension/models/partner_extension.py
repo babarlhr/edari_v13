@@ -7,11 +7,11 @@ from odoo.exceptions import Warning, ValidationError
 class PartnerExtension(models.Model):
 	_inherit='res.partner'
 
-	# trade_license_no = fields.Char("Trade License No")
+	trade_license_no = fields.Char("Trade License No")
 	trading_as = fields.Char("Trading as")
 
 	# billing details fields
-	# trade_license_no_bill = fields.Char("Trade License Number")
+	trade_license_no = fields.Char("Trade License Number")
 	branch_name = fields.Char("Branch Name")
 	beneficiary_name = fields.Char("Beneficiary Name")
 	account_number = fields.Char("Account Number")

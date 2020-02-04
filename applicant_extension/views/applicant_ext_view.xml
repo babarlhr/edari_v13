@@ -25,21 +25,28 @@
                 </xpath>
                 <xpath expr="//header" position="inside">
                     <!-- <button name="create_so" string="Create Cost Card" type="object" class='oe_highlight'/> -->
-                    <button name="approve_btn" string="Approve" type="object" class='oe_highlight'/>
+                    <button name="approve_btn" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':[('approve_stage','=', True)]}"/>
+                    <button class="oe_highlight" name="create_so" string="Cost Cards" type="object"/>
                     <button name="create_contract" string="Create Contract" type="object" class='oe_highlight' attrs="{'invisible':[('emp_id','=',False)]}"/>
                 </xpath>
 
-                <xpath expr="//div[@name='button_box']" position="inside">
+                <!-- <xpath expr="//div[@name='button_box']" position="inside">
                     <button class="oe_stat_button" name="create_so"
                                         string="Cost Cards" type="object"
                                         icon="fa-bars">
-                        <!-- <field name="so_count" widget="statinfo" string="Cost Cards"/> -->
                     </button>
-                </xpath>
+                </xpath> -->
 
                 <!-- Adding attribute to a button -->
                 <xpath expr="//button[@name='create_employee_from_applicant']" position="attributes">
                     <attribute name="attrs">{'invisible':[('approve_stage','=', False)]}</attribute>
+                </xpath>
+
+                <!-- <xpath expr="//field[@name='name']" position="replace">
+                    <field name="name" nolabel="1" invisible="1"/>
+                </xpath> -->
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="invisible">1</attribute>
                 </xpath>
 
             </field> 

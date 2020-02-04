@@ -5,7 +5,7 @@
 
     <!--===================== [] ====================-->
 
-    <!-- <record id="customers_form_view_extension" model="ir.ui.view"> 
+    <record id="customers_form_view_extension" model="ir.ui.view"> 
         <field name="name">customers_form_view_extension</field> 
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
@@ -14,6 +14,7 @@
             
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="trading_as"/>
+                <field name="trade_license_no"/>
             </xpath>
 
             <xpath expr="//page[1]" position="after">
@@ -36,6 +37,7 @@
                    <page name="billing_detail" string="Billing Details">
                         <group>
                             <group>
+                                <field name="trade_license_no"/>
                                 <field name="branch_name"/>
                                 <field name="beneficiary_name"/>
                                 <field name="account_number"/>
@@ -58,7 +60,7 @@
              </xpath>
 
         </field> 
-    </record> -->
+    </record>
 
     <!--********************* [] *********************-->
     

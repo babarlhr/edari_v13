@@ -4,6 +4,8 @@ from datetime import timedelta,datetime,date
 from odoo.exceptions import Warning, ValidationError, UserError
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from calendar import monthrange
+import datetime as dt
 
 
 class SaleOrderExt(models.Model):
@@ -22,10 +24,21 @@ class SaleOrderExt(models.Model):
 	percentage = fields.Float(string="Percentage %")
 	invoice_id = fields.Many2one('account.move', string="Invoice")
 	applicant = fields.Many2one('hr.applicant', string="Applicant")
+	employee = fields.Many2one('hr.employee', string="Employee")
 	contract = fields.Many2one('hr.contract', string="Contract")
 	candidate_name = fields.Char(string="Candidate Name")
 	month_days_deduction = fields.Boolean(string="Month Days Deduction")
 	monthly_deduction = fields.Boolean(string="Monthly Deduction")
+	costcard_type = fields.Selection([
+		('estimate','Estimate'),
+		('cost_card','Cost Card'),
+		], string='Cost Card Type')
+	work_days_type = fields.Selection([
+		('twenty_two_days','22 Days'),
+		('actual_month_days','Actual Month Days'),
+		('actual_working_days','Actual Working Days'),
+		], string='Work Days Type', default="twenty_two_days")
+
 
 
 	@api.onchange('contract_start_date','no_of_months')
@@ -34,10 +47,6 @@ class SaleOrderExt(models.Model):
 			self.contract_end_date = self.contract_start_date + (relativedelta(months = self.no_of_months))
 		else:
 			self.contract_end_date = self.contract_start_date
-
-	@api.onchange('partner_id')
-	def test_func(self):
-		print (self.partner_id.id)
 
 
 	# def create_invoice(self):
@@ -118,16 +127,15 @@ class SaleOrderExt(models.Model):
 				if months_differ.months <= 0:
 				# if int(str(start_plus_qty)[5:7]) <= int(str(self.contract_end_date)[5:7]):
 					if not line.product_id == edari_product.id:
+						# calculating with no of days
+						amount = self.calculate_salary(amount)
+
+
 						# Calculate leave balance
 						balance = amount
 						if line.leave_deductable:
 							temp = self.calculate_leave_balance(balance)
-							print ("LLLLLLLLLLLLLLLLLLLLLLLLL")
-							print (temp)
-							print (balance)
 							balance -= temp
-							print (balance)
-							print ("LLLLLLLLLLLLLLLLLLLLLLLLL")
 						invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name))
 						credit_sum += balance
 			if line.product_id == edari_product.id:
@@ -146,10 +154,90 @@ class SaleOrderExt(models.Model):
 		# 3) Create invoices.
 		moves = self.env['account.move'].with_context(default_type='out_invoice').create(invoice_vals_list)
 
-		
 	# new way of creating invoice ENDS
 
-	##################### Function to calculate leave balance total START #####################
+	# Function to count do of days in a month
+	def number_of_days_in_month(self, year, month):
+		return monthrange(year, month)[1]
+
+	def add_days_to_date(self, date):
+		temp = str(date)
+		days = int(temp[-2:])
+		days += 1
+		temp = temp[:-2]+str(days)
+
+	def add_month_to_date(self, date):
+		temp = str(date)
+		month = int(temp[5:7])
+		year = int(temp[0:4])
+		day = int(temp[8:])
+		if month == 12:
+			day = 1
+			month = 1
+			year += 1
+			temp = str(year)+"-0"+str(month)+"-0"+str(day)
+		else:
+			month += 1
+			temp = temp[0:5]+str(month)+temp[7:]
+		return temp
+
+	def sub_days_to_date(self, date):
+		temp = str(date)
+		days = int(temp[-2:])
+		days -= 1
+		temp = temp[:-2]+str(days)
+
+	def sub_month_to_date(self, date):
+		temp = str(date)
+		day = int(temp[8:])
+		month = int(temp[5:7])
+		year = int(temp[0:4])
+		if month == 1:
+			day = self.number_of_days_in_month(int(year), int(month))
+			month = 12
+			year -=1
+			temp = str(year)+"-"+str(month)+"-"+str(day)
+		else:
+			month -= 1
+			temp = temp[0:5]+str(month)+temp[7:]
+		return temp
+
+	################# Calculating salary according to days START #################
+	def calculate_salary(self, amount):
+		temp = amount
+		per_day = 0
+		if self.work_days_type == 'twenty_two_days':
+			per_day = temp/22
+			days = self.calculate_weekends()
+			temp -= per_day*days
+
+		elif self.work_days_type == 'actual_month_days':
+			per_day = temp/self.number_of_days_in_month(self.invoice_date.year, self.invoice_date.month)
+			days = self.calculate_weekends()
+			temp -= per_day*days
+
+		else:
+			temp = amount
+
+		return temp
+
+	def calculate_weekends(self):
+		month_start = self.date_invoice
+		day = self.date_invoice
+		single_day = dt.timedelta(days=1)
+		working_days = 0
+		while day.month == month_start.month:
+			if self.work_days_type == 'twenty_two_days':
+				if day.weekday() != 6 or day.weekday() != 5:
+					working_days += 1
+			if self.work_days_type == 'actual_month_days':
+				working_days += 1
+			day -= single_day
+		return working_days
+	################# Calculating salary according to days ENDS #################
+
+
+	############## Function to calculate leave balance total START ##############
 	def calculate_leave_balance(self, balance):
 		temp = balance
 		no_of_leaves = 0
@@ -158,19 +246,49 @@ class SaleOrderExt(models.Model):
 				employee = self.env['hr.employee'].search([('id','=',self.contract.employee_id.id)])
 				leaves = self.env['hr.leave'].search([('employee_id','=',employee.id)])
 				for x in leaves:
-					if self.date_invoice >= x.request_date_from and self.date_invoice <= x.request_date_to:
-						no_of_leaves = x.number_of_days
+					# if self.date_invoice >= x.request_date_from and self.date_invoice <= x.request_date_to:
+					# Adding no of days if date_invoice fall in the same month as of in holidays
+					if self.date_invoice.year == x.request_date_from.year and self.date_invoice.month == x.request_date_from.month:
+						temp_date = str(x.request_date_from)
+						no_of_days = self.number_of_days_in_month(x.request_date_from.year, x.request_date_from.month)
+						print (x.number_of_days)
+						for y in range(int(x.number_of_days)):
+							if temp_date:
+								if int(temp_date[5:7]) == self.date_invoice.month:
+									no_of_leaves +=1
+								if int(temp_date[8:]) == no_of_days:
+									temp_date = self.add_month_to_date(temp_date)
+								else:
+									temp_date = self.add_days_to_date(temp_date)
+
+
+					elif self.date_invoice.year == x.request_date_to.year and self.date_invoice.month == x.request_date_to.month:
+
+
+						temp_date = str(x.request_date_to)
+						for y in range(int(x.number_of_days)):
+							if temp_date:
+								if int(temp_date[5:7]) == self.date_invoice.month:
+									no_of_leaves +=1
+								if int(temp_date[8:]) == 1:
+									temp_date = self.sub_month_to_date(temp_date)
+								else:
+									temp_date = self.sub_days_to_date(temp_date)
+
+					else:
+						print ("pass")
+
 		return (balance/22)*no_of_leaves
-
-
 
 
 	##################### Function to calculate leave balance total ENDS  #####################
 
 	# @api.onchange('template')
 	def get_order_lines(self):
-		if self.order_line:
-			self.order_line.unlink()
+
+		for x in self.order_line:
+			if not x.costcard_type == 'manual':
+				x.unlink()
 		if self.template:
 
 			code_dict = {}
@@ -189,7 +307,10 @@ class SaleOrderExt(models.Model):
 				compute_result = 0
 				# if ' ' in x.computation_formula:
 				# result = eval(x.computation_formula)
-				expression = 'global compute_result;\n'+x.computation_formula
+				if x.computation_formula:
+					expression = 'global compute_result;\n'+x.computation_formula
+				else:
+					expression = 'global compute_result;\n'
 				# expression = x.computation_formula
 				# expression.replace("result", "cost_card_compute_x1")
 				# exec(x.computation_formula)
@@ -208,22 +329,29 @@ class SaleOrderExt(models.Model):
 					# compute_result = 0
 
 				# order_lines_list.append({
-				self.order_line.create({
-					'product_id':x.service_name.id,
-					# 'sale_order_template_id':self.id,
-					'order_id':self.id,
-					# 'product_uom_qty':self.no_of_months,
-					'product_uom_qty':qty,
-					'price_unit':compute_result,
-					'leave_type':x.leave_type.id,
-					'leave_deductable':x.leave_deductable,
-					'leave_deduct_type':x.leave_deduct_type,
-					'code':x.code,
-					'categ_id':x.service_name.categ_id.id,
-					'name':x.code,
-					'costcard_type':x.costcard_type,
-					'chargable':x.chargable,
-					})
+				manual_check = True
+				for index in self.order_line:
+					if index.product_id.id == x.service_name.id:
+						manual_check = False
+
+				if manual_check:
+					self.order_line.create({
+						'product_id':x.service_name.id,
+						# 'sale_order_template_id':self.id,
+						'order_id':self.id,
+						# 'product_uom_qty':self.no_of_months,
+						'product_uom_qty':qty,
+						'price_unit':compute_result,
+						'leave_type':x.leave_type.id,
+						'leave_deductable':x.leave_deductable,
+						'leave_deduct_type':x.leave_deduct_type,
+						'code':x.code,
+						'categ_id':x.service_name.categ_id.id,
+						'name':x.code or "",
+						'costcard_type':x.costcard_type,
+						'chargable':x.chargable,
+						})
+
 				# if x.costcard_type == 'fixed':
 				#   code_dict[x.code] = compute_result
 				# else:
@@ -231,20 +359,20 @@ class SaleOrderExt(models.Model):
 				code_dict[x.code] = qty*compute_result
 				globals().update(code_dict)
 				del compute_result
+
+
 				# print (order_lines_list)
 			# self.order_line = order_lines_list
 			# for y in self.order_line:
 			# deleting global variables
+
+
 			for x in code_dict.keys():
 				del x
 
 			for x in self.order_line:
 				if x.costcard_type == 'calculation':
-					print ('XXXXXXXXXXXXXXXXXXX')
-					print (x.code)
 					x.unlink()
-
-
 
 		else:
 			self.order_line = None
@@ -292,14 +420,20 @@ class SaleOrderExt(models.Model):
 				print (new_record.version)
 
 		new_record.get_contract_end_date()
-				
-		
+
+		# updating wage in employee
+		if new_record.employee:
+			new_record.employee.wage = new_record.per_month_gross_salary
 		return new_record
 
 	def write(self, vals):
 		rec = super(SaleOrderExt, self).write(vals)
 		if 'per_month_gross_salary' in vals:
 			self.applicant.salary_expected = vals['per_month_gross_salary']
+
+			# updating wage in employee
+			if self.employee:
+				self.employee.wage = vals['per_month_gross_salary']
 		return rec
 
 
@@ -313,9 +447,9 @@ class SOLineExt(models.Model):
 	leave_type = fields.Many2one('hr.leave.type', string="Leave Type")
 	leave_deductable = fields.Boolean(string="Leave Deductable")
 	leave_deduct_type = fields.Selection([
-        ('accrued','Accrued'),
-        ('non_accrued','Non-Accrued'),
-        ], string='Leave Deductable Type', default='accrued')
+		('accrued','Accrued'),
+		('non_accrued','Non-Accrued'),
+		], string='Leave Deductable Type', default='accrued')
 
 
 
@@ -344,15 +478,16 @@ class SOLineExt(models.Model):
 
 	@api.onchange('manual_amount')
 	def get_manual_price_unit(self):
-		print ("XXXXXXXXXXXXXXXXXXXXXX")
-		print (self.costcard_type)
-		print ("XXXXXXXXXXXXXXXXXXXXXX")
+		print ("111111111111111111")
 		if self.costcard_type == 'manual' and self.order_id.no_of_months>0:
+			print ("22222222222222222222")
 			self.product_uom_qty = self.order_id.no_of_months
 			self.price_unit = self.manual_amount/self.order_id.no_of_months
 		else:
+			print ("333333333333333333333")
 			self.product_uom_qty = 1
 			self.price_unit = 0
+
 
 
 	payment_type = fields.Selection([

@@ -41,35 +41,93 @@ class HrApplicantExt(models.Model):
 	#   self.cost_card.get_contract_end_date()
 
 
+	@api.onchange('partner_name')
+	def get_subject(self):
+		self.name = self.partner_name
 
+
+
+	# def create_so(self):
+	# 	rec = self.env['sale.order'].search([('applicant','=',self.id)]).ids
+	# 	domain = [('id','in',rec)]
+	# 	# view_id_tree = self.env['ir.ui.view'].search([('name','=',"semester.tree")])department_id=self.department_id.id)
+	# 	return {
+	# 	'type': 'ir.actions.act_window',
+	# 	 'name': ('Job'),
+	# 	 'res_model': 'sale.order',
+	# 	 'view_type': 'form',
+	# 	 'view_mode': 'tree,form',
+	# 	 # 'views': [(view_id_tree[0].id, 'tree'),(False,'form')],
+	# 	 'context': {
+	# 		'default_candidate_name':self.partner_name,
+	# 		# 'partner_id':self.job_id.customer.id,
+	# 		'default_applicant':self.id,
+	# 		'default_contract':self.contract.id,
+	# 		'default_contract_start_date':self.availability,
+	# 		'default_per_month_gross_salary':self.salary_expected,
+	# 		'default_job_pos':self.job_id.id,
+	# 		'default_template':self.job_id.template.id,
+	# 		'default_partner_id':self.job_id.customer.id,
+	# 		'default_no_of_months':int(self.job_id.contract_length),
+	# 	 },
+	# 	 'view_id ref=" sale.view_quotation_tree_with_onboarding"': '',
+	# 	 'target': 'current',
+	# 	 'domain': domain,
+	# 	}
 	def create_so(self):
-		rec = self.env['sale.order'].search([('applicant','=',self.id)]).ids
-		domain = [('id','in',rec)]
-		# view_id_tree = self.env['ir.ui.view'].search([('name','=',"semester.tree")])department_id=self.department_id.id)
-		return {
-		'type': 'ir.actions.act_window',
-		 'name': ('Job'),
-		 'res_model': 'sale.order',
-		 'view_type': 'form',
-		 'view_mode': 'tree,form',
-		 # 'views': [(view_id_tree[0].id, 'tree'),(False,'form')],
-		 'context': {
-			'default_candidate_name':self.partner_name,
-			# 'partner_id':self.job_id.customer.id,
-			'default_applicant':self.id,
-			'default_contract':self.contract.id,
-			'default_contract_start_date':self.availability,
-			'default_per_month_gross_salary':self.salary_expected,
-			'default_job_pos':self.job_id.id,
-			'default_template':self.job_id.template.id,
-			'default_partner_id':self.job_id.customer.id,
-			'default_no_of_months':int(self.job_id.contract_length),
-		 },
-		 'view_id ref=" sale.view_quotation_tree_with_onboarding"': '',
-		 'target': 'current',
-		 'domain': domain,
-		}
+		if not self.cost_card:
+			so_rec = self.env['sale.order'].create({
+				'candidate_name':self.partner_name,
+				'applicant':self.id,
+				'contract':self.contract.id,
+				'contract_start_date':self.availability,
+				'per_month_gross_salary':self.salary_expected,
+				'job_pos':self.job_id.id,
+				'template':self.job_id.template.id,
+				'partner_id':self.job_id.customer.id,
+				'no_of_months':int(self.job_id.contract_length),
+				})
+			self.cost_card = so_rec.id
+			self.cost_card.get_order_lines()
+			self.get_manual_order_lines()
+			self.cost_card.create_edari_fee()
+		else:
+			if self.cost_card.state == 'draft':
+				self.cost_card.candidate_name = self.partner_name,
+				self.cost_card.applicant = self.id,
+				self.cost_card.contract = self.contract.id,
+				self.cost_card.contract_start_date = self.availability,
+				self.cost_card.per_month_gross_salary = self.salary_expected,
+				self.cost_card.job_pos = self.job_id.id,
+				self.cost_card.template = self.job_id.template.id,
+				self.cost_card.partner_id = self.job_id.customer.id,
+				self.cost_card.no_of_months = int(self.job_id.contract_length),
+				self.cost_card.get_order_lines()
+				self.get_manual_order_lines()
+				self.cost_card.create_edari_fee()
+			else:
+				raise Warning('Cost Card is not in quotation state.')
+		
 
+	def get_manual_order_lines(self):
+		costcard_recs = self.env['sale.order'].search([('job_pos','=',),('costcard_type','=','estimate')])
+		self.cost_card.percentage = costcard_recs.percentage
+		for x in costcard_recs.order_line:
+			if x.costcard_type == 'manual':
+				self.cost_card.order_line.create({
+					'product_id':x.product_id.id,
+					'order_id':self.cost_card.id,
+					'product_uom_qty':product_uom_qty,
+					'price_unit':price_unit,
+					'leave_type':x.leave_type.id,
+					'leave_deductable':x.leave_deductable,
+					'leave_deduct_type':x.leave_deduct_type,
+					'code':x.code,
+					'categ_id':x.categ_id.id,
+					'name':x.code or "",
+					'costcard_type':x.costcard_type,
+					'chargable':x.chargable,
+					})
 
 	def approve_btn(self):
 		recs = self.env['hr.recruitment.stage'].search([('name','=','Approved')])

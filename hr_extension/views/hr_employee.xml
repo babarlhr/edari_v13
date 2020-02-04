@@ -14,7 +14,13 @@
             <field name="arch" type="xml">
                 
                 <xpath expr="//field[@name='work_location']" position="after">
+                    <field name="cost_card" options="{'no_create_edit': True}"/>
+                    <field name="wage"/>
                     <field name="employee_code"/>
+                </xpath>
+
+                <xpath expr="//header" position="inside">
+                    <button name="create_so" string="Create Cost Card" type="object" class="oe_highlight"/>
                 </xpath>
 
             </field> 
