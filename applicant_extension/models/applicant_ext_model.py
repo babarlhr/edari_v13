@@ -110,15 +110,15 @@ class HrApplicantExt(models.Model):
 		
 
 	def get_manual_order_lines(self):
-		costcard_recs = self.env['sale.order'].search([('job_pos','=',),('costcard_type','=','estimate')])
+		costcard_recs = self.env['sale.order'].search([('job_pos','=',self.job_id.id),('costcard_type','=','estimate')])
 		self.cost_card.percentage = costcard_recs.percentage
 		for x in costcard_recs.order_line:
 			if x.costcard_type == 'manual':
 				self.cost_card.order_line.create({
 					'product_id':x.product_id.id,
 					'order_id':self.cost_card.id,
-					'product_uom_qty':product_uom_qty,
-					'price_unit':price_unit,
+					'product_uom_qty':x.product_uom_qty,
+					'price_unit':x.price_unit,
 					'leave_type':x.leave_type.id,
 					'leave_deductable':x.leave_deductable,
 					'leave_deduct_type':x.leave_deduct_type,
