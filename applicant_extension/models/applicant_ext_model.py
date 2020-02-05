@@ -80,7 +80,7 @@ class HrApplicantExt(models.Model):
 				'candidate_name':self.partner_name,
 				'applicant':self.id,
 				'contract':self.contract.id,
-				'contract_start_date':self.availability,
+				# 'contract_start_date':self.availability,
 				'per_month_gross_salary':self.salary_expected,
 				'job_pos':self.job_id.id,
 				'template':self.job_id.template.id,
@@ -93,15 +93,15 @@ class HrApplicantExt(models.Model):
 			self.cost_card.create_edari_fee()
 		else:
 			if self.cost_card.state == 'draft':
-				self.cost_card.candidate_name = self.partner_name,
-				self.cost_card.applicant = self.id,
-				self.cost_card.contract = self.contract.id,
-				self.cost_card.contract_start_date = self.availability,
-				self.cost_card.per_month_gross_salary = self.salary_expected,
-				self.cost_card.job_pos = self.job_id.id,
-				self.cost_card.template = self.job_id.template.id,
-				self.cost_card.partner_id = self.job_id.customer.id,
-				self.cost_card.no_of_months = int(self.job_id.contract_length),
+				self.cost_card.candidate_name = self.partner_name
+				self.cost_card.applicant = self.id
+				self.cost_card.contract = self.contract.id
+				# self.cost_card.contract_start_date = self.availability,
+				self.cost_card.per_month_gross_salary = self.salary_expected
+				self.cost_card.job_pos = self.job_id.id
+				self.cost_card.template = self.job_id.template.id
+				self.cost_card.partner_id = self.job_id.customer.id
+				self.cost_card.no_of_months = int(self.job_id.contract_length)
 				self.cost_card.get_order_lines()
 				self.get_manual_order_lines()
 				self.cost_card.create_edari_fee()
