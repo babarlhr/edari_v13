@@ -87,8 +87,9 @@ class HrApplicantExt(models.Model):
 				'partner_id':self.job_id.customer.id,
 				'no_of_months':int(self.job_id.contract_length),
 				})
+
 			self.cost_card = so_rec.id
-			self.cost_card.get_order_lines()
+			# self.cost_card.get_order_lines()
 			self.get_manual_order_lines()
 			self.cost_card.create_edari_fee()
 		else:
@@ -102,7 +103,7 @@ class HrApplicantExt(models.Model):
 				self.cost_card.template = self.job_id.template.id
 				self.cost_card.partner_id = self.job_id.customer.id
 				self.cost_card.no_of_months = int(self.job_id.contract_length)
-				self.cost_card.get_order_lines()
+				# self.cost_card.get_order_lines()
 				self.get_manual_order_lines()
 				self.cost_card.create_edari_fee()
 			else:
@@ -111,6 +112,13 @@ class HrApplicantExt(models.Model):
 
 	def get_manual_order_lines(self):
 		costcard_recs = self.env['sale.order'].search([('job_pos','=',self.job_id.id),('costcard_type','=','estimate')])
+
+		# deleting manual lines first
+		for cost in self.cost_card.order_line:
+			if cost.costcard_type == 'manual':
+				cost.unlink()
+
+
 		self.cost_card.percentage = costcard_recs.percentage
 		for x in costcard_recs.order_line:
 			if x.costcard_type == 'manual':
