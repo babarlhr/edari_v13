@@ -38,16 +38,21 @@ class SaleOrderExt(models.Model):
 		('actual_month_days','Actual Month Days'),
 		('actual_working_days','Actual Working Days'),
 		], string='Work Days Type', default="twenty_two_days")
+	contract_state = fields.Selection([
+		('draft','New'),
+		('open','Running'),
+		('close','Expired'),
+		('cancel','Cancelled'),
+		], string='Contract State', default="draft")
 
 
 
-	@api.onchange('contract_start_date','no_of_months')
-	def get_contract_end_date(self):
-		if self.contract_start_date and self.no_of_months:
-			self.contract_end_date = self.contract_start_date + (relativedelta(months = self.no_of_months))
-			# self.contract_end_date = self.contract_end_date - (relativedelta(day = 1))
-		else:
-			self.contract_end_date = self.contract_start_date
+	# @api.onchange('contract_start_date','no_of_months')
+	# def get_contract_end_date(self):
+	# 	if self.contract_start_date and self.no_of_months:
+	# 		self.contract_end_date = self.contract_start_date + (relativedelta(months = self.no_of_months))
+	# 	else:
+	# 		self.contract_end_date = self.contract_start_date
 
 
 	# def create_invoice(self):
@@ -93,7 +98,7 @@ class SaleOrderExt(models.Model):
 		invoice_vals = self.prepare_invoice()
 		# for line in self.order_line:
 
-		######################################################################################
+		#####################################################################################
 		edari_product = self.env['product.product'].search([('name','=','Edari Service Fee')],limit=1)
 
 		# Untaxed amounts
@@ -133,23 +138,12 @@ class SaleOrderExt(models.Model):
 
 
 							t_date = self.date_invoice
-							print (lines_not_to_add)
-							print (lines_not_to_add)
-							print (lines_not_to_add)
 							if 'end' in lines_not_to_add:
 								t_date = self.contract_start_date
 								amount = self.calculate_salary(amount,t_date,'upfront')
 							if 'upfront' in lines_not_to_add:
 								t_date = self.contract_end_date
 								amount = self.calculate_salary(amount,t_date,'end')
-							print ("amountamountamountamount")
-							print (amount)
-							print ("amountamountamountamount")
-
-
-
-
-
 
 							# Calculate leave balance
 							balance = amount
@@ -158,9 +152,6 @@ class SaleOrderExt(models.Model):
 							# 	balance -= temp
 
 							invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name))
-							print ("check333")
-							print (invoice_vals['invoice_line_ids'])
-							print ("check333")
 							credit_sum += balance
 				if line.product_id == edari_product.id:
 					invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(credit_sum,'Edari Service Fee'))
@@ -466,7 +457,8 @@ class SaleOrderExt(models.Model):
 				new_record.version = "V1"
 				print (new_record.version)
 
-		new_record.get_contract_end_date()
+		# new_record.get_contract_end_date()
+		new_record.get_order_lines()
 
 		# updating wage in employee
 		if new_record.employee:
