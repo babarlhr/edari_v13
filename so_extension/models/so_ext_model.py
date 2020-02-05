@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openerp import models, fields, api
+from odoo import models, fields, api
 from datetime import timedelta,datetime,date
 from odoo.exceptions import Warning, ValidationError, UserError
 from datetime import datetime
@@ -101,46 +101,56 @@ class SaleOrderExt(models.Model):
 		credit_sum = 0
 
 		lines_not_to_add = []
-		if self.date_invoice >= self.contract_start_date and self.date_invoice < self.contract_start_date + (relativedelta(months = 1)):
+		if self.date_invoice.month == self.contract_start_date.month and self.date_invoice.year == self.contract_start_date.year:
 			lines_not_to_add = ['end']
 
-		elif self.date_invoice >= self.contract_start_date+ (relativedelta(months = 1)) and self.date_invoice < self.contract_end_date - (relativedelta(months = 1)):
-			lines_not_to_add = ['end','upfront']
-
-		else:
+		elif self.date_invoice.month == self.contract_end_date.month and self.date_invoice.year == self.contract_end_date.year:
 			lines_not_to_add = ['upfront']
 
+		else:
+			lines_not_to_add = ['end','upfront']
+
+		print (lines_not_to_add)
+		print ("check111")
 		for line in self.order_line:
-			amount = 0
-			if line.payment_type == 'interval':
-				amount = line.price_unit
-			else:
-				amount = line.price_subtotal
+			if line.price_unit != 0:
+				print ("check222")
+				amount = 0
+				if line.payment_type == 'interval':
+					amount = line.price_unit
+				else:
+					amount = line.price_subtotal
 
-			if not line.payment_type in lines_not_to_add:
+				if not line.payment_type in lines_not_to_add:
 
-				# qty in months check
-				start_plus_qty = self.date_invoice+(relativedelta(months = line.product_uom_qty))
-				print 
-				# if int(str(start_plus_qty)[5:7]) <= int(str(self.contract_end_date)[5:7]):
-				months_differ = relativedelta(start_plus_qty, self.contract_end_date)
-				if months_differ.months <= 0:
-				# if int(str(start_plus_qty)[5:7]) <= int(str(self.contract_end_date)[5:7]):
-					if not line.product_id == edari_product.id:
-						# calculating with no of days
-						amount = self.calculate_salary(amount)
+					# qty in months check
+					start_plus_qty = self.date_invoice+(relativedelta(months = line.product_uom_qty))
+					# if int(str(start_plus_qty)[5:7]) <= int(str(self.contract_end_date)[5:7]):
+					if self.date_invoice <= start_plus_qty:
+					# months_differ = relativedelta(start_plus_qty, self.contract_end_date)
+					# if months_differ.months <= 0:
+					# if int(str(start_plus_qty)[5:7]) <= int(str(self.contract_end_date)[5:7]):
+						if not line.product_id == edari_product.id:
+							# print(line.product_id.name)
+							# print(line.name)
+							# print (start_plus_qty)
+							# calculating with no of days
+							amount = self.calculate_salary(amount)
 
 
-						# Calculate leave balance
-						balance = amount
-						if line.leave_deductable:
-							temp = self.calculate_leave_balance(balance)
-							balance -= temp
-						invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name))
-						credit_sum += balance
-			if line.product_id == edari_product.id:
-				invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(credit_sum,'Edari Service Fee'))
-		#=====================================================================================#
+							# Calculate leave balance
+							balance = amount
+							if line.leave_deductable:
+								temp = self.calculate_leave_balance(balance)
+								balance -= temp
+							invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name))
+							print ("check333")
+							print (invoice_vals['invoice_line_ids'])
+							print ("check333")
+							credit_sum += balance
+				if line.product_id == edari_product.id:
+					invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(credit_sum,'Edari Service Fee'))
+		#==========================================================================#
 
 
 		# invoice_vals['invoice_line_ids'].append((0, 0, line.prepare_invoice_line()))
@@ -281,7 +291,7 @@ class SaleOrderExt(models.Model):
 		return (balance/22)*no_of_leaves
 
 
-	##################### Function to calculate leave balance total ENDS  #####################
+	############### Function to calculate leave balance total ENDS  ###############
 
 	# @api.onchange('template')
 	def get_order_lines(self):
@@ -321,11 +331,11 @@ class SaleOrderExt(models.Model):
 				qty = 0
 				# if x.costcard_type in ['fixed','calculation']:
 				if x.costcard_type in ['manual']:
+					qty = 1
 				# if x.costcard_type:
-					qty = self.no_of_months
 				# if x.costcard_type == 'manual':
 				else:
-					qty = 1
+					qty = self.no_of_months
 					# compute_result = 0
 
 				# order_lines_list.append({
@@ -333,6 +343,7 @@ class SaleOrderExt(models.Model):
 				for index in self.order_line:
 					if index.product_id.id == x.service_name.id:
 						manual_check = False
+						index.get_manual_price_unit()
 
 				if manual_check:
 					self.order_line.create({
@@ -345,6 +356,7 @@ class SaleOrderExt(models.Model):
 						'leave_type':x.leave_type.id,
 						'leave_deductable':x.leave_deductable,
 						'leave_deduct_type':x.leave_deduct_type,
+						'payment_type':x.payment_type,
 						'code':x.code,
 						'categ_id':x.service_name.categ_id.id,
 						'name':x.code or "",
@@ -378,32 +390,30 @@ class SaleOrderExt(models.Model):
 			self.order_line = None
 
 	def create_edari_fee(self):
-		edari_service_charges = self.env['product.product'].search([('name','=','Edari Service Fee')])
-		for x in self.order_line:
-			if x.product_id.id == edari_service_charges.id:
-				x.unlink()
-		charable_sum = 0
-		for x in self.order_line:
-			if x.chargable:
-				# charable_sum += x.price_subtotal
-				charable_sum += x.price_unit
-		if charable_sum > 0:
+		if self.percentage > 0:
 			edari_service_charges = self.env['product.product'].search([('name','=','Edari Service Fee')])
-			price = 0
-			if self.percentage > 0:
+			for x in self.order_line:
+				if x.product_id.id == edari_service_charges.id:
+					x.unlink()
+			charable_sum = 0
+			for x in self.order_line:
+				if x.chargable:
+					# charable_sum += x.price_subtotal
+					charable_sum += x.price_unit
+			if charable_sum > 0:
+				edari_service_charges = self.env['product.product'].search([('name','=','Edari Service Fee')])
+				price = 0
 				price = charable_sum*(self.percentage/100)
-			else:
-				price = charable_sum
-			self.order_line.create({
-				'product_id':edari_service_charges.id,
-				'name':"Service Charges",
-				'code':"SC",
-				# 'product_uom_qty':1,
-				'product_uom_qty':self.no_of_months,
-				'price_unit':price,
-				'order_id':self.id,
-				'costcard_type':'manual',
-				})
+				self.order_line.create({
+					'product_id':edari_service_charges.id,
+					'name':"Service Charges",
+					'code':"SC",
+					# 'product_uom_qty':1,
+					'product_uom_qty':self.no_of_months,
+					'price_unit':price,
+					'order_id':self.id,
+					'payment_type':'interval',
+					})
 
 	@api.model
 	def create(self, vals):
@@ -427,6 +437,8 @@ class SaleOrderExt(models.Model):
 		return new_record
 
 	def write(self, vals):
+		before=self.write_date
+
 		rec = super(SaleOrderExt, self).write(vals)
 		if 'per_month_gross_salary' in vals:
 			self.applicant.salary_expected = vals['per_month_gross_salary']
@@ -434,6 +446,13 @@ class SaleOrderExt(models.Model):
 			# updating wage in employee
 			if self.employee:
 				self.employee.wage = vals['per_month_gross_salary']
+
+		after = self.write_date
+		if before != after:
+			self.get_order_lines()
+			self.create_edari_fee()
+
+
 		return rec
 
 
@@ -466,7 +485,7 @@ class SOLineExt(models.Model):
 			'name': name,
 			'product_id': self.product_id.id,
 			'product_uom_id': self.product_uom.id,
-			'quantity': self.product_uom_qty,
+			'quantity': 1,
 			'discount': self.discount,
 			# 'price_unit': self.price_unit,
 			'price_unit': amount,
@@ -476,17 +495,29 @@ class SOLineExt(models.Model):
 			'sale_line_ids': [(4, self.id)],
 		}
 
-	@api.onchange('manual_amount')
+	@api.onchange('manual_amount','product_uom_qty')
 	def get_manual_price_unit(self):
-		print ("111111111111111111")
 		if self.costcard_type == 'manual' and self.order_id.no_of_months>0:
-			print ("22222222222222222222")
 			self.product_uom_qty = self.order_id.no_of_months
 			self.price_unit = self.manual_amount/self.order_id.no_of_months
-		else:
-			print ("333333333333333333333")
-			self.product_uom_qty = 1
-			self.price_unit = 0
+
+	@api.onchange('product_uom')
+	def product_uom_change(self):
+		if not self.product_uom or not self.product_id:
+			self.price_unit = 0.0
+			return
+		if self.order_id.pricelist_id and self.order_id.partner_id:
+			product = self.product_id.with_context(
+				lang=self.order_id.partner_id.lang,
+				partner=self.order_id.partner_id,
+				quantity=self.product_uom_qty,
+				date=self.order_id.date_order,
+				pricelist=self.order_id.pricelist_id.id,
+				uom=self.product_uom.id,
+				fiscal_position=self.env.context.get('fiscal_position')
+			)
+			self.price_unit = self.env['account.tax']._fix_tax_included_price_company(self._get_display_price(product), product.taxes_id, self.tax_id, self.company_id)
+
 
 
 
@@ -494,11 +525,11 @@ class SOLineExt(models.Model):
 		('upfront','Upfront'),
 		('end','End'),
 		('interval','Interval')
-		], string='Payment Type', default='upfront')
+		], string='Payment Type')
 
 	costcard_type = fields.Selection([
 		('fixed','Fixed'),
 		('manual','Manual'),
 		('calculation','Calculation'),
-		], string='Type', default='manual')
+		], string='Type')
 	

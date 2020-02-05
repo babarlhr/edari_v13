@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openerp import models, fields, api
+from odoo import models, fields, api
 from datetime import timedelta,datetime,date
 from odoo.exceptions import Warning, ValidationError
 
@@ -7,6 +7,7 @@ from odoo.exceptions import Warning, ValidationError
 class CostCardTemplate(models.Model):
 	_name = 'costcard.template'
 	_rec_name = 'template_name'
+	_description = "Model for Template"
 
 	template_name = fields.Char(string="Template Name")
 	job_position = fields.Many2one('hr.job', string="Job Position")
@@ -20,6 +21,7 @@ class CostCardTemplate(models.Model):
 class CostCardTemplateTree(models.Model):
 	_name = 'costcard.template.tree'
 	_rec_name = 'service_name'
+	_description = "Tree Model for Template"
 
 
 

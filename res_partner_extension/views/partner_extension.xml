@@ -34,7 +34,7 @@
                             </field>
                    </page>
 
-                   <!-- <page name="billing_detail" string="Billing Details">
+                   <page name="billing_detail" string="Billing Details">
                         <group>
                             <group>
                                 <field name="trade_license_no"/>
@@ -56,7 +56,7 @@
                                 
                             </group>
                         </group>
-                   </page> -->
+                   </page>
              </xpath>
 
         </field> 

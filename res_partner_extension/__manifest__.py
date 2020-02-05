@@ -13,8 +13,8 @@
     'depends': ['base','sale','hr'],
 
     # always loaded
-    # 'data': [
-    #     'views/partner_extension.xml',
-    # ],
+    'data': [
+        'views/partner_extension.xml',
+    ],
 
 }
