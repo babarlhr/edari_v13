@@ -45,6 +45,7 @@ class SaleOrderExt(models.Model):
 	def get_contract_end_date(self):
 		if self.contract_start_date and self.no_of_months:
 			self.contract_end_date = self.contract_start_date + (relativedelta(months = self.no_of_months))
+			# self.contract_end_date = self.contract_end_date - (relativedelta(day = 1))
 		else:
 			self.contract_end_date = self.contract_start_date
 
@@ -110,11 +111,8 @@ class SaleOrderExt(models.Model):
 		else:
 			lines_not_to_add = ['end','upfront']
 
-		print (lines_not_to_add)
-		print ("check111")
 		for line in self.order_line:
 			if line.price_unit != 0:
-				print ("check222")
 				amount = 0
 				if line.payment_type == 'interval':
 					amount = line.price_unit
@@ -131,18 +129,34 @@ class SaleOrderExt(models.Model):
 					# if months_differ.months <= 0:
 					# if int(str(start_plus_qty)[5:7]) <= int(str(self.contract_end_date)[5:7]):
 						if not line.product_id == edari_product.id:
-							# print(line.product_id.name)
-							# print(line.name)
-							# print (start_plus_qty)
 							# calculating with no of days
-							amount = self.calculate_salary(amount)
+
+
+							t_date = self.date_invoice
+							print (lines_not_to_add)
+							print (lines_not_to_add)
+							print (lines_not_to_add)
+							if 'end' in lines_not_to_add:
+								t_date = self.contract_start_date
+								amount = self.calculate_salary(amount,t_date,'upfront')
+							if 'upfront' in lines_not_to_add:
+								t_date = self.contract_end_date
+								amount = self.calculate_salary(amount,t_date,'end')
+							print ("amountamountamountamount")
+							print (amount)
+							print ("amountamountamountamount")
+
+
+
+
 
 
 							# Calculate leave balance
 							balance = amount
-							if line.leave_deductable:
-								temp = self.calculate_leave_balance(balance)
-								balance -= temp
+							# if line.leave_deductable:
+							# 	temp = self.calculate_leave_balance(balance)
+							# 	balance -= temp
+
 							invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name))
 							print ("check333")
 							print (invoice_vals['invoice_line_ids'])
@@ -213,37 +227,60 @@ class SaleOrderExt(models.Model):
 		return temp
 
 	################# Calculating salary according to days START #################
-	def calculate_salary(self, amount):
+	def calculate_salary(self, amount, contract_date, payment_type):
 		temp = amount
 		per_day = 0
 		if self.work_days_type == 'twenty_two_days':
 			per_day = temp/22
-			days = self.calculate_weekends()
-			temp -= per_day*days
+			days = self.calculate_weekends(contract_date, payment_type)
+			if payment_type == 'upfront':
+				working_days = 22 - days
+			if payment_type == 'end':
+				working_days = days
+
+			# temp -= per_day*days
+			temp = per_day*working_days
 
 		elif self.work_days_type == 'actual_month_days':
-			per_day = temp/self.number_of_days_in_month(self.invoice_date.year, self.invoice_date.month)
-			days = self.calculate_weekends()
-			temp -= per_day*days
+			per_day = temp/self.number_of_days_in_month(self.date_invoice.year, self.date_invoice.month)
+			days = self.calculate_weekends(contract_date, payment_type)
+			if payment_type == 'upfront':
+				working_days = self.number_of_days_in_month(self.date_invoice.year, self.date_invoice.month) - days
+			if payment_type == 'end':
+				working_days = days
+			temp = per_day*working_days
+
 
 		else:
 			temp = amount
 
 		return temp
 
-	def calculate_weekends(self):
-		month_start = self.date_invoice
-		day = self.date_invoice
+	def calculate_weekends(self,contract_date, payment_type):
+
+		relevant_date = contract_date
+		day = contract_date.replace(day=1)
 		single_day = dt.timedelta(days=1)
-		working_days = 0
-		while day.month == month_start.month:
-			if self.work_days_type == 'twenty_two_days':
-				if day.weekday() != 6 or day.weekday() != 5:
-					working_days += 1
-			if self.work_days_type == 'actual_month_days':
-				working_days += 1
-			day -= single_day
-		return working_days
+		days_to_deduct = 0
+		if payment_type == "upfront":
+			while day < relevant_date:
+				if self.work_days_type == 'twenty_two_days':
+					if day.weekday() != 6 and day.weekday() != 5:
+						days_to_deduct += 1
+				if self.work_days_type == 'actual_month_days':
+					days_to_deduct += 1
+				day += single_day
+
+		if payment_type == "end":
+			while day <= relevant_date:
+				if self.work_days_type == 'twenty_two_days':
+					if day.weekday() != 6 and day.weekday() != 5:
+						days_to_deduct += 1
+				if self.work_days_type == 'actual_month_days':
+					days_to_deduct += 1
+				day += single_day
+
+		return days_to_deduct
 	################# Calculating salary according to days ENDS #################
 
 
