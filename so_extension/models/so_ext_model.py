@@ -133,9 +133,9 @@ class SaleOrderExt(models.Model):
 				if not line.payment_type in lines_not_to_add:
 
 					# qty in months check
-					start_plus_qty = self.date_invoice+(relativedelta(months = int(line.product_uom_qty)))
+					start_plus_qty = self.date_invoice+(relativedelta(months = int(line.product_uom_qty-1)))
 					# if int(str(start_plus_qty)[5:7]) <= int(str(self.contract_end_date)[5:7]):
-					if self.date_invoice <= start_plus_qty:
+					if self.date_invoice.month <= start_plus_qty.month and self.date_invoice.year <= start_plus_qty.year:
 					# months_differ = relativedelta(start_plus_qty, self.contract_end_date)
 					# if months_differ.months <= 0:
 					# if int(str(start_plus_qty)[5:7]) <= int(str(self.contract_end_date)[5:7]):
