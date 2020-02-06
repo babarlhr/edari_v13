@@ -189,10 +189,10 @@ class SaleOrderExt(models.Model):
 	# Function to calculate total days in billing period START
 	def calculate_total_days(self, billing_period):
 		if self.work_days_type == 'twenty_two_days':
-			return 22
+			return 22 * 8
 		elif self.work_days_type == 'actual_month_days':
-			return monthrange(billing_period.start.year, billing_period.start.month)[1]
-		# TODO: 
+			return monthrange(billing_period.start.year, billing_period.start.month)[1] * 8
+		# TODO: Include calculation for actual_working_days
 	# Function to calculate total days in billing period END
 
 	def calculate_days_worked(billing_period, total_days):
@@ -212,7 +212,10 @@ class SaleOrderExt(models.Model):
 					days_to_deduct += 1
 				day += single_day
 
-		# TODO: Include leaves and holidays
+		# Convert to hours to comply with leave calcualtion
+		days_to_deduct *= 8
+
+		# TODO: Include leaves and holidays (calculated in hours)
 		return days_to_deduct
 
 	# new way of creating invoice ENDS
