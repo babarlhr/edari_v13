@@ -483,10 +483,10 @@ class SaleOrderExt(models.Model):
 			if self.employee:
 				self.employee.wage = vals['per_month_gross_salary']
 
-		after = self.write_date
-		if before != after:
-			self.get_order_lines()
-			self.create_edari_fee()
+		# after = self.write_date
+		# if before != after:
+		# 	self.get_order_lines()
+		# 	self.create_edari_fee()
 
 
 		return rec
