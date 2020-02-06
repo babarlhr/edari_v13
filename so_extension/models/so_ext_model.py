@@ -106,6 +106,10 @@ class SaleOrderExt(models.Model):
 		move_lines_list = []
 		credit_sum = 0
 
+		billing_period = self.calculate_billing_period(self.date_invoice)
+		total_days = self.calculate_total_days(billing_period)
+		worked_days = self.calculate_days_worked(billing_period, total_days)
+
 		lines_not_to_add = []
 		if self.date_invoice.month == self.contract_start_date.month and self.date_invoice.year == self.contract_start_date.year:
 			lines_not_to_add = ['end']
@@ -168,6 +172,48 @@ class SaleOrderExt(models.Model):
 
 		# 3) Create invoices.
 		moves = self.env['account.move'].with_context(default_type='out_invoice').create(invoice_vals_list)
+
+	# Function to calculate the billing period START
+	def calculate_billing_period(self, invoice_date):
+		start = invoice_date.replace(day = 1)
+		end = invoice_date.replace(day = monthrange(invoice_date.year, invoice_date.month)[1])
+		
+		if start < self.contract_start_date:
+			start = self.contract_start_date
+		if end > self.contract_end_date:
+			end = self.contract_end_date
+		
+		return { "start": start, "end": end }
+	# Function to calculate the billing period END
+
+	# Function to calculate total days in billing period START
+	def calculate_total_days(self, billing_period):
+		if self.work_days_type == 'twenty_two_days':
+			return 22
+		elif self.work_days_type == 'actual_month_days':
+			return monthrange(billing_period.start.year, billing_period.start.month)[1]
+		# TODO: 
+	# Function to calculate total days in billing period END
+
+	def calculate_days_worked(billing_period, total_days):
+		mr = monthrange(billing_period["start"].year, billing_period["start"])
+		day = billing_period["start"].replace(day=1)
+		end = billing_period["start"].replace(day=mr[1])
+
+		single_day = dt.timedelta(days=1)
+		days_to_deduct = 0
+
+		while day < end:
+			if day < billing_period["start"] or day > billing_period["end"]:
+				if self.work_days_type == 'twenty_two_days' or self.work_days_type == 'actual_working_days':
+					if day.weekday() != 6 and day.weekday() != 5:
+						days_to_deduct += 1
+				if self.work_days_type == 'actual_month_days':
+					days_to_deduct += 1
+				day += single_day
+
+		# TODO: Include leaves and holidays
+		return days_to_deduct
 
 	# new way of creating invoice ENDS
 
