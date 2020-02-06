@@ -64,7 +64,7 @@ class SaleOrderExt(models.Model):
 		journal = self.env['account.move'].with_context(force_company=self.company_id.id, default_type='out_invoice')._get_default_journal()
 		if not journal:
 			raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (self.company_id.name, self.company_id.id))
-
+		# if self.contract and self.contract_state =='open':
 		invoice_vals = {
 			# 'ref': self.client_order_ref or '',
 			'ref': self.name,
@@ -87,6 +87,9 @@ class SaleOrderExt(models.Model):
 			'transaction_ids': [(6, 0, self.transaction_ids.ids)],
 			'invoice_line_ids': [],
 		}
+		# else:
+		# 	raise ValidationError('Contract not available or not in Open state.')
+
 		return invoice_vals
 
 
@@ -105,13 +108,16 @@ class SaleOrderExt(models.Model):
 		print ("Check1")
 		move_lines_list = []
 		credit_sum = 0
-
+		starting_month = False
+		ending_month = False
 		lines_not_to_add = []
 		if self.date_invoice.month == self.contract_start_date.month and self.date_invoice.year == self.contract_start_date.year:
 			lines_not_to_add = ['end']
+			starting_month = True
 
 		elif self.date_invoice.month == self.contract_end_date.month and self.date_invoice.year == self.contract_end_date.year:
 			lines_not_to_add = ['upfront']
+			ending_month = True
 
 		else:
 			lines_not_to_add = ['end','upfront']
@@ -138,10 +144,10 @@ class SaleOrderExt(models.Model):
 
 
 							t_date = self.date_invoice
-							if 'end' in lines_not_to_add:
+							if starting_month == True:
 								t_date = self.contract_start_date
 								amount = self.calculate_salary(amount,t_date,'upfront')
-							if 'upfront' in lines_not_to_add:
+							if ending_month == True:
 								t_date = self.contract_end_date
 								amount = self.calculate_salary(amount,t_date,'end')
 
@@ -386,6 +392,7 @@ class SaleOrderExt(models.Model):
 						'leave_deduct_type':x.leave_deduct_type,
 						'payment_type':x.payment_type,
 						'code':x.code,
+						'handle':x.handle,
 						'categ_id':x.service_name.categ_id.id,
 						'name':x.code or "",
 						'costcard_type':x.costcard_type,
@@ -487,8 +494,10 @@ class SaleOrderExt(models.Model):
 
 class SOLineExt(models.Model):
 	_inherit='sale.order.line'
+	_order = 'handle'
 
 	code = fields.Char(string="Code")
+	handle = fields.Char(string="Handle", readonly=True, copy=False)
 	chargable = fields.Boolean(string="Chargable")
 	manual_amount = fields.Float(string="Manual Amount")
 	categ_id = fields.Many2one('product.category', string="Product Category")
