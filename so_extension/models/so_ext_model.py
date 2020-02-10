@@ -135,30 +135,30 @@ class SaleOrderExt(models.Model):
 					# qty in months check
 					start_plus_qty = self.contract_start_date+(relativedelta(months = int(line.product_uom_qty-1)))
 					# if int(str(start_plus_qty)[5:7]) <= int(str(self.contract_end_date)[5:7]):
-					# if self.date_invoice.month <= start_plus_qty.month and self.date_invoice.year <= start_plus_qty.year:
+					if self.date_invoice.month <= start_plus_qty.month and self.date_invoice.year <= start_plus_qty.year:
 					# months_differ = relativedelta(start_plus_qty, self.contract_end_date)
 					# if months_differ.months <= 0:
 					# if int(str(start_plus_qty)[5:7]) <= int(str(self.contract_end_date)[5:7]):
-					if not line.product_id == edari_product.id:
-						# calculating with no of days
+						if not line.product_id == edari_product.id:
+							# calculating with no of days
 
 
-						t_date = self.date_invoice
-						if starting_month == True:
-							t_date = self.contract_start_date
-							amount = self.calculate_salary(amount,t_date,'upfront')
-						if ending_month == True:
-							t_date = self.contract_end_date
-							amount = self.calculate_salary(amount,t_date,'end')
+							t_date = self.date_invoice
+							if starting_month == True:
+								t_date = self.contract_start_date
+								amount = self.calculate_salary(amount,t_date,'upfront')
+							if ending_month == True:
+								t_date = self.contract_end_date
+								amount = self.calculate_salary(amount,t_date,'end')
 
-						# Calculate leave balance
-						balance = amount
-						# if line.leave_deductable:
-						# 	temp = self.calculate_leave_balance(balance)
-						# 	balance -= temp
+							# Calculate leave balance
+							balance = amount
+							# if line.leave_deductable:
+							# 	temp = self.calculate_leave_balance(balance)
+							# 	balance -= temp
 
-						invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name))
-						credit_sum += balance
+							invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name))
+							credit_sum += balance
 				if line.product_id == edari_product.id:
 					invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(credit_sum,'Edari Service Fee'))
 		#==========================================================================#
