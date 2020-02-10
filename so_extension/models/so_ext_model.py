@@ -535,11 +535,16 @@ class SOLineExt(models.Model):
 			'sale_line_ids': [(4, self.id)],
 		}
 
-	@api.onchange('manual_amount','product_uom_qty')
+	@api.onchange('manual_amount')
 	def get_manual_price_unit(self):
 		if self.costcard_type == 'manual' and self.order_id.no_of_months>0:
 			self.product_uom_qty = self.order_id.no_of_months
 			self.price_unit = self.manual_amount/self.order_id.no_of_months
+
+	@api.onchange('product_uom_qty')
+	def get_price_unit_on_uom_change(self):
+		if self.costcard_type == 'manual' and self.order_id.no_of_months>0:
+			self.price_unit = self.manual_amount/self.product_uom_qty
 
 	@api.onchange('product_uom')
 	def product_uom_change(self):
