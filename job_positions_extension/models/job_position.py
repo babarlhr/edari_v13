@@ -59,30 +59,9 @@ class JobsExtension(models.Model):
 	# 		jobs.so_count = int(count)
 	
 
-	# def so_smart_button(self):
-	# 	rec = self.env['sale.order'].search([('job_pos','=',self.id)]).ids
-	# 	domain = [('id','in',rec)]
-	# 	return {
-	# 	'type': 'ir.actions.act_window',
-	# 	 'name': ('Sale Orders'),
-	# 	 'res_model': 'sale.order',
-	# 	 'view_type': 'form',
-	# 	 'view_mode': 'tree,form',
-	# 	 'context': {
-	# 	 'default_job_pos':self.id,
-	# 	 'default_template':self.template.id,
-	# 	 'default_partner_id':self.customer.id,
-	# 	 'default_no_of_months':self.contract_length,
-	# 	 'default_per_month_gross_salary':self.budget,
-	# 	 'default_costcard_type':'estimate',
-	# 	 },
-	# 	 'view_id ref=" sale.view_quotation_tree_with_onboarding"': '',
-	# 	 'target': 'current',
-	# 	 'domain': domain,
-	# 	}
-
-
 	def create_so(self):
+		# rec = self.env['sale.order'].search([('job_pos','=',self.id)]).ids
+		# domain = [('id','=',rec)]
 		if not self.costcard_template:
 			so_rec = self.env['sale.order'].create({
 				'job_pos':self.id,
@@ -103,3 +82,47 @@ class JobsExtension(models.Model):
 				self.costcard_template.costcard_type = 'estimate'
 			else:
 				raise ValidationError('Cost Card template is not in draft state.')
+		self.costcard_template.get_order_lines()
+		self.costcard_template.create_edari_fee()
+
+		return {
+		'type': 'ir.actions.act_window',
+		 'name': ('Sale Orders'),
+		 'res_model': 'sale.order',
+		 'view_type': 'form',
+		 'view_mode': 'tree,form',
+		 # 'context': {
+		 # 'default_job_pos':self.id,
+		 # 'default_template':self.template.id,
+		 # 'default_partner_id':self.customer.id,
+		 # 'default_no_of_months':self.contract_length,
+		 # 'default_per_month_gross_salary':self.budget,
+		 # 'default_costcard_type':'estimate',
+		 # },
+		 # 'view_id ref=" sale.view_quotation_tree_with_onboarding"': '',
+		 'target': 'current',
+		 'domain': [('id','=',self.costcard_template.id)],
+		}
+
+
+	# def create_so(self):
+	# 	if not self.costcard_template:
+	# 		so_rec = self.env['sale.order'].create({
+	# 			'job_pos':self.id,
+	# 			'template':self.template.id,
+	# 			'partner_id':self.customer.id,
+	# 			'no_of_months':self.contract_length,
+	# 			'per_month_gross_salary':self.budget,
+	# 			'costcard_type':'estimate',
+	# 			})
+	# 		self.costcard_template = so_rec.id
+	# 	else:
+	# 		if self.costcard_template.state == 'draft':
+	# 			self.costcard_template.job_pos = self.id
+	# 			self.costcard_template.template = self.template.id
+	# 			self.costcard_template.partner_id = self.customer.id
+	# 			self.costcard_template.no_of_months = self.contract_length
+	# 			self.costcard_template.per_month_gross_salary = self.budget
+	# 			self.costcard_template.costcard_type = 'estimate'
+	# 		else:
+	# 			raise ValidationError('Cost Card template is not in draft state.')

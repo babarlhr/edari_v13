@@ -84,6 +84,7 @@ class HrApplicantExt(models.Model):
 				'per_month_gross_salary':self.salary_expected,
 				'job_pos':self.job_id.id,
 				'template':self.job_id.template.id,
+				'costcard_type':'estimate',
 				'partner_id':self.job_id.customer.id,
 				'no_of_months':int(self.job_id.contract_length),
 				})
@@ -157,6 +158,7 @@ class HrApplicantExt(models.Model):
 			'department_id':self.department_id.id,
 			'job_id':self.job_id.id,
 			'employee_id':self.emp_id.id,
+			'cost_card':self.cost_card.id,
 			'wage':self.salary_expected,
 			'structure_type_id':self.payroll_structure.id,
 			})

@@ -49,9 +49,7 @@
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
                 <field name="code" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
                 <field name="payment_type" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
-                <field name="leave_type" invisible="1"/>
-                <field name="leave_deductable" invisible="1"/>
-                <field name="leave_deduct_type" invisible="1"/>
+                <field name="prorate" invisible="1"/>
                 <field name="costcard_type" invisible="0"/>
                 <field name="manual_amount" attrs="{'readonly':[('costcard_type','!=','manual')]}"/>
                 <field name="categ_id" invisible="0"/>
