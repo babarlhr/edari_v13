@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="hr_contract_view_form_extended" model="ir.ui.view">
+            <field name="name">hr_contract_view_form_extended</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="type">form</field>
+
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='hr_responsible_id']" position="after">
+                    <field name="timesheet_cycle" />
+                    <field name="timesheet_mode" />
+                    <field name="timesheet_approver_1" />
+                    <field name="timesheet_approver_2" />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
