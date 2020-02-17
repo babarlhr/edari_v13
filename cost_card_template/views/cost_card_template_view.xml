@@ -38,14 +38,13 @@
                                 <field name="service_name" required="1"/>
                                 <field name="code" />
                                 <field name="service_category" />
-                                <field name="payment_type" />
-                                <field name="leave_type" />
-                                <field name="leave_deductable" />
-                                <field name="leave_deduct_type" />
+                                <field name="payment_type" required = "1"/>
+                                <field name="based_on_wd"/>
                                 <field name="chargable" />
                                 <field name="account_head" />
                                 <field name="costcard_type" />
                                 <field name="computation_formula" />
+                                <field name="computation_qty" />
                             </tree>
                         </field>
                     </sheet>

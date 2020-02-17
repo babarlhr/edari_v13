@@ -33,13 +33,10 @@ class CostCardTemplateTree(models.Model):
 	sequence = fields.Char(string="Sequence", readonly=True)
 	code = fields.Char(string="Code")
 	computation_formula = fields.Text(string="Computation Formula")
+	computation_qty = fields.Text(string="Computation Qty")
 	# fixed = fields.Boolean(string="Fixed")
-	leave_type = fields.Many2one('hr.leave.type', string="Leave Type")
-	leave_deductable = fields.Boolean(string="Leave Deductable")
-	leave_deduct_type = fields.Selection([
-        ('accrued','Accrued'),
-        ('non_accrued','Non-Accrued'),
-        ], string='Leave Deductable Type', default='accrued')
+	based_on_wd = fields.Boolean(string="Based on WD")
+
 	payment_type = fields.Selection([
         ('upfront','Upfront'),
         ('end','End'),
