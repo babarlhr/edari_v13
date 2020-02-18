@@ -579,10 +579,7 @@ class SaleOrderExt(models.Model):
 					exec(expression)
 					exec(qty_expression)
 					
-					if x.costcard_type != 'calculation':
-						cumulative_total += compute_result + manual_amount_cumulative
-						print (compute_result)
-						print (manual_amount_cumulative)
+
 
 				except Exception as e:
 					raise ValidationError('Error..!\n'+str(e))
@@ -610,6 +607,11 @@ class SaleOrderExt(models.Model):
 					qty = compute_qty
 					if compute_result and self.no_of_months and qty > 0:
 						compute_result = compute_result * (self.no_of_months / qty)
+
+				if x.costcard_type != 'calculation':
+					cumulative_total += compute_result + manual_amount_cumulative
+					print (compute_result)
+					print (manual_amount_cumulative)
 
 
 				# order_lines_list.append({
