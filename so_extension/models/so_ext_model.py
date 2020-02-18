@@ -8,7 +8,6 @@ from calendar import monthrange
 import datetime as dt
 # import pandas as pd
 
-
 class SaleOrderExt(models.Model):
 	_inherit='sale.order'
 
@@ -561,13 +560,10 @@ class SaleOrderExt(models.Model):
 				# expression = x.computation_formula
 				# expression.replace("result", "cost_card_compute_x1")
 				# exec(x.computation_formula)
-				
 				try:
 					exec(expression)
 					exec(qty_expression)
 					
-					if not x.costcard_type == 'calculation':
-						cumulative_total += compute_result
 				except Exception as e:
 					raise ValidationError('Error..!\n'+str(e))
 				
@@ -590,7 +586,11 @@ class SaleOrderExt(models.Model):
 
 				if x.computation_qty:
 					qty = compute_qty
-
+					if compute_result and self.no_of_months and qty > 0:
+						# Adjust the unit price based on calculated quantity
+						compute_result = compute_result * self.no_of_months / qty
+				if not x.costcard_type == 'calculation':
+					cumulative_total += compute_result
 				# order_lines_list.append({
 				manual_check = True
 				for index in self.order_line:
