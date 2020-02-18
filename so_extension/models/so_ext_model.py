@@ -6,6 +6,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from calendar import monthrange
 import datetime as dt
+import calendar
 # import pandas as pd
 
 
@@ -173,11 +174,12 @@ class SaleOrderExt(models.Model):
 				for i in range(delta.days + 1):
 					day = x.request_date_from + timedelta(days=i)
 					if day.replace(day=1) == self.date_invoice.replace(day=1):
-						leave_days_list.append(day)
-						if x.request_unit_half:
-							total_leaves += 0.5
-						else:
-							total_leaves += 1
+						if day.weekday() != 4 and day.weekday() != 5:
+							leave_days_list.append(day)
+							if x.request_unit_half:
+								total_leaves += 0.5
+							else:
+								total_leaves += 1
 
 
 				for z in unique_holidays:
@@ -277,6 +279,10 @@ class SaleOrderExt(models.Model):
 	def calculate_weekends(self,contract_date, month_interval):
 
 		relevant_date = contract_date
+		
+		last_day = calendar.monthrange(int(relevant_date.year),int(relevant_date.month))[1]
+		last_date = relevant_date.replace(day=last_day)
+		
 		day = contract_date.replace(day=1)
 		single_day = dt.timedelta(days=1)
 		days_to_deduct = 0
@@ -331,8 +337,8 @@ class SaleOrderExt(models.Model):
 		t_date = self.date_invoice
 
 		# divisor and working_days variable are used for finding invoice line amount
-		divisor = 1
-		working_days = 1
+		divisor = self.per_day_devisor(t_date)
+		working_days = divisor
 		if starting_month == True:
 			t_date = self.contract_start_date
 			divisor = self.per_day_devisor(t_date)
@@ -372,7 +378,7 @@ class SaleOrderExt(models.Model):
 					# months_differ = relativedelta(start_plus_qty, self.contract_end_date)
 					# if months_differ.months <= 0:
 					# if int(str(start_plus_qty)[5:7]) <= int(str(self.contract_end_date)[5:7]):
-						if not line.product_id == edari_product.id:
+						# if not line.product_id == edari_product.id:
 							# calculating with no of days
 
 
@@ -384,20 +390,21 @@ class SaleOrderExt(models.Model):
 							#   t_date = self.contract_end_date
 							#   amount = self.calculate_salary(amount,t_date,'end')
 
-							if line.based_on_wd:
-								per_day = amount/divisor
-								amount = per_day*working_days
+						if line.based_on_wd:
+							print ("---------------------------")
+							per_day = amount/divisor
+							amount = per_day*working_days
 
-							# Calculate leave balance
-							balance = amount
-							# if line.leave_deductable:
-							  # temp = self.calculate_leave_balance(balance)
-							  
+						# Calculate leave balance
+						balance = amount
+						# if line.leave_deductable:
+						  # temp = self.calculate_leave_balance(balance)
+						  
 
-							invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name))
-							credit_sum += balance
-				if line.product_id == edari_product.id:
-					invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(credit_sum,'Edari Service Fee'))
+						invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name))
+						credit_sum += balance
+				# if line.product_id == edari_product.id:
+				# 	invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(credit_sum,'Edari Service Fee'))
 		#==========================================================================#
 
 
@@ -540,6 +547,12 @@ class SaleOrderExt(models.Model):
 			template_tree_recs = self.env['costcard.template.tree'].search([('tree_link','=',self.template.id)], order='handle')
 			# for x in self.template.template_tree:
 			for x in template_tree_recs:
+				manual_amount_cumulative = 0
+				if x.costcard_type == "manual":
+					for lines in self.order_line:
+						if x.code == lines.code:
+							manual_amount_cumulative = lines.price_unit
+
 				print (x.code)
 				global compute_result
 				global compute_qty
@@ -567,12 +580,12 @@ class SaleOrderExt(models.Model):
 					exec(expression)
 					exec(qty_expression)
 					
-					if x.costcard_type != 'calculation':
-						cumulative_total += compute_result
+
+
 				except Exception as e:
 					raise ValidationError('Error..!\n'+str(e))
 
-				print (compute_result)
+				# print (compute_result)
 				
 				qty = 0
 				# if x.costcard_type in ['fixed','calculation']:
@@ -593,6 +606,14 @@ class SaleOrderExt(models.Model):
 
 				if x.computation_qty:
 					qty = compute_qty
+					if compute_result and self.no_of_months and qty > 0:
+						compute_result = compute_result * (self.no_of_months / qty)
+
+				if x.costcard_type != 'calculation':
+					cumulative_total += compute_result + manual_amount_cumulative
+					print (compute_result)
+					print (manual_amount_cumulative)
+
 
 				# order_lines_list.append({
 				manual_check = True
@@ -780,13 +801,15 @@ class SOLineExt(models.Model):
 	@api.onchange('manual_amount')
 	def get_manual_price_unit(self):
 		if self.costcard_type == 'manual' and self.order_id.no_of_months>0:
-			self.product_uom_qty = self.order_id.no_of_months
-			self.price_unit = self.manual_amount/self.order_id.no_of_months
+			if not self.product_uom_qty:
+				self.product_uom_qty = self.order_id.no_of_months
+			self.price_unit = self.manual_amount/self.product_uom_qty
 
 	@api.onchange('product_uom_qty')
 	def get_price_unit_on_uom_change(self):
 		if self.costcard_type == 'manual' and self.order_id.no_of_months>0:
 			self.price_unit = self.manual_amount/self.product_uom_qty
+
 
 	@api.onchange('product_uom')
 	def product_uom_change(self):
