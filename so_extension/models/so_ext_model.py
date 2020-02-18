@@ -174,11 +174,12 @@ class SaleOrderExt(models.Model):
 				for i in range(delta.days + 1):
 					day = x.request_date_from + timedelta(days=i)
 					if day.replace(day=1) == self.date_invoice.replace(day=1):
-						leave_days_list.append(day)
-						if x.request_unit_half:
-							total_leaves += 0.5
-						else:
-							total_leaves += 1
+						if day.weekday() != 4 and day.weekday() != 5:
+							leave_days_list.append(day)
+							if x.request_unit_half:
+								total_leaves += 0.5
+							else:
+								total_leaves += 1
 
 
 				for z in unique_holidays:
