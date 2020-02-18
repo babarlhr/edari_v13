@@ -515,12 +515,15 @@ class SaleOrderExt(models.Model):
 	# @api.onchange('template')
 	def get_order_lines(self):
 
+		manual_amounts = {}
 		# computed_dict = {}
 		for x in self.order_line:
 			if not x.costcard_type == 'manual':
 			#   if x.product_uom_qty > 1:
 			#       computed_dict[x.product_id.id] = x.product_uom_qty
 				x.unlink()
+			else:
+				manual_amounts[x.code] = x.price_unit
 
 		if self.template:
 
@@ -592,7 +595,10 @@ class SaleOrderExt(models.Model):
 					if compute_result and self.no_of_months and qty > 0:
 						# Adjust the unit price based on calculated quantity
 						compute_result = compute_result * self.no_of_months / qty
-				if not x.costcard_type == 'calculation':
+				if x.costcard_type == 'manual':
+					if manual_amounts[x.code]:
+						cumulative_total += manual_amounts[x.code]
+				elif x.costcard_type != 'calculation':
 					cumulative_total += compute_result
 				# order_lines_list.append({
 				manual_check = True
