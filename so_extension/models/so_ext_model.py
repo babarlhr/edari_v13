@@ -517,10 +517,10 @@ class SaleOrderExt(models.Model):
 
 		# computed_dict = {}
 		for x in self.order_line:
-			# if not x.costcard_type == 'manual':
+			if not x.costcard_type == 'manual':
 			#   if x.product_uom_qty > 1:
 			#       computed_dict[x.product_id.id] = x.product_uom_qty
-			x.unlink()
+				x.unlink()
 
 		if self.template:
 
@@ -539,6 +539,7 @@ class SaleOrderExt(models.Model):
 			template_tree_recs = self.env['costcard.template.tree'].search([('tree_link','=',self.template.id)], order='handle')
 			# for x in self.template.template_tree:
 			for x in template_tree_recs:
+				print (x.code)
 				global compute_result
 				global compute_qty
 				
@@ -566,6 +567,8 @@ class SaleOrderExt(models.Model):
 					
 				except Exception as e:
 					raise ValidationError('Error..!\n'+str(e))
+
+				print (compute_result)
 				
 				qty = 0
 				# if x.costcard_type in ['fixed','calculation']:
@@ -646,7 +649,7 @@ class SaleOrderExt(models.Model):
 				# if x.costcard_type == 'fixed':
 				#   code_dict[x.code] = compute_result
 				# else:
-				# # if x.costcard_type == 'fixed':
+				# if x.costcard_type == 'fixed':
 				code_dict[x.code] = qty*compute_result
 				globals().update(code_dict)
 				del compute_result
@@ -731,7 +734,7 @@ class SaleOrderExt(models.Model):
 		after = self.write_date
 		if before != after:
 			self.get_order_lines()
-			self.create_edari_fee()
+			# self.create_edari_fee()
 
 
 		return rec
