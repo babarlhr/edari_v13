@@ -608,6 +608,9 @@ class SaleOrderExt(models.Model):
 
 				if x.computation_qty:
 					qty = compute_qty
+					if compute_result and self.no_of_months and qty > 0:
+						compute_result = compute_result * (self.no_of_months / qty)
+
 
 				# order_lines_list.append({
 				manual_check = True
