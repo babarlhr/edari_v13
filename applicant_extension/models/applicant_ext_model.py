@@ -112,7 +112,7 @@ class HrApplicantExt(models.Model):
 		
 
 	def get_manual_order_lines(self):
-		costcard_recs = self.env['sale.order'].search([('job_pos','=',self.job_id.id),('costcard_type','=','estimate')])
+		costcard_recs = self.env['sale.order'].search([('job_pos','=',self.job_id.id),('costcard_type','=','estimate')])[0]
 
 		# deleting manual lines first
 		for cost in self.cost_card.order_line:
