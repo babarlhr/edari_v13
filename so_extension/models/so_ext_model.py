@@ -515,11 +515,6 @@ class SaleOrderExt(models.Model):
 					if compute_result and self.no_of_months and qty > 0:
 						compute_result = compute_result * (self.no_of_months / qty)
 
-				if x.costcard_type != 'calculation':
-					cumulative_total += compute_result + manual_amount_cumulative
-					print (compute_result)
-					print (manual_amount_cumulative)
-
 
 				# order_lines_list.append({
 				manual_check = True
@@ -532,6 +527,10 @@ class SaleOrderExt(models.Model):
 					# if x.service_name.id in computed_dict:
 					#   qty = computed_dict[x.service_name.id]
 
+					if x.costcard_type != 'calculation':
+						cumulative_total += compute_result
+						print (compute_result)
+						print (manual_amount_cumulative)
 
 					self.order_line.create({
 						'product_id':x.service_name.id,
@@ -550,7 +549,8 @@ class SaleOrderExt(models.Model):
 						'costcard_type':x.costcard_type,
 						'chargable':x.chargable,
 						})
-
+				
+				cumulative_total += manual_amount_cumulative
 					
 
 
