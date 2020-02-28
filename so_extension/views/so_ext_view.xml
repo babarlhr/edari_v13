@@ -44,9 +44,6 @@
                 <field name="monthly_deduction"/>
             </xpath>
 
-            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="before">
-                <field name="handle" invisible="1"/>
-            </xpath>
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
                 <field name="code" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
                 <field name="payment_type" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
@@ -54,6 +51,10 @@
                 <field name="costcard_type" invisible="0"/>
                 <field name="manual_amount" attrs="{'readonly':[('costcard_type','!=','manual')]}"/>
                 <field name="categ_id" invisible="0"/>
+                <field name="recomputable" invisible="0"/>
+            </xpath>
+             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
+                <field name="code" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
             </xpath>
 
             <!-- Making tree fields readonly -->
@@ -71,6 +72,10 @@
             </xpath>
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="attributes">
                 <attribute name="attrs">{'readonly': [('costcard_type','=', 'fixed')]}</attribute>
+            </xpath>
+
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="replace">
+                <field name="price_unit" attrs="{'readonly': [('qty_invoiced', '&gt;', 0), ('costcard_type','=', 'fixed')]}" sum="Total"/>
             </xpath>
 
         </field> 

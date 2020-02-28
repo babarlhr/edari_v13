@@ -15,7 +15,7 @@ class CostCardTemplate(models.Model):
 	
 	active = fields.Boolean(string="Active", default=True)
 
-	template_tree = fields.One2many('costcard.template.tree', 'tree_link')
+	template_tree = fields.One2many('costcard.template.tree', 'tree_link', copy=True)
 
 
 class CostCardTemplateTree(models.Model):
@@ -36,6 +36,7 @@ class CostCardTemplateTree(models.Model):
 	computation_qty = fields.Text(string="Computation Qty")
 	# fixed = fields.Boolean(string="Fixed")
 	based_on_wd = fields.Boolean(string="Based on WD")
+	recomputable = fields.Boolean(string="Recomputable")
 
 	payment_type = fields.Selection([
         ('upfront','Upfront'),

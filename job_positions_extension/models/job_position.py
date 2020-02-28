@@ -104,25 +104,26 @@ class JobsExtension(models.Model):
 		 'domain': [('id','=',self.costcard_template.id)],
 		}
 
+	def so_smart_button(self):
 
-	# def create_so(self):
-	# 	if not self.costcard_template:
-	# 		so_rec = self.env['sale.order'].create({
-	# 			'job_pos':self.id,
-	# 			'template':self.template.id,
-	# 			'partner_id':self.customer.id,
-	# 			'no_of_months':self.contract_length,
-	# 			'per_month_gross_salary':self.budget,
-	# 			'costcard_type':'estimate',
-	# 			})
-	# 		self.costcard_template = so_rec.id
-	# 	else:
-	# 		if self.costcard_template.state == 'draft':
-	# 			self.costcard_template.job_pos = self.id
-	# 			self.costcard_template.template = self.template.id
-	# 			self.costcard_template.partner_id = self.customer.id
-	# 			self.costcard_template.no_of_months = self.contract_length
-	# 			self.costcard_template.per_month_gross_salary = self.budget
-	# 			self.costcard_template.costcard_type = 'estimate'
-	# 		else:
-	# 			raise ValidationError('Cost Card template is not in draft state.')
+		recs = []
+		recs.append(self.costcard_template.id)
+		applications = self.env['hr.applicant'].search([('job_id','=',self.id)])
+		for app in applications:
+			recs.append(app.cost_card.id)
+		rec = self.env['sale.order'].search(['|',('job_pos','=',self.id),('applicant','!=',False)]).ids
+
+		domain = [('id','=',recs)]
+		
+		return {
+		'type': 'ir.actions.act_window',
+		 'name': ('Cost Cards'),
+		 'res_model': 'sale.order',
+		 'view_type': 'form',
+		 'view_mode': 'tree,form',
+		 
+		 'target': 'current',
+		 'domain': domain,
+		 
+		}
+

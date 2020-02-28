@@ -53,6 +53,13 @@ class SaleOrderExt(models.Model):
 		], string='Contract State', default="draft")
 
 
+	def get_handle_sequence(self):
+		if self.template:
+			for lines in self.order_line:
+				costcard_line_rec = self.env['costcard.template.tree'].search([('service_name','=',lines.product_id.id),('tree_link','=',self.template.id)])
+				lines.handle = costcard_line_rec.handle
+
+
 
 	# @api.onchange('contract_start_date','no_of_months')
 	# def get_contract_end_date(self):
@@ -161,7 +168,7 @@ class SaleOrderExt(models.Model):
 			if not holiday_index.day in unique_holidays:
 				unique_holidays.append(holiday_index.date)
 
-		leaves = self.env['hr.leave'].search([('employee_id','=',self.employee.id)])
+		leaves = self.env['hr.leave'].search([('employee_id','=',self.employee.id),('state','=','validate')])
 		total_leaves = 0
 		for x in leaves:
 			per_request_leaves = 0
@@ -204,10 +211,16 @@ class SaleOrderExt(models.Model):
 	############### Function to calculate leave balance total ENDS  #############
 
 	############## Function to calculate Holidays total START ##############
-	def calculate_holidays(self):
+	def calculate_holidays(self,interval_type):
 		holidays = 0
 
-		holiday_rec = self.env['custom.holiday.tree'].search([('tree_link.year','=',str(self.date_invoice.year))])
+		if interval_type == "start":
+			holiday_rec = self.env['custom.holiday.tree'].search([('tree_link.year','=',str(self.date_invoice.year)),('date','>=',self.contract_start_date)])
+		elif interval_type == "end":
+			holiday_rec = self.env['custom.holiday.tree'].search([('tree_link.year','=',str(self.date_invoice.year)),('date','<=',self.contract_end_date)])
+			print (holiday_rec)
+		else:
+			holiday_rec = self.env['custom.holiday.tree'].search([('tree_link.year','=',str(self.date_invoice.year))])
 		for y in holiday_rec:
 			if self.date_invoice.replace(day=1) == y.date.replace(day=1):
 				if self.leave_type == "two_days":
@@ -330,6 +343,40 @@ class SaleOrderExt(models.Model):
 		return days_to_deduct
 	################# Calculating salary according to days ENDS #################
 
+
+	def recompute_func(self, line, code_dict):
+		costcard_template_rec = self.env['costcard.template.tree'].search([('service_name','=',line.product_id.id),('tree_link','=',self.template.id),('code','=',line.code)])
+
+		print (code_dict)
+
+		global compute_result
+		global compute_qty
+		
+		compute_result = 0
+		compute_qty = 0
+
+		salary = self.per_month_gross_salary
+		no_months = self.no_of_months
+		edari_service_percent = self.percentage
+		cumulative_total = 0
+		edari_fee = 0
+
+		if costcard_template_rec.computation_formula:
+			expression = 'global compute_result;\n'+costcard_template_rec.computation_formula
+		else:
+			expression = 'global compute_result;\n'
+
+		try:
+			exec(expression)
+			code_dict[line.code] = compute_result
+
+			globals().update(code_dict)
+		except Exception as e:
+			raise ValidationError('Error..!\n'+str(e))
+
+		return compute_result
+
+
 	def create_invoice(self):
 		invoice_vals_list = []
 		invoice_vals = self.prepare_invoice()
@@ -362,6 +409,7 @@ class SaleOrderExt(models.Model):
 		# divisor and working_days variable are used for finding invoice line amount
 		divisor = self.per_day_devisor()
 		working_days = divisor
+		month_interval = "regular"
 		if starting_month == True:
 			t_date = self.contract_start_date
 			# divisor = self.per_day_devisor(t_date)
@@ -375,14 +423,17 @@ class SaleOrderExt(models.Model):
 
 		no_of_holidays = 0
 		if self.work_days_type == "actual_working_days":
-			no_of_holidays = self.calculate_holidays()
+			no_of_holidays = self.calculate_holidays(month_interval)
+			print ("----------------------------------------")
+			print (no_of_holidays)
+			print ("----------------------------------------")
 			divisor -= no_of_holidays
 
 
 		working_days -= (self.calculate_leave_balance() + no_of_holidays)
 
 
-
+		code_dict_new = {}
 		for line in self.order_line:
 			if line.price_unit != 0:
 				amount = 0
@@ -392,11 +443,14 @@ class SaleOrderExt(models.Model):
 					amount = line.price_subtotal
 
 				if not line.payment_type in lines_not_to_add:
+					print (line.code)
+
 
 					# qty in months check
 					start_plus_qty = self.contract_start_date+(relativedelta(months = int(line.product_uom_qty-1)))
 
 					if self.date_invoice.replace(day=1) <= start_plus_qty.replace(day=1):
+						print ("==========================================")
 
 						if line.based_on_wd:
 							per_day = amount/divisor
@@ -405,16 +459,32 @@ class SaleOrderExt(models.Model):
 
 						# Calculate leave balance
 						balance = amount
+						recompute_result = 0
+						code_dict_new[line.code] = balance
+						globals().update(code_dict_new)
+						if line.recomputable:
+							recompute_result = self.recompute_func(line, code_dict_new)							
+							balance = recompute_result
 						
 						invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name))
 						credit_sum += balance
-				# if line.product_id == edari_product.id:
-				# 	invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(credit_sum,'Edari Service Fee'))
-		#==========================================================================#
+					else:
+						balance = 0
+						code_dict_new[line.code] = balance
+						globals().update(code_dict_new)
 
+				
+				# setting those variables which are not falling in date limit as zero
+				else:
+					print (line.code)
+					balance = 0
+					code_dict_new[line.code] = balance
+					globals().update(code_dict_new)
+			else:
+				balance = 0
+				code_dict_new[line.code] = balance
+				globals().update(code_dict_new)
 
-		# invoice_vals['invoice_line_ids'].append((0, 0, line.prepare_invoice_line()))
-		# invoice_vals['sale_order_id'] = self.id
 		
 		if not invoice_vals['invoice_line_ids']:
 			raise UserError('There is no invoiceable line. If a product has a Delivered quantities invoicing policy, please make sure that a quantity has been delivered.')
@@ -425,8 +495,6 @@ class SaleOrderExt(models.Model):
 		moves = self.env['account.move'].with_context(default_type='out_invoice').create(invoice_vals_list)
 
 	# new way of creating invoice ENDS
-
-
 
 
 	# @api.onchange('template')
@@ -544,6 +612,7 @@ class SaleOrderExt(models.Model):
 						'based_on_wd':x.based_on_wd,
 						'payment_type':x.payment_type,
 						'code':x.code,
+						'recomputable':x.recomputable,
 						'handle':x.handle,
 						'categ_id':x.service_name.categ_id.id,
 						'name':x.code or "",
@@ -611,6 +680,7 @@ class SaleOrderExt(models.Model):
 			else:
 				new_record.version = "V1"
 				print (new_record.version)
+		new_record.get_handle_sequence()
 
 		# new_record.get_contract_end_date()
 		new_record.get_order_lines()
@@ -634,6 +704,7 @@ class SaleOrderExt(models.Model):
 		after = self.write_date
 		if before != after:
 			self.get_order_lines()
+			self.get_handle_sequence()
 			# self.create_edari_fee()
 
 
@@ -650,6 +721,7 @@ class SOLineExt(models.Model):
 	manual_amount = fields.Float(string="Manual Amount")
 	categ_id = fields.Many2one('product.category', string="Product Category")
 	based_on_wd = fields.Boolean(string="Based on WD")
+	recomputable = fields.Boolean(string="Recomputable")
 
 
 
