@@ -129,17 +129,20 @@ class HrApplicantExt(models.Model):
 				self.cost_card.order_line.create({
 					'product_id':x.product_id.id,
 					'order_id':self.cost_card.id,
-					# 'product_uom_qty':x.product_uom_qty,
+					'product_uom_qty':x.product_uom_qty,
 					'price_unit':x.price_unit,
 					# 'leave_type':x.leave_type.id,
 					# 'leave_deductable':x.leave_deductable,
-					# 'leave_deduct_type':x.leave_deduct_type,
+					'based_on_wd':x.based_on_wd,
+					'payment_type':x.payment_type,
+					'manual_amount':x.manual_amount,
 					'code':x.code,
 					'categ_id':x.categ_id.id,
 					'name':x.code or "",
 					'costcard_type':x.costcard_type,
 					'chargable':x.chargable,
 					})
+		self.cost_card.get_handle_sequence()
 
 	def approve_btn(self):
 		recs = self.env['hr.recruitment.stage'].search([('name','=','Approved')])

@@ -528,6 +528,9 @@ class SaleOrderExt(models.Model):
 							manual_amount_cumulative = lines.price_unit
 
 				print (x.code)
+				print ("--------------------------------")
+				print (manual_amount_cumulative)
+				print ("--------------------------------")
 				global compute_result
 				global compute_qty
 				
@@ -563,16 +566,16 @@ class SaleOrderExt(models.Model):
 				
 				qty = 0
 				# if x.costcard_type in ['fixed','calculation']:
-				if x.costcard_type in ['manual']:
-					qty = 1
+				# if x.costcard_type in ['manual']:
+				# 	qty = 1
 
 
 				
 				# if x.costcard_type:
 				# if x.costcard_type == 'manual':
-				else:
+				# else:
 				#   # Changed to get date from compute date field
-					qty = self.no_of_months
+				qty = self.no_of_months
 					
 					# compute_result = 0
 				if x.payment_type in ['upfront','end'] and x.costcard_type != 'manual':
