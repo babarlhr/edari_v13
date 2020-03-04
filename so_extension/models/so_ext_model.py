@@ -344,10 +344,9 @@ class SaleOrderExt(models.Model):
 	################# Calculating salary according to days ENDS #################
 
 
-	def recompute_func(self, line, code_dict):
+	def recompute_func(self, line, code_dict,cumulative_total):
 		costcard_template_rec = self.env['costcard.template.tree'].search([('service_name','=',line.product_id.id),('tree_link','=',self.template.id),('code','=',line.code)])
 
-		print (code_dict)
 
 		global compute_result
 		global compute_qty
@@ -358,7 +357,7 @@ class SaleOrderExt(models.Model):
 		salary = self.per_month_gross_salary
 		no_months = self.no_of_months
 		edari_service_percent = self.percentage
-		cumulative_total = 0
+		# cumulative_total = 0
 		edari_fee = 0
 
 		if costcard_template_rec.computation_formula:
@@ -422,15 +421,13 @@ class SaleOrderExt(models.Model):
 			working_days = self.calculate_working_days(t_date, month_interval)
 
 		no_of_holidays = 0
+		no_of_holidays_wd = 0
 		if self.work_days_type == "actual_working_days":
-			no_of_holidays = self.calculate_holidays(month_interval)
-			print ("----------------------------------------")
-			print (no_of_holidays)
-			print ("----------------------------------------")
+			no_of_holidays = self.calculate_holidays()
+			no_of_holidays_wd = self.calculate_holidays(month_interval)
 			divisor -= no_of_holidays
 
-
-		working_days -= (self.calculate_leave_balance() + no_of_holidays)
+		working_days -= (self.calculate_leave_balance() + no_of_holidays_wd)
 
 
 		code_dict_new = {}
@@ -450,7 +447,7 @@ class SaleOrderExt(models.Model):
 					start_plus_qty = self.contract_start_date+(relativedelta(months = int(line.product_uom_qty-1)))
 
 					if self.date_invoice.replace(day=1) <= start_plus_qty.replace(day=1):
-						print ("==========================================")
+					
 
 						if line.based_on_wd:
 							per_day = amount/divisor
@@ -463,7 +460,14 @@ class SaleOrderExt(models.Model):
 						code_dict_new[line.code] = balance
 						globals().update(code_dict_new)
 						if line.recomputable:
-							recompute_result = self.recompute_func(line, code_dict_new)							
+							cumulative_total = 0
+							for rec in self.order_line:
+								if rec.code == line.code:
+									break
+								cumulative_total += code_dict_new[rec.code]
+
+
+							recompute_result = self.recompute_func(line, code_dict_new,cumulative_total)							
 							balance = recompute_result
 						
 						invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name))
@@ -521,16 +525,23 @@ class SaleOrderExt(models.Model):
 			template_tree_recs = self.env['costcard.template.tree'].search([('tree_link','=',self.template.id)], order='handle')
 			# for x in self.template.template_tree:
 			for x in template_tree_recs:
+				cumulative_check = True
 				manual_amount_cumulative = 0
-				if x.costcard_type == "manual":
-					for lines in self.order_line:
-						if x.code == lines.code:
+				for lines in self.order_line:
+					if x.code == lines.code:
+						if lines.costcard_type == "manual":
+							cumulative_check = False
 							manual_amount_cumulative = lines.price_unit
+				if x.costcard_type == "calculation":
+					cumulative_check = False
 
-				print (x.code)
-				print ("--------------------------------")
-				print (manual_amount_cumulative)
-				print ("--------------------------------")
+				# manual_amount_cumulative = 0
+				# if x.costcard_type == "manual":
+				# 	for lines in self.order_line:
+				# 		if x.code == lines.code:
+				# 			manual_amount_cumulative = lines.price_unit
+
+
 				global compute_result
 				global compute_qty
 				
@@ -586,10 +597,10 @@ class SaleOrderExt(models.Model):
 					if compute_result and self.no_of_months and qty > 0:
 						compute_result = compute_result * (self.no_of_months / qty)
 
-				if x.costcard_type != 'calculation':
-					cumulative_total += compute_result + manual_amount_cumulative
-					print (compute_result)
-					print (manual_amount_cumulative)
+				if cumulative_check == True:
+					cumulative_total += compute_result 
+
+				cumulative_total += manual_amount_cumulative
 
 
 				# order_lines_list.append({
@@ -626,7 +637,7 @@ class SaleOrderExt(models.Model):
 					
 
 
-				code_dict[x.code] = qty*compute_result
+				code_dict[x.code] = compute_result
 				globals().update(code_dict)
 				del compute_result
 				del compute_qty
