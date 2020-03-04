@@ -423,7 +423,7 @@ class SaleOrderExt(models.Model):
 		no_of_holidays = 0
 		no_of_holidays_wd = 0
 		if self.work_days_type == "actual_working_days":
-			no_of_holidays = self.calculate_holidays()
+			no_of_holidays = self.calculate_holidays("Regular")
 			no_of_holidays_wd = self.calculate_holidays(month_interval)
 			divisor -= no_of_holidays
 
