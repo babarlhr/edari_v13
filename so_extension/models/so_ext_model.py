@@ -13,7 +13,7 @@ import calendar
 class SaleOrderExt(models.Model):
 	_inherit='sale.order'
 
-	no_of_months = fields.Integer(string="No of Months")
+	no_of_months = fields.Float(string="No of Months")
 	per_month_gross_salary = fields.Float(string="Per Month Gross Salary")
 	template = fields.Many2one('costcard.template', string="Template")
 	job_pos = fields.Many2one('hr.job', string="Job Position")
