@@ -11,6 +11,11 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="type">form</field> 
         <field name="arch" type="xml">
+
+
+            <xpath expr="//field[@name='order_line']/tree" position="attributes">
+                <attribute name="editable">top</attribute>
+            </xpath>
             
             <xpath expr="//header" position="inside">
                 <button name="get_order_lines" string="Get Order Lines" type="object" class="oe_highlight"/>
@@ -34,7 +39,7 @@
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <!-- <field name="interval"/> -->
                 <field name="work_days_type"/>
-                <field name="leave_type"/>
+                <field name="leave_type" attrs="{'invisible':[('work_days_type','!=','actual_working_days')]}"/>
                 <field name="contract_start_date"/>
                 <field name="contract_end_date"/>
                 <field name="date_invoice"/>

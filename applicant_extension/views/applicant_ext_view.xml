@@ -42,6 +42,10 @@
                     <attribute name="attrs">{'invisible':[('approve_stage','=', False)]}</attribute>
                 </xpath>
 
+                <xpath expr="//button[@name='approve_btn']" position="attributes">
+                    <attribute name="attrs">{'invisible':[('cost_card','=', False)]}</attribute>
+                </xpath>
+
                 <!-- <xpath expr="//field[@name='name']" position="replace">
                     <field name="name" nolabel="1" invisible="1"/>
                 </xpath> -->
@@ -58,6 +62,7 @@
         </record>
 
     <!--********************* [] *********************-->
+
     
 </data>
 </odoo>

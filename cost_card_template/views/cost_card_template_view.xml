@@ -21,14 +21,16 @@
                     </header> -->
 
                     <sheet>
-                        <group>
-                            <group>
+                        <group name="top">
+                            <group name = "left">
                                 <field name="template_name" required="1"/>
                                 <field name="active"/>
                             </group>
-                            <group>
+                            <group name="right">
                                 <field name="job_position" options="{'no_create_edit':True}"/>
                                 <field name="customer" options="{'no_create_edit':True}"/>
+                                <field name="working_days_type"/>
+                                <field name="leave_type"/>
                             </group>
                         </group>
                         <field name="template_tree" options="{'reload_on_button': true}">

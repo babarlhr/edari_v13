@@ -14,6 +14,8 @@ class CostCardTemplate(models.Model):
 	customer = fields.Many2one('res.partner', string="Customer")
 	
 	active = fields.Boolean(string="Active", default=True)
+	working_days_type = fields.Char(string="Working Days Type")
+	leave_type = fields.Char(string="Leave Type")
 
 	template_tree = fields.One2many('costcard.template.tree', 'tree_link', copy=True)
 

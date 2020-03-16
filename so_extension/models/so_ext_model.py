@@ -23,7 +23,7 @@ class SaleOrderExt(models.Model):
 	contract_end_date = fields.Date(string="Contract End Date")
 	date_invoice = fields.Date(string="Invoice Date")
 	invoice_amount = fields.Float(string="Invoice Amount")
-	percentage = fields.Float(string="Percentage %")
+	percentage = fields.Float(string="Percentage %" ,digits=(4,4))
 	invoice_id = fields.Many2one('account.move', string="Invoice")
 	applicant = fields.Many2one('hr.applicant', string="Applicant")
 	employee = fields.Many2one('hr.employee', string="Employee")

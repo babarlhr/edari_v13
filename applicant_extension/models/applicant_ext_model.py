@@ -14,9 +14,9 @@ class HrApplicantExt(models.Model):
 
 	# @api.depends('cost_card')
 	# def _compute_salary(self):
-	# 	print ("DDDDDDDDDDDDDDDDDDDDDDDDDDd")
-	# 	if self.cost_card:
-	# 		self.salary_expected = self.cost_card.per_month_gross_salary
+	#   print ("DDDDDDDDDDDDDDDDDDDDDDDDDDd")
+	#   if self.cost_card:
+	#       self.salary_expected = self.cost_card.per_month_gross_salary
 			
 	# salary_expected = fields.Float(string="Expected Salary", compute='_compute_salary', store=True)
 
@@ -47,33 +47,152 @@ class HrApplicantExt(models.Model):
 
 
 
+	# def create_employee_from_applicant(self):
+
+	#   print ("1111111111111111111111111")
+	#   rec = super(HrApplicantExt, self).create_employee_from_applicant()
+	#   emp_rec = self.env['hr.employee'].search([('')])
+	#   self.emp_id.customer = self.partner_id.id
+	#   print ("1111111111111111111111111")
+	#   return rec
+
+
+
+	# def create_employee_from_applicant(self):
+	#   """ Create an hr.employee from the hr.applicants """
+	#   employee = False
+	#   for applicant in self:
+	#       contact_name = False
+	#       if applicant.partner_id:
+	#           address_id = applicant.partner_id.address_get(['contact'])['contact']
+	#           contact_name = applicant.partner_id.display_name
+	#       else:
+	#           if not applicant.partner_name:
+	#               raise UserError(_('You must define a Contact Name for this applicant.'))
+	#           new_partner_id = self.env['res.partner'].create({
+	#               'is_company': False,
+	#               'name': applicant.partner_name,
+	#               'email': applicant.email_from,
+	#               'phone': applicant.partner_phone,
+	#               'mobile': applicant.partner_mobile
+	#           })
+	#           address_id = new_partner_id.address_get(['contact'])['contact']
+	#       if applicant.partner_name or contact_name:
+	#           print ("11111111111111111111111")
+	#           print (applicant.partner_id)
+	#           employee = self.env['hr.employee'].create({
+	#               'name': applicant.partner_name or contact_name,
+	#               'job_id': applicant.job_id.id or False,
+	#               'job_title': applicant.job_id.name,
+	#               # below line added by jaffar
+	#               # 'customer': applicant.partner_id.id,
+	#               'customer': new_partner_id.id,
+
+	#               'address_home_id': address_id,
+	#               'department_id': applicant.department_id.id or False,
+	#               'address_id': applicant.company_id and applicant.company_id.partner_id
+	#                       and applicant.company_id.partner_id.id or False,
+	#               'work_email': applicant.department_id and applicant.department_id.company_id
+	#                       and applicant.department_id.company_id.email or False,
+	#               'work_phone': applicant.department_id and applicant.department_id.company_id
+	#                       and applicant.department_id.company_id.phone or False})
+	#           applicant.write({'emp_id': employee.id})
+	#           if applicant.job_id:
+	#               applicant.job_id.write({'no_of_hired_employee': applicant.job_id.no_of_hired_employee + 1})
+	#               applicant.job_id.message_post(
+	#                   body=_('New Employee %s Hired') % applicant.partner_name if applicant.partner_name else applicant.name,
+	#                   subtype="hr_recruitment.mt_job_applicant_hired")
+	#           applicant.message_post_with_view(
+	#               'hr_recruitment.applicant_hired_template',
+	#               values={'applicant': applicant},
+	#               subtype_id=self.env.ref("hr_recruitment.mt_applicant_hired").id)
+
+	#   employee_action = self.env.ref('hr.open_view_employee_list')
+	#   dict_act_window = employee_action.read([])[0]
+	#   dict_act_window['context'] = {'form_view_initial_mode': 'edit'}
+	#   dict_act_window['res_id'] = employee.id
+	#   return dict_act_window
+
+
+	def create_employee_from_applicant(self):
+		""" Create an hr.employee from the hr.applicants """
+		employee = False
+		for applicant in self:
+			contact_name = False
+			if applicant.partner_id:
+				address_id = applicant.partner_id.address_get(['contact'])['contact']
+				contact_name = applicant.partner_id.display_name
+			else:
+				if not applicant.partner_name:
+					raise UserError(_('You must define a Contact Name for this applicant.'))
+				new_partner_id = self.env['res.partner'].create({
+					'is_company': False,
+					'name': applicant.partner_name,
+					'email': applicant.email_from,
+					'phone': applicant.partner_phone,
+					'mobile': applicant.partner_mobile
+				})
+				address_id = new_partner_id.address_get(['contact'])['contact']
+			if applicant.partner_name or contact_name:
+				employee = self.env['hr.employee'].create({
+					'name': applicant.partner_name or contact_name,
+					'job_id': applicant.job_id.id or False,
+					'job_title': applicant.job_id.name,
+					'address_home_id': address_id,
+					'customer': applicant.job_id.customer.id,
+					'department_id': applicant.department_id.id or False,
+					'address_id': applicant.company_id and applicant.company_id.partner_id
+							and applicant.company_id.partner_id.id or False,
+					'work_email': applicant.department_id and applicant.department_id.company_id
+							and applicant.department_id.company_id.email or False,
+					'work_phone': applicant.department_id and applicant.department_id.company_id
+							and applicant.department_id.company_id.phone or False})
+				applicant.write({'emp_id': employee.id})
+				if applicant.job_id:
+					applicant.job_id.write({'no_of_hired_employee': applicant.job_id.no_of_hired_employee + 1})
+					applicant.job_id.message_post(
+						body=('New Employee %s Hired') % applicant.partner_name if applicant.partner_name else applicant.name,
+						subtype="hr_recruitment.mt_job_applicant_hired")
+				applicant.message_post_with_view(
+					'hr_recruitment.applicant_hired_template',
+					values={'applicant': applicant},
+					subtype_id=self.env.ref("hr_recruitment.mt_applicant_hired").id)
+
+		employee_action = self.env.ref('hr.open_view_employee_list')
+		dict_act_window = employee_action.read([])[0]
+		dict_act_window['context'] = {'form_view_initial_mode': 'edit'}
+		dict_act_window['res_id'] = employee.id
+		return dict_act_window
+
+
+
 	# def create_so(self):
-	# 	rec = self.env['sale.order'].search([('applicant','=',self.id)]).ids
-	# 	domain = [('id','in',rec)]
-	# 	# view_id_tree = self.env['ir.ui.view'].search([('name','=',"semester.tree")])department_id=self.department_id.id)
-	# 	return {
-	# 	'type': 'ir.actions.act_window',
-	# 	 'name': ('Job'),
-	# 	 'res_model': 'sale.order',
-	# 	 'view_type': 'form',
-	# 	 'view_mode': 'tree,form',
-	# 	 # 'views': [(view_id_tree[0].id, 'tree'),(False,'form')],
-	# 	 'context': {
-	# 		'default_candidate_name':self.partner_name,
-	# 		# 'partner_id':self.job_id.customer.id,
-	# 		'default_applicant':self.id,
-	# 		'default_contract':self.contract.id,
-	# 		'default_contract_start_date':self.availability,
-	# 		'default_per_month_gross_salary':self.salary_expected,
-	# 		'default_job_pos':self.job_id.id,
-	# 		'default_template':self.job_id.template.id,
-	# 		'default_partner_id':self.job_id.customer.id,
-	# 		'default_no_of_months':int(self.job_id.contract_length),
-	# 	 },
-	# 	 'view_id ref=" sale.view_quotation_tree_with_onboarding"': '',
-	# 	 'target': 'current',
-	# 	 'domain': domain,
-	# 	}
+	#   rec = self.env['sale.order'].search([('applicant','=',self.id)]).ids
+	#   domain = [('id','in',rec)]
+	#   # view_id_tree = self.env['ir.ui.view'].search([('name','=',"semester.tree")])department_id=self.department_id.id)
+	#   return {
+	#   'type': 'ir.actions.act_window',
+	#    'name': ('Job'),
+	#    'res_model': 'sale.order',
+	#    'view_type': 'form',
+	#    'view_mode': 'tree,form',
+	#    # 'views': [(view_id_tree[0].id, 'tree'),(False,'form')],
+	#    'context': {
+	#       'default_candidate_name':self.partner_name,
+	#       # 'partner_id':self.job_id.customer.id,
+	#       'default_applicant':self.id,
+	#       'default_contract':self.contract.id,
+	#       'default_contract_start_date':self.availability,
+	#       'default_per_month_gross_salary':self.salary_expected,
+	#       'default_job_pos':self.job_id.id,
+	#       'default_template':self.job_id.template.id,
+	#       'default_partner_id':self.job_id.customer.id,
+	#       'default_no_of_months':int(self.job_id.contract_length),
+	#    },
+	#    'view_id ref=" sale.view_quotation_tree_with_onboarding"': '',
+	#    'target': 'current',
+	#    'domain': domain,
+	#   }
 	def create_so(self):
 		if not self.cost_card:
 			so_rec = self.env['sale.order'].create({
@@ -81,7 +200,7 @@ class HrApplicantExt(models.Model):
 				'applicant':self.id,
 				'contract':self.contract.id,
 				# 'contract_start_date':self.availability,
-				'per_month_gross_salary':self.salary_expected,
+				'per_month_gross_salary':self.salary_proposed,
 				'job_pos':self.job_id.id,
 				'template':self.job_id.template.id,
 				'costcard_type':'cost_card',
@@ -99,7 +218,7 @@ class HrApplicantExt(models.Model):
 				self.cost_card.applicant = self.id
 				self.cost_card.contract = self.contract.id
 				# self.cost_card.contract_start_date = self.availability,
-				self.cost_card.per_month_gross_salary = self.salary_expected
+				self.cost_card.per_month_gross_salary = self.salary_proposed
 				self.cost_card.job_pos = self.job_id.id
 				self.cost_card.template = self.job_id.template.id
 				self.cost_card.partner_id = self.job_id.customer.id
@@ -170,7 +289,6 @@ class HrApplicantExt(models.Model):
 			})
 
 		self.contract = contract_rec.id
-
 
 
 
