@@ -105,6 +105,8 @@ class JobsExtension(models.Model):
 				'template':self.template.id,
 				'partner_id':self.customer.id,
 				'no_of_months':self.contract_length,
+				'work_days_type':self.work_days_type,
+				'leave_type':self.leave_type,
 				'per_month_gross_salary':self.estimated_gross_salary,
 				'percentage':self.customer.default_edari_percentage,
 				'costcard_type':'estimate',
@@ -118,6 +120,8 @@ class JobsExtension(models.Model):
 				self.costcard_template.template = self.template.id
 				self.costcard_template.partner_id = self.customer.id
 				self.costcard_template.no_of_months = self.contract_length
+				self.costcard_template.work_days_type = self.work_days_type
+				self.costcard_template.leave_type = self.leave_type
 				self.costcard_template.per_month_gross_salary = self.estimated_gross_salary
 				self.costcard_template.percentage = self.customer.default_edari_percentage
 				self.costcard_template.costcard_type = 'estimate'
