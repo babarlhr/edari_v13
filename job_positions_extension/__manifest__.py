@@ -14,7 +14,7 @@
 
     # always loaded
     'data': [
-        # 'views/job_extension.xml',
+        'views/job_extension.xml',
         'views/job_type_extension.xml',
 	'views/visa_entity_view.xml',
     ],
