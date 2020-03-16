@@ -22,6 +22,17 @@ class JobsExtension(models.Model):
 	costcard_template = fields.Many2one('sale.order', string="Cost Card")
 	working_days_type = fields.Char(string="Working Days Type")
 	leave_type = fields.Char(string="Leave Type")
+
+	work_days_type = fields.Selection([
+		('twenty_two_days','22 Days'),
+		('calender_days','Calender Days'),
+		('actual_working_days','Actual Working Days'),
+		('twenty_six_days','26 Days'),
+		], string='Work Days Type', default="twenty_two_days", required = True)
+	leave_type = fields.Selection([
+		('one_day','One Day / Week'),
+		('two_days','Two Days / Week'),
+		], string='Leave Type', default="two_days")
 	# annual_leaves = fields.Float(string="Annual Leaves")
 	# sick_leaves = fields.Float(string="Sick Leaves")
 	template = fields.Many2one('costcard.template', string="Template")
@@ -50,7 +61,7 @@ class JobsExtension(models.Model):
 
 	@api.onchange('template')
 	def get_work_leave_type(self):
-		self.working_days_type = self.template.working_days_type or None
+		self.work_days_type = self.template.work_days_type or None
 		self.leave_type = self.template.leave_type or None
 
 

@@ -51,7 +51,7 @@
                 <field name="probation_period"/>
                 <field name="notice_period"/>
                 <field name="working_days"/>
-                <field name="working_days_type"/>
+                <field name="work_days_type"/>
                 <field name="leave_type"/>
             </xpath>
         </field> 
