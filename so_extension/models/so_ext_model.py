@@ -21,6 +21,7 @@ class SaleOrderExt(models.Model):
 	# interval = fields.Integer(string="Interval")
 	contract_start_date = fields.Date(string="Contract Start Date")
 	contract_end_date = fields.Date(string="Contract End Date")
+	actual_start_date = fields.Date(string="Actual Start Date")
 	date_invoice = fields.Date(string="Invoice Date")
 	invoice_amount = fields.Float(string="Invoice Amount")
 	percentage = fields.Float(string="Percentage %" ,digits=(4,4))
@@ -31,6 +32,8 @@ class SaleOrderExt(models.Model):
 	candidate_name = fields.Char(string="Candidate Name")
 	month_days_deduction = fields.Boolean(string="Month Days Deduction")
 	monthly_deduction = fields.Boolean(string="Monthly Deduction")
+	applicant_approve_check = fields.Boolean(string="Approved Applicant")
+	budget = fields.Float(string="Budget", related="job_pos.budget")
 	costcard_type = fields.Selection([
 		('estimate','Estimate'),
 		('cost_card','Cost Card'),
@@ -51,6 +54,13 @@ class SaleOrderExt(models.Model):
 		('close','Expired'),
 		('cancel','Cancelled'),
 		], string='Contract State', default="draft")
+
+
+
+	def approve_applicant(self):
+		if self.applicant:
+			self.applicant.approve_btn()
+			self.applicant_approve_check = True
 
 
 	def get_handle_sequence(self):
@@ -720,6 +730,8 @@ class SaleOrderExt(models.Model):
 			self.get_order_lines()
 			self.get_handle_sequence()
 			# self.create_edari_fee()
+			if self.actual_start_date:
+				self.contract.date_start = self.actual_start_date
 
 
 		return rec

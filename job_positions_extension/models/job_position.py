@@ -61,8 +61,8 @@ class JobsExtension(models.Model):
 
 	@api.onchange('template')
 	def get_work_leave_type(self):
-		self.work_days_type = self.template.work_days_type or None
-		self.leave_type = self.template.leave_type or None
+		self.work_days_type = self.template.work_days_type
+		self.leave_type = self.template.leave_type
 
 
 
@@ -132,7 +132,7 @@ class JobsExtension(models.Model):
 
 		return {
 		'type': 'ir.actions.act_window',
-		 'name': ('Sale Orders'),
+		 'name': ('Cost Card'),
 		 'res_model': 'sale.order',
 		 'view_type': 'form',
 		 'view_mode': 'tree,form',

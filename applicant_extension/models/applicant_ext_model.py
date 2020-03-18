@@ -138,6 +138,8 @@ class HrApplicantExt(models.Model):
 					'name': applicant.partner_name or contact_name,
 					'job_id': applicant.job_id.id or False,
 					'job_title': applicant.job_id.name,
+					'cost_card': applicant.cost_card.id,
+					'wage': applicant.cost_card.per_month_gross_salary,
 					'address_home_id': address_id,
 					'customer': applicant.job_id.customer.id,
 					'department_id': applicant.department_id.id or False,
@@ -166,33 +168,33 @@ class HrApplicantExt(models.Model):
 
 
 
-	# def create_so(self):
-	#   rec = self.env['sale.order'].search([('applicant','=',self.id)]).ids
-	#   domain = [('id','in',rec)]
-	#   # view_id_tree = self.env['ir.ui.view'].search([('name','=',"semester.tree")])department_id=self.department_id.id)
-	#   return {
-	#   'type': 'ir.actions.act_window',
-	#    'name': ('Job'),
-	#    'res_model': 'sale.order',
-	#    'view_type': 'form',
-	#    'view_mode': 'tree,form',
-	#    # 'views': [(view_id_tree[0].id, 'tree'),(False,'form')],
-	#    'context': {
-	#       'default_candidate_name':self.partner_name,
-	#       # 'partner_id':self.job_id.customer.id,
-	#       'default_applicant':self.id,
-	#       'default_contract':self.contract.id,
-	#       'default_contract_start_date':self.availability,
-	#       'default_per_month_gross_salary':self.salary_expected,
-	#       'default_job_pos':self.job_id.id,
-	#       'default_template':self.job_id.template.id,
-	#       'default_partner_id':self.job_id.customer.id,
-	#       'default_no_of_months':int(self.job_id.contract_length),
-	#    },
-	#    'view_id ref=" sale.view_quotation_tree_with_onboarding"': '',
-	#    'target': 'current',
-	#    'domain': domain,
-	#   }
+	def create_so(self):
+	  rec = self.env['sale.order'].search([('applicant','=',self.id)]).ids
+	  domain = [('id','in',rec)]
+	  # view_id_tree = self.env['ir.ui.view'].search([('name','=',"semester.tree")])department_id=self.department_id.id)
+	  return {
+	  'type': 'ir.actions.act_window',
+	   'name': ('Job'),
+	   'res_model': 'sale.order',
+	   'view_type': 'form',
+	   'view_mode': 'tree,form',
+	   # 'views': [(view_id_tree[0].id, 'tree'),(False,'form')],
+	   'context': {
+	      'default_candidate_name':self.partner_name,
+	      # 'partner_id':self.job_id.customer.id,
+	      'default_applicant':self.id,
+	      'default_contract':self.contract.id,
+	      'default_contract_start_date':self.availability,
+	      'default_per_month_gross_salary':self.salary_expected,
+	      'default_job_pos':self.job_id.id,
+	      'default_template':self.job_id.template.id,
+	      'default_partner_id':self.job_id.customer.id,
+	      'default_no_of_months':int(self.job_id.contract_length),
+	   },
+	   'view_id ref=" sale.view_quotation_tree_with_onboarding"': '',
+	   'target': 'current',
+	   'domain': domain,
+	  }
 	def create_so(self):
 		if not self.cost_card:
 			so_rec = self.env['sale.order'].create({
@@ -228,6 +230,22 @@ class HrApplicantExt(models.Model):
 				self.cost_card.create_edari_fee()
 			else:
 				raise Warning('Cost Card is not in quotation state.')
+
+		domain = [('id','=',self.cost_card.id)]
+		return {
+			  'type': 'ir.actions.act_window',
+			   'name': ('Job'),
+			   'res_model': 'sale.order',
+			   'view_type': 'form',
+			   'view_mode': 'tree,form',
+			   # 'views': [(view_id_tree[0].id, 'tree'),(False,'form')],
+			   'context': {
+			      
+			   },
+			   'view_id ref=" sale.view_quotation_tree_with_onboarding"': '',
+			   'target': 'current',
+			   'domain': domain,
+			  }
 		
 
 	def get_manual_order_lines(self):

@@ -14,14 +14,14 @@
             <field name="arch" type="xml">
                 
                 <xpath expr="//field[@name='type_id']" position="after">
-                    <field name="cost_card" options="{'no_edit_create':True}"/>
+                    <field name="cost_card" options="{'no_edit_create':True}" readonly="1"/>
                     <field name="approve_stage" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='availability']" position="after">
                     <field name="payroll_structure" options="{'no_edit_create':True}"/>
                 </xpath>
                 <xpath expr="//field[@name='department_id']" position="after">
-                    <field name="contract" options="{'no_edit_create':True}"/>
+                    <field name="contract" options="{'no_edit_create':True}" readonly="1"/>
                 </xpath>
                 <xpath expr="//header" position="inside">
                     <!-- <button name="create_so" string="Create Cost Card" type="object" class='oe_highlight'/> -->
@@ -43,7 +43,8 @@
                 </xpath>
 
                 <xpath expr="//button[@name='approve_btn']" position="attributes">
-                    <attribute name="attrs">{'invisible':[('cost_card','=', False)]}</attribute>
+                    <!-- <attribute name="attrs">{'invisible':[('cost_card','=', False)]}</attribute> -->
+                    <attribute name="invisible">1</attribute>
                 </xpath>
 
                 <!-- <xpath expr="//field[@name='name']" position="replace">

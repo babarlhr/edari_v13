@@ -25,10 +25,33 @@ class HrContractExtension(models.Model):
 			if so_rec:
 				so_rec.write({
 					'contract_start_date':self.date_start,
-					'contract_start_date':self.date_end,
+					'contract_end_date':self.date_end,
 					'contract_state':self.state,
 						})
 		return rec
+
+
+
+	@api.model
+	def create(self, vals):
+		new_record = super(HrContractExtension, self).create(vals)
+		# updating wage in contract
+		if new_record.cost_card:
+			new_record.cost_card.contract = new_record.id
+		
+		return new_record
+
+	@api.onchange('name')
+	def get_default_values(self):
+		print ("XXXXXXXXXXXXXXXXXXXXXXXXx")
+		if self.employee_id:
+			if self.employee_id.cost_card:
+				if not self.cost_card:
+					self.cost_card = self.employee_id.cost_card.id
+				if not self.wage:
+					self.wage = self.cost_card.per_month_gross_salary
+
+
 
 
 		
