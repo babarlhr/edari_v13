@@ -26,7 +26,7 @@
                 <xpath expr="//header" position="inside">
                     <!-- <button name="create_so" string="Create Cost Card" type="object" class='oe_highlight'/> -->
                     <button name="approve_btn" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':[('approve_stage','=', True)]}"/>
-                    <button class="oe_highlight" name="create_so" string="Cost Cards" type="object"/>
+                    <button class="oe_highlight" name="create_so" string="Create Cost Card" type="object"/>
                     <button name="create_contract" string="Create Contract" type="object" class='oe_highlight' attrs="{'invisible':[('emp_id','=',False)]}"/>
                 </xpath>
 
