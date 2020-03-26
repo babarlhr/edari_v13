@@ -52,7 +52,7 @@
                 <field name="notice_period"/>
                 <field name="working_days"/>
                 <field name="work_days_type"/>
-                <field name="leave_type"/>
+                <field name="leave_type" attrs="{'invisible':[('work_days_type','!=','actual_working_days')]}"/>
             </xpath>
         </field> 
     </record>

@@ -45,7 +45,7 @@
                 <field name="leave_type" attrs="{'invisible':[('work_days_type','!=','actual_working_days')]}"/>
                 <field name="contract_start_date"/>
                 <field name="contract_end_date"/>
-                <field name="actual_start_date"/>
+                <field name="estimated_start_date"/>
                 <field name="date_invoice"/>
                 <field name="invoice_amount"/>
                 <field name="percentage"/>

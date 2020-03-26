@@ -21,7 +21,7 @@ class SaleOrderExt(models.Model):
 	# interval = fields.Integer(string="Interval")
 	contract_start_date = fields.Date(string="Contract Start Date")
 	contract_end_date = fields.Date(string="Contract End Date")
-	actual_start_date = fields.Date(string="Actual Start Date")
+	estimated_start_date = fields.Date(string="Estimated Start Date")
 	date_invoice = fields.Date(string="Invoice Date")
 	invoice_amount = fields.Float(string="Invoice Amount")
 	percentage = fields.Float(string="Percentage %" ,digits=(4,4))
@@ -168,12 +168,12 @@ class SaleOrderExt(models.Model):
 		return temp
 
 	############## Function to calculate leave balance total START ##############
-	def calculate_leave_balance(self):
+	def calculate_leave_balance(self,date_invoice):
 
 
 
 		unique_holidays = []
-		holiday_rec = self.env['custom.holiday.tree'].search([('tree_link.year','=',str(self.date_invoice.year))])
+		holiday_rec = self.env['custom.holiday.tree'].search([('tree_link.year','=',str(date_invoice.year))])
 		for holiday_index in holiday_rec:
 			if not holiday_index.day in unique_holidays:
 				unique_holidays.append(holiday_index.date)
@@ -184,13 +184,13 @@ class SaleOrderExt(models.Model):
 			per_request_leaves = 0
 			leave_days_list = []
 
-			if self.date_invoice.replace(day=1) == x.request_date_from.replace(day=1) or self.date_invoice.replace(day=1) == x.request_date_to.replace(day=1):
+			if date_invoice.replace(day=1) == x.request_date_from.replace(day=1) or date_invoice.replace(day=1) == x.request_date_to.replace(day=1):
 
 				# getting list of days
 				delta = x.request_date_to - x.request_date_from
 				for i in range(delta.days + 1):
 					day = x.request_date_from + timedelta(days=i)
-					if day.replace(day=1) == self.date_invoice.replace(day=1):
+					if day.replace(day=1) == date_invoice.replace(day=1):
 						if self.leave_type == "two_days":
 							if day.weekday() != 4 and day.weekday() != 5:
 								leave_days_list.append(day)
@@ -221,18 +221,18 @@ class SaleOrderExt(models.Model):
 	############### Function to calculate leave balance total ENDS  #############
 
 	############## Function to calculate Holidays total START ##############
-	def calculate_holidays(self,interval_type):
+	def calculate_holidays(self,interval_type,date_invoice):
 		holidays = 0
 
 		if interval_type == "start":
-			holiday_rec = self.env['custom.holiday.tree'].search([('tree_link.year','=',str(self.date_invoice.year)),('date','>=',self.contract_start_date)])
+			holiday_rec = self.env['custom.holiday.tree'].search([('tree_link.year','=',str(date_invoice.year)),('date','>=',self.contract_start_date)])
 		elif interval_type == "end":
-			holiday_rec = self.env['custom.holiday.tree'].search([('tree_link.year','=',str(self.date_invoice.year)),('date','<=',self.contract_end_date)])
+			holiday_rec = self.env['custom.holiday.tree'].search([('tree_link.year','=',str(date_invoice.year)),('date','<=',self.contract_end_date)])
 			print (holiday_rec)
 		else:
-			holiday_rec = self.env['custom.holiday.tree'].search([('tree_link.year','=',str(self.date_invoice.year))])
+			holiday_rec = self.env['custom.holiday.tree'].search([('tree_link.year','=',str(date_invoice.year))])
 		for y in holiday_rec:
-			if self.date_invoice.replace(day=1) == y.date.replace(day=1):
+			if date_invoice.replace(day=1) == y.date.replace(day=1):
 				if self.leave_type == "two_days":
 					if y.date.weekday() !=4 and y.date.weekday() != 5 :
 
@@ -245,7 +245,7 @@ class SaleOrderExt(models.Model):
 
 
 	################# Calculating salary according to days START #################
-	def per_day_devisor(self):
+	def per_day_devisor(self,date_invoice):
 		
 		if self.work_days_type == 'twenty_two_days':
 			return 22
@@ -254,8 +254,8 @@ class SaleOrderExt(models.Model):
 			return 26
 
 		if self.work_days_type == "actual_working_days":
-			total_days = self.number_of_days_in_month(self.date_invoice.year, self.date_invoice.month)
-			weekends = self.calculate_weekends(self.date_invoice,"regular")
+			total_days = self.number_of_days_in_month(date_invoice.year, date_invoice.month)
+			weekends = self.calculate_weekends(date_invoice,"regular")
 			# holidays = self.calculate_holidays()
 			net_days = total_days - weekends
 
@@ -264,7 +264,7 @@ class SaleOrderExt(models.Model):
 
 		if self.work_days_type == 'calender_days':
 			
-			return self.number_of_days_in_month(self.date_invoice.year, self.date_invoice.month)
+			return self.number_of_days_in_month(date_invoice.year, date_invoice.month)
 		
 
 
@@ -385,6 +385,36 @@ class SaleOrderExt(models.Model):
 
 		return compute_result
 
+	def FinalWorkingDays(self,date_invoice,starting_month,ending_month):
+		t_date = date_invoice
+
+		# divisor and working_days variable are used for finding invoice line amount
+		divisor = self.per_day_devisor(date_invoice)
+		working_days = divisor
+		month_interval = "regular"
+		if starting_month == True:
+			t_date = self.contract_start_date
+			# divisor = self.per_day_devisor(t_date)
+			month_interval = "start"
+			working_days = self.calculate_working_days(t_date, month_interval)
+		if ending_month == True:
+			month_interval = "end"
+			t_date = self.contract_end_date
+			# divisor = self.per_day_devisor(t_date)
+			working_days = self.calculate_working_days(t_date, month_interval)
+
+		no_of_holidays = 0
+		no_of_holidays_wd = 0
+		if self.work_days_type == "actual_working_days":
+			no_of_holidays = self.calculate_holidays("Regular",date_invoice)
+			no_of_holidays_wd = self.calculate_holidays(month_interval,date_invoice)
+			divisor -= no_of_holidays
+
+		working_days -= (self.calculate_leave_balance(date_invoice) + no_of_holidays_wd)
+
+		return [working_days,divisor]
+
+
 
 	def create_invoice(self):
 		invoice_vals_list = []
@@ -413,31 +443,36 @@ class SaleOrderExt(models.Model):
 			lines_not_to_add = ['end','upfront']
 
 
-		t_date = self.date_invoice
+		# t_date = self.date_invoice
 
-		# divisor and working_days variable are used for finding invoice line amount
-		divisor = self.per_day_devisor()
-		working_days = divisor
-		month_interval = "regular"
-		if starting_month == True:
-			t_date = self.contract_start_date
-			# divisor = self.per_day_devisor(t_date)
-			month_interval = "start"
-			working_days = self.calculate_working_days(t_date, month_interval)
-		if ending_month == True:
-			month_interval = "end"
-			t_date = self.contract_end_date
-			# divisor = self.per_day_devisor(t_date)
-			working_days = self.calculate_working_days(t_date, month_interval)
+		# # divisor and working_days variable are used for finding invoice line amount
+		# divisor = self.per_day_devisor(self.date_invoice)
+		# working_days = divisor
+		# month_interval = "regular"
+		# if starting_month == True:
+		# 	t_date = self.contract_start_date
+		# 	# divisor = self.per_day_devisor(t_date)
+		# 	month_interval = "start"
+		# 	working_days = self.calculate_working_days(t_date, month_interval)
+		# if ending_month == True:
+		# 	month_interval = "end"
+		# 	t_date = self.contract_end_date
+		# 	# divisor = self.per_day_devisor(t_date)
+		# 	working_days = self.calculate_working_days(t_date, month_interval)
 
-		no_of_holidays = 0
-		no_of_holidays_wd = 0
-		if self.work_days_type == "actual_working_days":
-			no_of_holidays = self.calculate_holidays("Regular")
-			no_of_holidays_wd = self.calculate_holidays(month_interval)
-			divisor -= no_of_holidays
+		# no_of_holidays = 0
+		# no_of_holidays_wd = 0
+		# if self.work_days_type == "actual_working_days":
+		# 	no_of_holidays = self.calculate_holidays("Regular",self.date_invoice)
+		# 	no_of_holidays_wd = self.calculate_holidays(month_interval,self.date_invoice)
+		# 	divisor -= no_of_holidays
 
-		working_days -= (self.calculate_leave_balance() + no_of_holidays_wd)
+		# working_days -= (self.calculate_leave_balance(self.date_invoice) + no_of_holidays_wd)
+		values = self.FinalWorkingDays(self.date_invoice,starting_month,ending_month)
+		working_days = values[0]
+		divisor = values[1]
+
+		print (values)
 
 
 		code_dict_new = {}
@@ -454,7 +489,7 @@ class SaleOrderExt(models.Model):
 
 
 					# qty in months check
-					start_plus_qty = self.contract_start_date+(relativedelta(months = int(line.product_uom_qty-1)))
+					start_plus_qty = self.contract_start_date+(relativedelta(months = int(line.product_uom_qty)))
 
 					if self.date_invoice.replace(day=1) <= start_plus_qty.replace(day=1):
 					
@@ -480,7 +515,7 @@ class SaleOrderExt(models.Model):
 							recompute_result = self.recompute_func(line, code_dict_new,cumulative_total)							
 							balance = recompute_result
 						
-						invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name))
+						invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(balance,line.product_id.name,line.product_id.id))
 						credit_sum += balance
 					else:
 						balance = 0
@@ -502,6 +537,18 @@ class SaleOrderExt(models.Model):
 		
 		if not invoice_vals['invoice_line_ids']:
 			raise UserError('There is no invoiceable line. If a product has a Delivered quantities invoicing policy, please make sure that a quantity has been delivered.')
+
+		if ending_month == True:
+
+			all_invoices_amount = 0
+			all_invoices = self.env['account.move'].search([('sale_order_id','=',self.id)])
+			for inv in all_invoices:
+				all_invoices_amount += inv.amount_untaxed
+			remaining_amount = self.amount_untaxed -(all_invoices_amount + credit_sum) 
+			if remaining_amount > 0:
+
+
+				invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(remaining_amount,"Final Inovice Adjustment",None))
 
 		invoice_vals_list.append(invoice_vals)
 
@@ -730,8 +777,9 @@ class SaleOrderExt(models.Model):
 			self.get_order_lines()
 			self.get_handle_sequence()
 			# self.create_edari_fee()
-			if self.actual_start_date:
-				self.contract.date_start = self.actual_start_date
+			# if self.actual_start_date:
+			self.contract.date_start = self.contract_start_date
+			self.contract.date_end = self.contract_end_date
 
 
 		return rec
@@ -752,7 +800,7 @@ class SOLineExt(models.Model):
 
 
 
-	def prepare_invoice_line(self,amount,name):
+	def prepare_invoice_line(self,amount,name,product_id):
 		"""
 		Prepare the dict of values to create the new invoice line for a sales order line.
 		:param qty: float quantity to invoice
@@ -763,7 +811,7 @@ class SOLineExt(models.Model):
 			'display_type': self.display_type,
 			'sequence': self.sequence,
 			'name': name,
-			'product_id': self.product_id.id,
+			'product_id': product_id,
 			'product_uom_id': self.product_uom.id,
 			'quantity': 1,
 			'discount': self.discount,
