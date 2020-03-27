@@ -784,6 +784,27 @@ class SaleOrderExt(models.Model):
 
 		return rec
 
+	def GetDivisorPayroll(self,date_from):
+		no_of_holidays = 0
+		days = 0
+		days = self.per_day_devisor(date_from)
+		no_of_holidays = self.calculate_holidays("Regular",date_from)
+		return days - no_of_holidays
+
+	def GetWorkingDaysPayroll(self,date_from,date_to):
+		result = 0
+		starting_month = False
+		ending_month = False
+		if date_from <= self.contract_start_date  <= date_to:
+		    starting_month = True
+		if date_from <= self.contract_end_date  <= date_to:
+		    ending_month = True
+
+
+		values = self.FinalWorkingDays(date_from,starting_month,ending_month)
+		return values[0]
+
+
 
 class SOLineExt(models.Model):
 	_inherit='sale.order.line'
