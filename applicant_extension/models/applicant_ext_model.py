@@ -252,14 +252,15 @@ class HrApplicantExt(models.Model):
 		# costcard_recs = self.env['sale.order'].search([('job_pos','=',self.job_id.id),('costcard_type','=','estimate')])[0]
 		costcard_recs = self.env['sale.order'].search([('job_pos','=',self.job_id.id),('costcard_type','=','estimate')])[0]
 
+		if not costcard_recs:
+			raise ValidationError("There is no associated estimate linked to this Job Position please create one")
+
 		# deleting manual lines first
 		for cost in self.cost_card.order_line:
 			if cost.costcard_type == 'manual':
 				cost.unlink()
 
-		print (costcard_recs.percentage)
-		print (costcard_recs.name)
-		print ("-------------------------------")
+
 		self.cost_card.percentage = costcard_recs.percentage
 		for x in costcard_recs.order_line:
 			if x.costcard_type == 'manual':
