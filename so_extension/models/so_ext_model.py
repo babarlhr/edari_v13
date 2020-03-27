@@ -57,6 +57,20 @@ class SaleOrderExt(models.Model):
 
 
 
+	@api.depends('order_line.invoice_lines')
+	def _get_invoiced(self):
+		# The invoice_ids are obtained thanks to the invoice lines of the SO
+		# lines, and we also search for possible refunds created directly from
+		# existing invoices. This is necessary since such a refund is not
+		# directly linked to the SO.
+		for order in self:
+			invoices = self.env['account.move'].search([('sale_order_id','=',order.id)])
+			# invoices = order.order_line.invoice_lines.move_id.filtered(lambda r: r.type in ('out_invoice', 'out_refund'))
+			order.invoice_ids = invoices
+			order.invoice_count = len(invoices)
+
+
+
 	def approve_applicant(self):
 		if self.applicant:
 			self.applicant.approve_btn()
@@ -417,6 +431,10 @@ class SaleOrderExt(models.Model):
 
 
 	def create_invoice(self):
+		if not self.contract_start_date:
+			raise ValidationError("Please input Contract Start Date")
+		if not self.contract_end_date:
+			raise ValidationError("Please input Contract End Date")
 		invoice_vals_list = []
 		invoice_vals = self.prepare_invoice()
 		# for line in self.order_line:
@@ -798,9 +816,9 @@ class SaleOrderExt(models.Model):
 		starting_month = False
 		ending_month = False
 		if date_from <= self.contract_start_date  <= date_to:
-		    starting_month = True
+			starting_month = True
 		if date_from <= self.contract_end_date  <= date_to:
-		    ending_month = True
+			ending_month = True
 
 
 		values = self.FinalWorkingDays(date_from,starting_month,ending_month)
