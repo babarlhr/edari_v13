@@ -11,34 +11,9 @@ class HrApplicantExt(models.Model):
 	contract = fields.Many2one('hr.contract', string="Contract")
 	payroll_structure = fields.Many2one('hr.payroll.structure.type', string="Salary Structure")
 	approve_stage = fields.Boolean(string="Approve Boolean")
+	first_approval = fields.Many2one('res.users',string = "First Approval")
+	second_approval = fields.Many2one('res.users',string = "Second Approval")
 
-	# @api.depends('cost_card')
-	# def _compute_salary(self):
-	#   print ("DDDDDDDDDDDDDDDDDDDDDDDDDDd")
-	#   if self.cost_card:
-	#       self.salary_expected = self.cost_card.per_month_gross_salary
-			
-	# salary_expected = fields.Float(string="Expected Salary", compute='_compute_salary', store=True)
-
-	# Adding a new value in selection field
-	# stage_id = fields.Selection(selection_add=[('approved','Approved')])
-
-
-
-	# def create_so(self):
-	#   # cost_card = self.cost_card.create({
-	#   cost_card = self.env['sale.order'].create({
-	#       'candidate_name':self.partner_name,
-	#       'applicant':self.id,
-	#       'contract_start_date':self.availability,
-	#       'per_month_gross_salary':self.salary_expected,
-	#       'job_pos':self.job_id.id,
-	#       'template':self.job_id.template.id,
-	#       'partner_id':self.job_id.customer.id,
-	#       'no_of_months':int(self.job_id.contract_length),
-	#       })
-	#   self.cost_card = cost_card.id
-	#   self.cost_card.get_contract_end_date()
 
 
 	@api.onchange('partner_name')
@@ -46,72 +21,19 @@ class HrApplicantExt(models.Model):
 		self.name = self.partner_name
 
 
+	def FirstApproval(self):
+		self.first_approval = self.env.uid
+		if self.first_approval and self.second_approval:
+			self.approve_btn()
 
-	# def create_employee_from_applicant(self):
-
-	#   print ("1111111111111111111111111")
-	#   rec = super(HrApplicantExt, self).create_employee_from_applicant()
-	#   emp_rec = self.env['hr.employee'].search([('')])
-	#   self.emp_id.customer = self.partner_id.id
-	#   print ("1111111111111111111111111")
-	#   return rec
+	def SecondApproval(self):
+		self.second_approval = self.env.uid
+		if self.first_approval and self.second_approval:
+			self.approve_btn()
 
 
 
-	# def create_employee_from_applicant(self):
-	#   """ Create an hr.employee from the hr.applicants """
-	#   employee = False
-	#   for applicant in self:
-	#       contact_name = False
-	#       if applicant.partner_id:
-	#           address_id = applicant.partner_id.address_get(['contact'])['contact']
-	#           contact_name = applicant.partner_id.display_name
-	#       else:
-	#           if not applicant.partner_name:
-	#               raise UserError(_('You must define a Contact Name for this applicant.'))
-	#           new_partner_id = self.env['res.partner'].create({
-	#               'is_company': False,
-	#               'name': applicant.partner_name,
-	#               'email': applicant.email_from,
-	#               'phone': applicant.partner_phone,
-	#               'mobile': applicant.partner_mobile
-	#           })
-	#           address_id = new_partner_id.address_get(['contact'])['contact']
-	#       if applicant.partner_name or contact_name:
-	#           print ("11111111111111111111111")
-	#           print (applicant.partner_id)
-	#           employee = self.env['hr.employee'].create({
-	#               'name': applicant.partner_name or contact_name,
-	#               'job_id': applicant.job_id.id or False,
-	#               'job_title': applicant.job_id.name,
-	#               # below line added by jaffar
-	#               # 'customer': applicant.partner_id.id,
-	#               'customer': new_partner_id.id,
 
-	#               'address_home_id': address_id,
-	#               'department_id': applicant.department_id.id or False,
-	#               'address_id': applicant.company_id and applicant.company_id.partner_id
-	#                       and applicant.company_id.partner_id.id or False,
-	#               'work_email': applicant.department_id and applicant.department_id.company_id
-	#                       and applicant.department_id.company_id.email or False,
-	#               'work_phone': applicant.department_id and applicant.department_id.company_id
-	#                       and applicant.department_id.company_id.phone or False})
-	#           applicant.write({'emp_id': employee.id})
-	#           if applicant.job_id:
-	#               applicant.job_id.write({'no_of_hired_employee': applicant.job_id.no_of_hired_employee + 1})
-	#               applicant.job_id.message_post(
-	#                   body=_('New Employee %s Hired') % applicant.partner_name if applicant.partner_name else applicant.name,
-	#                   subtype="hr_recruitment.mt_job_applicant_hired")
-	#           applicant.message_post_with_view(
-	#               'hr_recruitment.applicant_hired_template',
-	#               values={'applicant': applicant},
-	#               subtype_id=self.env.ref("hr_recruitment.mt_applicant_hired").id)
-
-	#   employee_action = self.env.ref('hr.open_view_employee_list')
-	#   dict_act_window = employee_action.read([])[0]
-	#   dict_act_window['context'] = {'form_view_initial_mode': 'edit'}
-	#   dict_act_window['res_id'] = employee.id
-	#   return dict_act_window
 
 
 	def create_employee_from_applicant(self):
@@ -286,6 +208,7 @@ class HrApplicantExt(models.Model):
 		recs = self.env['hr.recruitment.stage'].search([('name','=','Approved')])
 		self.stage_id = recs.id
 		self._get_approve_stage()
+		
 
 	@api.onchange('stage_id')
 	def _get_approve_stage(self):

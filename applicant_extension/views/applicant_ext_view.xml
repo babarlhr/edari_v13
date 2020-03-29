@@ -27,7 +27,11 @@
                     <!-- <button name="create_so" string="Create Cost Card" type="object" class='oe_highlight'/> -->
                     <button name="approve_btn" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':[('approve_stage','=', True)]}"/>
                     <button class="oe_highlight" name="create_so" string="Create Cost Card" type="object"/>
-                    <button name="create_contract" string="Create Contract" type="object" class='oe_highlight' attrs="{'invisible':[('emp_id','=',False)]}"/>
+                    
+
+                    <button name="FirstApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':[('first_approval','!=',False)]}"/>
+                    
+                    <button name="SecondApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':[('second_approval','!=',False)]}"/>
                 </xpath>
 
                 <!-- <xpath expr="//div[@name='button_box']" position="inside">
@@ -54,12 +58,23 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
+
+                <xpath expr="//field[@name='source_id']" position="after">
+                    <field name="first_approval" readonly="1"/>
+                    <field name="second_approval" readonly="1"/>
+
+                </xpath>
+
             </field> 
         </record>
 
         <!-- Creating Record using xml -->
         <record id="approved_hr_recruitment_stage" model="hr.recruitment.stage">
             <field name="name">Approved</field>
+        </record>
+
+        <record id="in_approval_hr_recruitment_stage" model="hr.recruitment.stage">
+            <field name="name">In Approvals</field>
         </record>
 
     <!--********************* [] *********************-->

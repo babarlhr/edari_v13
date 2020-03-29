@@ -73,7 +73,9 @@ class SaleOrderExt(models.Model):
 
 	def approve_applicant(self):
 		if self.applicant:
-			self.applicant.approve_btn()
+			recs = self.env['hr.recruitment.stage'].search([('name','=','In Approvals')])
+			self.applicant.stage_id = recs.id
+			# self.applicant.approve_btn()
 			self.applicant_approve_check = True
 
 
