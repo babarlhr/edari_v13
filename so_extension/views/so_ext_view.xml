@@ -21,7 +21,7 @@
                 <button name="get_order_lines" string="Get Order Lines" type="object" class="oe_highlight" invisible="1"/>
                 <button name="create_invoice" string="Create Invoice" type="object" class="oe_highlight"/>
                 <button name="create_edari_fee" string="Create Edari Fee" type="object" class="oe_highlight" invisible="1"/>
-                <button name="approve_applicant" string="Approve Applicant" type="object" class="oe_highlight" attrs="{'invisible':[('applicant','=',False),('applicant_approve_check','=',False),]}"/>
+                <button name="approve_applicant" string="Send for Approval" type="object" class="oe_highlight" attrs="{'invisible':[('applicant','=',False),('applicant_approve_check','=',False),]}"/>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="applicant" options="{'no_create_edit':True}" readonly="1"/>
@@ -49,8 +49,6 @@
                 <field name="date_invoice"/>
                 <field name="invoice_amount"/>
                 <field name="percentage"/>
-                <field name="month_days_deduction"/>
-                <field name="monthly_deduction"/>
             </xpath>
 
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
