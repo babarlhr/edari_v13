@@ -2,6 +2,7 @@
 from odoo import models, fields, api
 from datetime import timedelta,datetime,date
 from odoo.exceptions import Warning, ValidationError
+from dateutil.relativedelta import *
 
 
 class HrContractExtension(models.Model):
@@ -41,15 +42,22 @@ class HrContractExtension(models.Model):
 		
 		return new_record
 
-	@api.onchange('name')
+	@api.onchange('employee_id')
 	def get_default_values(self):
-		print ("XXXXXXXXXXXXXXXXXXXXXXXXx")
+		
 		if self.employee_id:
 			if self.employee_id.cost_card:
 				if not self.cost_card:
 					self.cost_card = self.employee_id.cost_card.id
 				if not self.wage:
 					self.wage = self.cost_card.per_month_gross_salary
+				self.name = self.employee_id.name
+				self.contract_length = self.cost_card.no_of_months
+
+	@api.onchange('date_start')
+	def get_contract_end_date(self):
+
+		self.date_end = self.date_start + relativedelta(months=+self.cost_card.no_of_months)
 
 
 
