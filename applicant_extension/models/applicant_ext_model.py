@@ -172,11 +172,11 @@ class HrApplicantExt(models.Model):
 
 	def get_manual_order_lines(self):
 		# costcard_recs = self.env['sale.order'].search([('job_pos','=',self.job_id.id),('costcard_type','=','estimate')])[0]
-		costcard_recs = self.env['sale.order'].search([('job_pos','=',self.job_id.id),('costcard_type','=','estimate')])[0]
+		costcard_recs_all = self.env['sale.order'].search([('job_pos','=',self.job_id.id),('costcard_type','=','estimate')])
 
-		if not costcard_recs:
+		if not costcard_recs_all:
 			raise ValidationError("There is no associated estimate linked to this Job Position please create one")
-
+		costcard_recs = costcard_recs_all[0]
 		# deleting manual lines first
 		for cost in self.cost_card.order_line:
 			if cost.costcard_type == 'manual':
