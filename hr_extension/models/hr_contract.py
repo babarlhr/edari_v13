@@ -42,11 +42,11 @@ class HrContractExtension(models.Model):
 		
 	# 	return new_record
 
-	@api.onchange('date_start')
-	def get_default_values(self):
+	# @api.onchange('date_start')
+	# def get_default_values(self):
 		
-		if self.employee_id:
-			self.name = self.employee_id.name
+	# 	if self.employee_id:
+	# 		self.name = self.employee_id.name
 			
 			# if self.employee_id.cost_card:
 			# 	if not self.cost_card:
