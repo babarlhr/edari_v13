@@ -19,28 +19,28 @@ class HrContractExtension(models.Model):
 	# 				x.wage = x.employee_id.cost_card.per_month_gross_salary
 
 
-	def write(self,vals):
-		rec = super(HrContractExtension,self).write(vals)
-		if 'state' in vals and vals['state'] == 'open':
-			so_rec = self.env['sale.order'].search([('id','=',self.cost_card.id)])
-			if so_rec:
-				so_rec.write({
-					'contract_start_date':self.date_start,
-					'contract_end_date':self.date_end,
-					'contract_state':self.state,
-						})
-		return rec
+	# def write(self,vals):
+	# 	rec = super(HrContractExtension,self).write(vals)
+	# 	if 'state' in vals and vals['state'] == 'open':
+	# 		so_rec = self.env['sale.order'].search([('id','=',self.cost_card.id)])
+	# 		if so_rec:
+	# 			so_rec.write({
+	# 				'contract_start_date':self.date_start,
+	# 				'contract_end_date':self.date_end,
+	# 				'contract_state':self.state,
+	# 					})
+	# 	return rec
 
 
 
-	@api.model
-	def create(self, vals):
-		new_record = super(HrContractExtension, self).create(vals)
-		# updating wage in contract
-		if new_record.cost_card:
-			new_record.cost_card.contract = new_record.id
+	# @api.model
+	# def create(self, vals):
+	# 	new_record = super(HrContractExtension, self).create(vals)
+	# 	# updating wage in contract
+	# 	if new_record.cost_card:
+	# 		new_record.cost_card.contract = new_record.id
 		
-		return new_record
+	# 	return new_record
 
 	@api.onchange('employee_id','date_start')
 	def get_default_values(self):
