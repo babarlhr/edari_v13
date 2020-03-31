@@ -59,7 +59,7 @@ class HrContractExtension(models.Model):
 			self.cost_card = self.employee_id.cost_card.id
 			self.contract_length = self.cost_card.no_of_months
 			self.wage = self.cost_card.per_month_gross_salary
-			self.date_end = self.date_start + relativedelta(months=+self.cost_card.no_of_months)
+			self.date_end = self.date_start + relativedelta(months=self.cost_card.no_of_months)
 					
 				
 
