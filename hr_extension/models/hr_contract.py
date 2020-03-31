@@ -42,7 +42,7 @@ class HrContractExtension(models.Model):
 		
 		return new_record
 
-	@api.onchange('employee_id')
+	@api.onchange('employee_id','date_start')
 	def get_default_values(self):
 		
 		if self.employee_id:
@@ -50,6 +50,7 @@ class HrContractExtension(models.Model):
 			self.cost_card = self.employee_id.cost_card.id
 			self.contract_length = self.cost_card.no_of_months
 			self.wage = self.cost_card.per_month_gross_salary
+			self.date_end = self.date_start + relativedelta(months=+self.cost_card.no_of_months)
 			# if self.employee_id.cost_card:
 			# 	if not self.cost_card:
 					
@@ -57,10 +58,9 @@ class HrContractExtension(models.Model):
 					
 				
 
-	@api.onchange('date_start')
-	def get_contract_end_date(self):
+	
 
-		self.date_end = self.date_start + relativedelta(months=+self.cost_card.no_of_months)
+		
 
 
 
