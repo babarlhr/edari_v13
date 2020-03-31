@@ -56,6 +56,7 @@ class HrContractExtension(models.Model):
 	@api.onchange('date_start')
 	def GetDate(self):
 		if self.date_start:
+			self.name = self.employee_id.name
 			self.cost_card = self.employee_id.cost_card.id
 			self.contract_length = self.cost_card.no_of_months
 			self.wage = self.cost_card.per_month_gross_salary
