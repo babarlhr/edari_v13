@@ -47,8 +47,8 @@ class HrContractExtension(models.Model):
 		
 		if self.employee_id:
 			self.name = self.employee_id.name
-			self.contract_length = self.cost_card.no_of_months
 			self.cost_card = self.employee_id.cost_card.id
+			self.contract_length = self.cost_card.no_of_months
 			self.wage = self.cost_card.per_month_gross_salary
 			# if self.employee_id.cost_card:
 			# 	if not self.cost_card:
