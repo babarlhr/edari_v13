@@ -44,18 +44,24 @@
 								.h1_div {
 									font-weight: bold;
 									font-size: 20px;
-									margin-top: 30px;
+									width: 50%;
+									margin-top: 50px;
+									margin-bottom: 50px;
+									float: left;
 								}
 								.h2_div {
-									font-weight: bold;
-									font-size: 20px;
-									margin-top: 30px;
-									float: right;
-									margin-right: 200px;
+									margin-top: 50px;
+								    width: 50%;
+								    font-weight: bold;
+								    font-size: 20px;
+								    float: left;
 								}
 								.h3_div {
 									font-weight: bold;
 									font-size: 25px;
+								}
+								.company_info {
+									font-size: 14px;
 								}
 								.main_div {
 									width: 100%
@@ -68,7 +74,7 @@
 								}
 								.right_div {
 									font-size: 20px;
-									float: right;
+									float: left;
 									width: 50%;
 								}
 								.clear_float {
@@ -77,25 +83,23 @@
 									width: 1
 									height: 1px;
 								}
-								table {
-								}
 								th {
-									text-align: center;
-									font-size: 20px;
+									text-align: left;
+									font-size: 15px;
 									font-weight: bold;
 									padding: 8px;
 								}
 								td {
-									text-align:center;
+									text-align: left;
 									border-top: 1px solid black;
 									font-weight: bold;
-									font-size: 15px;
+									font-size: 13px;
 									padding: 5px;
 									border-bottom: 1px solid black;
 								}
 								img {
-									width: 33%;
-									height: 270px;
+									width: 50%;
+									height: 100px;
 								}
 								.solid {
     								font-weight: bold;
@@ -104,61 +108,71 @@
 								h3 {
 								    font-weight: bold;
 								}
+								.bill {
+									border-bottom: 1px solid;
+									display: inline-block;
+									width: 350px;
+								}
+								.sod { 
+									font-size: 13px;
+								}
 							</style>
+								<!-- .liquid {
+									float: right;
+								} -->
 							<div class="main_wraper">
-								<h1 class="h1_div">INVOICE#
+								<h1 class="h1_div">
+									<span> INVOICE#</span>
 									<span t-esc="o.invoice_sequence_number_next_prefix"></span>
 									<span t-esc="o.invoice_sequence_number_next"></span>
 								</h1>
 								<!-- <span t-esc="company.image_1920"  t-field-options='{"widget": "image"}'></span> -->
-								<img src="/customer_invoice_report/static/src/img/logo.png"/>
 								<p class="h2_div">TAX INVOICE</p>
-								<p class="h3_div">
-									<span t-esc="company.name"></span>
-								</p>
+								<br class="clear_float"/>
 								<div class="main_div">
 									<div class="left_div">
-										<p>
+										<img src="/customer_invoice_report/static/src/img/logo.jpeg"/>	
+									</div>
+									<div class="right_div">
+										<p class="h3_div">
+											<span t-esc="company.name"></span>
+										</p>
+										<p class="company_info">
 											<span t-esc="company.street"></span>
 											<span t-esc="company.street2"></span>
 											<span t-esc="company.city"></span>
 											<span t-esc="company.country_id.name"></span>
 										</p>
-										<p>
+										<p class="company_info">
 											<span class="solid">TEL:</span>
 											<span t-esc="company.phone"></span> 
 											<!-- <span>Mobile:</span> -->
 											<!-- <span t-esc="company.mobile"></span> -->
 										</p>
-										<p>
+										<p class="company_info">
 											<span class="solid">TRN:</span>
 											<span t-esc="company.vat"></span>
 										</p>
-										<p>
+										<p class="company_info">
 											<span class="solid">Requestor/Billing Contact: </span>
 											<span> -- </span>
 										</p>
-										
-									</div>
-									<div class="right_div">
-										<p>
-											<span class="solid">Invoice date:</span>
-											<span t-esc="o.invoice_date"></span>
-										</p>
-										<p>
-											<span class="solid">BILL TO:</span>
-											<span t-esc="o.partner_id.name"></span>
-										</p>
-										<p>
-											<span class="solid">Client TRN Number: </span>
-											<span t-esc="o.partner_id.vat"></span>
-										</p>
-										<p>
-											<span class="solid">SO Number: </span>
-											<span t-esc="o.sale_order_id.name"></span>
-										</p>
 									</div>
 								</div>
+								<p>
+									<span class="solid">BILL TO:</span>
+									<span class="bill" t-esc="o.partner_id.name"></span>
+								</p>
+								<p>
+									<span class="solid sod">Invoice date:</span>
+									<span class="solid sod">Client TRN Number: </span>
+									<span class="solid sod">SO Number: </span>
+								</p>
+								<p>
+									<span class="sod" t-esc="o.invoice_date"></span>
+									<span class="sod" t-esc="o.partner_id.vat"></span>
+									<!-- <span class="sod" t-esc="o.sale_order_id.name"></span> -->
+								</p>
 								<br class="clear_float"/>
 								<br class="clear_float"/>
 								<table width="100%">
@@ -181,12 +195,12 @@
 										<tr>
 											<th style="text-align:right;">Vat@5%:</th>
 											<th>
-												<span t-esc="'{0:,.2f}'.format(float(o.amount_by_group[0][1]))"></span>
+												<!-- <span t-esc="'{0:,.2f}'.format(float(o.amount_by_group[0][1]))"></span> -->
 											</th>
 										</tr>
 
 										<tr>
-											<th style="text-align:right;">Total:</th>
+											<th style="text-align: right;padding-right: 35px;">Total:</th>
 											<th>
 												<span t-esc="'{0:,.2f}'.format(float(o.amount_total))"></span>
 											</th>
@@ -197,22 +211,22 @@
 								<div class="main_div">
 									<div class="left_div">
 										<p>
-											<span class="solid">Bank Transfer:</span>
-											<span>Abu Dhabi Commercial Bank</span>
+											<span class="solid sod">Bank Transfer:</span>
+											<span class="sod">Abu Dhabi Commercial Bank</span>
 										</p>
 										<p>
-											<span class="solid">Bank name:</span>
-											<span t-esc="o.invoice_partner_bank_id.bank_id.name"></span>
+											<span class="solid sod">Bank name:</span>
+											<span class="sod" t-esc="o.invoice_partner_bank_id.bank_id.name"></span>
 										</p>
 									</div>
 									<div class="right_div">
 										<p>
-											<span class="solid">IBAN:</span>
-											<span t-esc="o.invoice_partner_bank_id.acc_number"></span>
+											<span class="solid sod">IBAN:</span>
+											<span class="liquid sod" t-esc="o.invoice_partner_bank_id.acc_number"></span>
 										</p>
 										<p>
-											<span class="solid">Account Holder:</span>
-											<span t-esc="o.invoice_partner_bank_id.partner_id.name"></span>
+											<span class="solid sod">Account Holder:</span>
+											<span class="liquid sod" t-esc="o.invoice_partner_bank_id.partner_id.name"></span>
 										</p>
 									</div>
 								</div>
@@ -221,17 +235,17 @@
 								<div class="main_div">
 									<div class="left_div">
 										<p>
-											<span class="solid">SWIFT:</span>
-											<span t-esc="o.invoice_partner_bank_id.bank_id.bic" ></span> 
+											<span class="solid sod">SWIFT:</span>
+											<span class="sod" t-esc="o.invoice_partner_bank_id.bank_id.bic" ></span> 
 										</p>
 										<p>
-											<span class="solid">Payment Terms:</span>
-											<span t-esc="o.invoice_payment_term_id.name"></span>
+											<span class="solid sod">Payment Terms:</span>
+											<span class="solid sod" t-esc="o.invoice_payment_term_id.name"></span>
 										</p>
 									</div>
 								</div> 
 								<br class="clear_float"/>
-								<p style="font-size: 25px;">
+								<p style="font-size: 20px;">
 									If you have any questions concerning this invoice please contact Tunji Abiola at <span t-esc="company.website"></span>
 								</p>
 							</div>
