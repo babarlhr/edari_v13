@@ -432,7 +432,7 @@ class SaleOrderExt(models.Model):
 
 
 
-	def create_invoice(self):
+	def create_invoice(self,date_invoice):
 		if not self.contract_start_date:
 			raise ValidationError("Please input Contract Start Date")
 		if not self.contract_end_date:
@@ -451,11 +451,11 @@ class SaleOrderExt(models.Model):
 		starting_month = False
 		ending_month = False
 		lines_not_to_add = []
-		if self.date_invoice.month == self.contract_start_date.month and self.date_invoice.year == self.contract_start_date.year:
+		if date_invoice.month == self.contract_start_date.month and date_invoice.year == self.contract_start_date.year:
 			lines_not_to_add = ['end']
 			starting_month = True
 
-		elif self.date_invoice.month == self.contract_end_date.month and self.date_invoice.year == self.contract_end_date.year:
+		elif date_invoice.month == self.contract_end_date.month and date_invoice.year == self.contract_end_date.year:
 			lines_not_to_add = ['upfront']
 			ending_month = True
 
@@ -488,7 +488,7 @@ class SaleOrderExt(models.Model):
 		# 	divisor -= no_of_holidays
 
 		# working_days -= (self.calculate_leave_balance(self.date_invoice) + no_of_holidays_wd)
-		values = self.FinalWorkingDays(self.date_invoice,starting_month,ending_month)
+		values = self.FinalWorkingDays(date_invoice,starting_month,ending_month)
 		working_days = values[0]
 		divisor = values[1]
 
@@ -511,7 +511,7 @@ class SaleOrderExt(models.Model):
 					# qty in months check
 					start_plus_qty = self.contract_start_date+(relativedelta(months = int(line.product_uom_qty)))
 
-					if self.date_invoice.replace(day=1) <= start_plus_qty.replace(day=1):
+					if date_invoice.replace(day=1) <= start_plus_qty.replace(day=1):
 					
 
 						if line.based_on_wd:
@@ -839,6 +839,19 @@ class SOLineExt(models.Model):
 	categ_id = fields.Many2one('product.category', string="Product Category")
 	based_on_wd = fields.Boolean(string="Based on WD")
 	recomputable = fields.Boolean(string="Recomputable")
+
+	def _check_line_unlink(self):
+		return False
+		"""
+		Check wether a line can be deleted or not.
+
+		Lines cannot be deleted if the order is confirmed; downpayment
+		lines who have not yet been invoiced bypass that exception.
+		:rtype: recordset sale.order.line
+		:returns: set of lines that cannot be deleted
+		"""
+		# return self.filtered(lambda line: line.state in ('sale', 'done') and (line.invoice_lines or not line.is_downpayment))
+
 
 
 
