@@ -43,8 +43,8 @@
                 <!-- <field name="interval"/> -->
                 <field name="work_days_type" attrs="{'readonly':[('state','=','sale')]}"/>
                 <field name="leave_type" attrs="{'invisible':[('work_days_type','!=','actual_working_days')]}"/>
-                <field name="contract_start_date" attrs="{'readonly':[('state','=','sale')]}"/>
-                <field name="contract_end_date" attrs="{'readonly':[('state','=','sale')]}"/>
+                <field name="contract_start_date" attrs="{'readonly':[('state','=','sale')]}" invisible = "1"/>
+                <field name="contract_end_date" attrs="{'readonly':[('state','=','sale')]}" invisible = "1"/>
                 <field name="estimated_start_date" attrs="{'readonly':[('state','=','sale')]}"/>
                 <field name="date_invoice" attrs="{'readonly':[('state','=','sale')]}"/>
                 <field name="invoice_amount" attrs="{'readonly':[('state','=','sale')]}"/>
