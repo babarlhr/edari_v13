@@ -826,6 +826,14 @@ class SaleOrderExt(models.Model):
 		values = self.FinalWorkingDays(date_from,starting_month,ending_month)
 		return values[0]
 
+	@api.onchange('no_of_months')
+	def UpdateManualMonths(self):
+		for lines in self.order_line:
+			if lines.costcard_type == "manual":
+				lines.product_uom_qty = self.no_of_months
+				lines.get_manual_price_unit()
+
+
 
 
 class SOLineExt(models.Model):
@@ -879,7 +887,7 @@ class SOLineExt(models.Model):
 			'sale_line_ids': [(4, self.id)],
 		}
 
-	@api.onchange('manual_amount')
+	@api.onchange('manual_amount','product_uom_qty')
 	def get_manual_price_unit(self):
 		if self.costcard_type == 'manual' and self.order_id.no_of_months>0:
 			if not self.product_uom_qty:
