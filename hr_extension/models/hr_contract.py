@@ -19,28 +19,20 @@ class HrContractExtension(models.Model):
 	# 				x.wage = x.employee_id.cost_card.per_month_gross_salary
 
 
-	# def write(self,vals):
-	# 	rec = super(HrContractExtension,self).write(vals)
-	# 	if 'state' in vals and vals['state'] == 'open':
-	# 		so_rec = self.env['sale.order'].search([('id','=',self.cost_card.id)])
-	# 		if so_rec:
-	# 			so_rec.write({
-	# 				'contract_start_date':self.date_start,
-	# 				'contract_end_date':self.date_end,
-	# 				'contract_state':self.state,
-	# 					})
-	# 	return rec
+	def write(self,vals):
+		rec = super(HrContractExtension,self).write(vals)
+		self.UpdateSo()
+		return rec
 
 
 
-	# @api.model
-	# def create(self, vals):
-	# 	new_record = super(HrContractExtension, self).create(vals)
-	# 	# updating wage in contract
-	# 	if new_record.cost_card:
-	# 		new_record.cost_card.contract = new_record.id
+	@api.model
+	def create(self, vals):
+		new_record = super(HrContractExtension, self).create(vals)
+		# updating wage in contract
+		new_record.UpdateSo()
 		
-	# 	return new_record
+		return new_record
 
 	# @api.onchange('date_start')
 	# def get_default_values(self):
@@ -53,6 +45,11 @@ class HrContractExtension(models.Model):
 					
 			# 	if not self.wage:
 
+	def UpdateSo(self):
+		if self.cost_card:
+			self.cost_card.contract_start_date = self.date_start
+			self.cost_card.contract_end_date = self.date_end
+
 	@api.onchange('date_start')
 	def GetDate(self):
 		if self.date_start:
@@ -60,7 +57,7 @@ class HrContractExtension(models.Model):
 			self.cost_card = self.employee_id.cost_card.id
 			self.contract_length = self.cost_card.no_of_months
 			self.wage = self.cost_card.per_month_gross_salary
-			self.date_end = self.date_start + relativedelta(months=int(self.cost_card.no_of_months))
+			self.date_end = self.date_start + relativedelta(months=int(self.cost_card.no_of_months))- relativedelta(days=1) 
 					
 				
 

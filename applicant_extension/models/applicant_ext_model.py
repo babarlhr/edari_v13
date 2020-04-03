@@ -21,15 +21,15 @@ class HrApplicantExt(models.Model):
 		self.name = self.partner_name
 
 
-	def FirstApproval(self):
-		self.first_approval = self.env.uid
-		if self.first_approval and self.second_approval:
-			self.approve_btn()
+	# def FirstApproval(self):
+	# 	self.first_approval = self.env.uid
+	# 	if self.first_approval and self.second_approval:
+	# 		self.approve_btn()
 
-	def SecondApproval(self):
-		self.second_approval = self.env.uid
-		if self.first_approval and self.second_approval:
-			self.approve_btn()
+	# def SecondApproval(self):
+	# 	self.second_approval = self.env.uid
+	# 	if self.first_approval and self.second_approval:
+	# 		self.approve_btn()
 
 
 
@@ -172,11 +172,11 @@ class HrApplicantExt(models.Model):
 
 	def get_manual_order_lines(self):
 		# costcard_recs = self.env['sale.order'].search([('job_pos','=',self.job_id.id),('costcard_type','=','estimate')])[0]
-		costcard_recs_all = self.env['sale.order'].search([('job_pos','=',self.job_id.id),('costcard_type','=','estimate')])
+		costcard_recs = self.env['sale.order'].search([('job_pos','=',self.job_id.id),('costcard_type','=','estimate')])[0]
 
-		if not costcard_recs_all:
+		if not costcard_recs:
 			raise ValidationError("There is no associated estimate linked to this Job Position please create one")
-		costcard_recs = costcard_recs_all[0]
+
 		# deleting manual lines first
 		for cost in self.cost_card.order_line:
 			if cost.costcard_type == 'manual':

@@ -16,47 +16,66 @@
             <xpath expr="//field[@name='order_line']/tree" position="attributes">
                 <attribute name="editable">top</attribute>
             </xpath>
+
+            <xpath expr="//header/button[@name=%(sale.action_view_sale_advance_payment_inv)d]" position="replace">
+                
+            </xpath>
+
+
             
             <xpath expr="//header" position="inside">
                 <button name="get_order_lines" string="Get Order Lines" type="object" class="oe_highlight" invisible="1"/>
-                <button name="create_invoice" string="Create Invoice" type="object" class="oe_highlight"/>
+                <button name="create_invoice" string="Create Invoice" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','done')]}"/>
                 <button name="create_edari_fee" string="Create Edari Fee" type="object" class="oe_highlight" invisible="1"/>
-                <button name="approve_applicant" string="Send for Approval" type="object" class="oe_highlight" attrs="{'invisible':[('applicant','=',False),('applicant_approve_check','=',False),]}"/>
+                <!-- <button name="approve_applicant" string="Send for Approval" type="object" class="oe_highlight" attrs="{'invisible':[('applicant','=',False),('applicant_approve_check','=',False),]}"/> -->
+                
+                <button name="FirstApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|',('first_approval','!=',False),('state','!=','sale')]}"/>
+                    
+                <button name="SecondApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|',('second_approval','!=',False),('state','!=','sale')]}"/>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="applicant" options="{'no_create_edit':True}" readonly="1"/>
                 <field name="employee" options="{'no_create_edit':True}" readonly="1"/>
                 <field name="contract" options="{'no_create_edit':True}" readonly = "1"/>
                 <field name="contract_state" readonly = "1"/>
-                <field name="no_of_months" attrs="{'readonly':[('state','=','sale')]}"/>
-                <field name="per_month_gross_salary" attrs="{'readonly':[('state','=','sale')]}"/>
-                <field name="costcard_type" attrs="{'readonly':[('state','=','sale')]}"/>
-                <field name="job_pos" options="{'no_create_edit': True}" attrs="{'readonly':[('state','=','sale')]}"/>
-                <field name="template" options="{'no_create_edit': True}" attrs="{'readonly':[('state','=','sale')]}"/>
-                <field name="version" attrs="{'readonly':[('state','=','sale')]}"/>
-                <field name="invoice_id" readonly="1" attrs="{'readonly':[('state','=','sale')]}"/>
-                <field name="applicant_approve_check" invisible="1" attrs="{'readonly':[('state','=','sale')]}"/>
-                <field name="candidate_name" attrs="{'readonly':[('state','=','sale')]}"/>
-                <field name="budget" attrs="{'readonly':[('state','=','sale')]}"/>
+                <field name="no_of_months" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                <field name="per_month_gross_salary" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                <field name="costcard_type" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                <field name="job_pos" options="{'no_create_edit': True}" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                <field name="template" options="{'no_create_edit': True}" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                <field name="version" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                <field name="invoice_id" readonly="1" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                <field name="applicant_approve_check" invisible="1" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                <field name="candidate_name" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                <field name="budget" readonly = "1"/>
             </xpath>
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <!-- <field name="interval"/> -->
-                <field name="work_days_type" attrs="{'readonly':[('state','=','sale')]}"/>
+                <field name="work_days_type" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                 <field name="leave_type" attrs="{'invisible':[('work_days_type','!=','actual_working_days')]}"/>
                 <field name="contract_start_date" attrs="{'readonly':[('state','=','sale')]}" invisible = "1"/>
                 <field name="contract_end_date" attrs="{'readonly':[('state','=','sale')]}" invisible = "1"/>
-                <field name="estimated_start_date" attrs="{'readonly':[('state','=','sale')]}"/>
+                <field name="estimated_start_date" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                 <field name="date_invoice" attrs="{'readonly':[('state','=','sale')]}"/>
-                <field name="invoice_amount" attrs="{'readonly':[('state','=','sale')]}"/>
-                <field name="percentage" attrs="{'readonly':[('state','=','sale')]}"/>
+                <field name="invoice_amount" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                <field name="percentage" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                <field name="first_approval" readonly="1"/>
+                <field name="second_approval" readonly="1"/>
             </xpath>
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']" position="attributes">
                 <attribute name="attrs">{'readonly': [('state', 'in', ('done','cancel','sale'))]}</attribute>
             </xpath>
+
+            <xpath expr="/form/sheet/notebook/page[2]" position="replace">
+                
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page[3]" position="replace">
+                
+            </xpath>
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
                 <field name="code" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
                 <field name="payment_type" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
-                <field name="based_on_wd" invisible="1"/>
+                <field name="based_on_wd" invisible="0"/>
                 <field name="costcard_type" invisible="0"/>
                 <field name="manual_amount" attrs="{'readonly':[('costcard_type','!=','manual')]}"/>
                 <field name="categ_id" invisible="0"/>

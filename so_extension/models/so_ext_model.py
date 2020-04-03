@@ -18,6 +18,8 @@ class SaleOrderExt(models.Model):
 	template = fields.Many2one('costcard.template', string="Template")
 	job_pos = fields.Many2one('hr.job', string="Job Position")
 	version = fields.Char(string="Version No")
+	first_approval = fields.Many2one('res.users',string = "First Approval")
+	second_approval = fields.Many2one('res.users',string = "Second Approval")
 	# interval = fields.Integer(string="Interval")
 	contract_start_date = fields.Date(string="Contract Start Date")
 	contract_end_date = fields.Date(string="Contract End Date")
@@ -55,6 +57,18 @@ class SaleOrderExt(models.Model):
 		('cancel','Cancelled'),
 		], string='Contract State', default="draft")
 
+
+	def FirstApproval(self):
+		self.first_approval = self.env.uid
+		if self.first_approval and self.second_approval:
+			self.state = "done"
+			self.applicant.approve_btn()
+
+	def SecondApproval(self):
+		self.second_approval = self.env.uid
+		if self.first_approval and self.second_approval:
+			self.state = "done"
+			self.applicant.approve_btn()
 
 
 	@api.depends('order_line.invoice_lines')
@@ -578,6 +592,29 @@ class SaleOrderExt(models.Model):
 	# new way of creating invoice ENDS
 
 
+	def CalculateLeaveDays(self,record_id):
+		salary = self.per_month_gross_salary
+		no_months = self.no_of_months
+		edari_service_percent = self.percentage
+		cumulative_total = 0
+		edari_fee = 0
+
+
+		global compute_result
+
+		if record_id.computation_formula:
+			expression = 'global compute_result;\n'+record_id.computation_formula
+		else:
+			expression = 'global compute_result;\n'
+
+		try:
+			exec(expression)
+		
+		except Exception as e:
+			raise ValidationError('Error..!\n'+str(e))
+
+		return compute_result
+
 	# @api.onchange('template')
 	def get_order_lines(self):
 
@@ -597,6 +634,8 @@ class SaleOrderExt(models.Model):
 			edari_service_percent = self.percentage
 			cumulative_total = 0
 			edari_fee = 0
+
+			
 
 
 			template_tree_recs = self.env['costcard.template.tree'].search([('tree_link','=',self.template.id)], order='handle')
