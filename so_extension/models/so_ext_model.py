@@ -837,10 +837,10 @@ class SaleOrderExt(models.Model):
 			self.get_handle_sequence()
 			# self.create_edari_fee()
 			# if self.actual_start_date:
-			if self.contract_start_date:
-				self.contract.date_start = self.contract_start_date
-			if self.contract_end_date:
-				self.contract.date_end = self.contract_end_date
+			# if self.contract_start_date:
+			# 	self.contract.date_start = self.contract_start_date
+			# if self.contract_end_date:
+			# 	self.contract.date_end = self.contract_end_date
 
 
 		return rec
