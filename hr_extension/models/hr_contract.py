@@ -52,6 +52,7 @@ class HrContractExtension(models.Model):
 			self.cost_card.contract_start_date = self.date_start
 			self.cost_card.contract_end_date = self.date_end
 			self.cost_card.contract = self.id
+			self.cost_card.costcard_type = "cost_card"
 			self.cost_card.state = "done"
 	@api.onchange('date_start')
 	def GetDate(self):
