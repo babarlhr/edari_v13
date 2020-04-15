@@ -14,18 +14,137 @@
     </record>
 
 
+            <!-- <xpath expr="//notebook/page[@name='public']" position="attributes">
+                <attribute name="string">General</attribute>
+            </xpath> -->
     <record id="view_employee_form_emp_ext_view" model="ir.ui.view">
         <field name="name">hr.employee.form.emp.ext.view</field>
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//form/sheet/div[2]/h1" position="after">
+
+            <xpath expr="//notebook/page[@name='public']" position="after">
+                <page string="Work Information">
+                    <group>
+                        <group>
+                            <field name="address_id" />
+                            <field name="work_location" />
+                            <field name="work_email" />
+                            <field name="mobile_phone" />
+                        </group>
+                        <group>
+                            <field name="department_id" />
+                            <field name="job_id" />
+                            <field name="job_title" />
+                            <field name="parent_id" />
+                            <field name="allow_multiple_loans" />
+                            <field name="loan_defaulter" />
+                            <field name="coach_id" />
+                            <field name="resource_calendar_id" />
+                            <field name="tz" />
+                        </group>
+                    </group>
+                    <field name="emp_event_ids">
+                        <tree string="Events" editable="bottom">
+                            <field name="event_date" string="Event Date"/>
+                            <field name="event_desc" />
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Candidate Information">
+                    <group>
+                        <group>
+                            <field name="display_name" />
+                            <field name="name_in_passport" />
+                            <field name="country_id" />
+                            <field name="birthday" />
+                            <field name="uae_visa_held" />
+                            <field name="education" />
+                            <field name="cv" />
+                        </group>
+                        <group>
+                            <field name="job_title" />
+                            <field name="contact_no" />
+                            <field name="personal_email" />
+                            <field name="client_email" />
+                            <field name="language_spoken" string="Language"/>
+                        </group>
+                        <group string="Education">
+                            <field name="level_of_education" />
+                            <field name="university" />
+                            <field name="country"/>
+                            <field name="marital"/>
+                            <field name="child_depend"/>
+                        </group>
+                        <group string="Contract Details">
+                            <field name="prob_period" />
+                            <field name="notice_period" />
+                            <field name="work_days"/>
+                            <field name="sick_leaves"/>
+                            <field name="visa_entity"/>
+                            <!-- <field name="passport_id"/> -->
+                            <field name="country_id"/>
+                        </group>
+                    </group>
+                </page>
+                <page string="Dependent Information Tab">
+                    <group>
+                        <group>
+                            <field name="display_name" />
+                            <field name="name_in_passport" />
+                            <field name="country_id" />
+                            <field name="birthday" />
+                        </group>
+                        <group>
+                            <field name="relation" />
+                        </group>
+                       
+                    </group>
+                </page>
+
+                <page string="Bank Details">
+                    <group>
+                        <group>
+                            <field name="branch_name" />
+                            <field name="beneficiary_name" />
+                            <field name="account_no" />
+                            <field name="iban" />
+                            <field name="swift_routing_no" />
+                        </group>
+                        <group>
+                        </group>
+                       
+                    </group>
+                </page>
+            </xpath>
+
+            <xpath expr="//field[@name='mobile_phone']" position="replace">
+            </xpath> 
+            <xpath expr="//field[@name='work_phone']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='work_email']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='work_location']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='department_id']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='job_id']" position="replace">
+            </xpath>
+            <xpath expr="//field[@name='parent_id']" position="replace">
+            </xpath>
+
+            <!-- <xpath expr="//notebook/page[@name='public']" position="after">
+            </xpath> -->
+
+
+
+
+
+            <!-- <xpath expr="//form/sheet/div[2]/h1" position="after">
                 <h3>
                     <field name="name_ar" placeholder="Employee's Name (Arabic)" required="False"/>
                 </h3>
-            </xpath>
-            <xpath expr="//notebook/page[@name='public']" position="attributes">
-                <attribute name="string">General</attribute>
             </xpath>
             <field name="address_id" position="before">
                 <field name="user_id" string="Related User"/>
@@ -174,6 +293,8 @@
                     </field>
                 </page>
             </xpath>
+
+
             
             <xpath expr="/form/sheet" position="inside">
                 <notebook>
@@ -231,7 +352,8 @@
                         </field>
                     </page>
                 </notebook>
-            </xpath>
+            </xpath> -->
+
         </field>
     </record>
     

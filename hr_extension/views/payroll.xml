@@ -21,6 +21,10 @@
                     
                 </xpath>
 
+                <xpath expr="/form/sheet/notebook/page/field[@name='input_line_ids']/tree/field[@name='input_type_id']" position="after">
+                    <field name="description" />
+                </xpath>
+
                 <!-- <xpath expr="//header" position="inside">
                     <button name="create_so" string="Create Cost Card" type="object" class="oe_highlight"/>
                 </xpath> -->

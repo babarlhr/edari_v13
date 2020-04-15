@@ -12,11 +12,13 @@ class CreateInvWizard(models.Model):
 
 
 	def confirm(self):
-		so_recs = self.env['sale.order'].search([('state','=','done'),('contract_start_date','<=',self.month),('contract_end_date','>=',self.month),('costcard_type','=',"cost_card")])
-		for index in so_recs:
+		active_invoices =self.env['sale.order'].browse(self._context.get('active_ids'))
+		to_invoice = active_invoices.search([('state','=','done'),('contract_start_date','<=',self.month),('contract_end_date','>=',self.month),('costcard_type','=',"cost_card")])
+		
+		for index in to_invoice:
 			if index.contract.state == "open":
 				print (index)
 				index.create_invoice(self.month)
-
-
-		
+				index.state = "sale"
+				index.date_invoice = self.month
+				index.state = "done"

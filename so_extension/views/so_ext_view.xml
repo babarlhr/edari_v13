@@ -12,6 +12,11 @@
         <field name="type">form</field> 
         <field name="arch" type="xml">
 
+            <xpath expr="//form/header/button[@name='action_confirm'][2]" position="attributes">
+                <attribute name="string" >Send for Approval</attribute>
+            </xpath>
+
+
 
             <xpath expr="//field[@name='order_line']/tree" position="attributes">
                 <attribute name="editable">top</attribute>
@@ -25,7 +30,7 @@
             
             <xpath expr="//header" position="inside">
                 <button name="get_order_lines" string="Get Order Lines" type="object" class="oe_highlight" invisible="1"/>
-                <button name="create_invoice" string="Create Invoice" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','done')]}"/>
+               <!--  <button name="create_invoice" string="Create Invoice" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','done')]}"/> -->
                 <button name="create_edari_fee" string="Create Edari Fee" type="object" class="oe_highlight" invisible="1"/>
                 <!-- <button name="approve_applicant" string="Send for Approval" type="object" class="oe_highlight" attrs="{'invisible':[('applicant','=',False),('applicant_approve_check','=',False),]}"/> -->
                 
@@ -56,7 +61,7 @@
                 <field name="contract_start_date" attrs="{'readonly':[('state','=','sale')]}" invisible = "1"/>
                 <field name="contract_end_date" attrs="{'readonly':[('state','=','sale')]}" invisible = "1"/>
                 <field name="estimated_start_date" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
-                <field name="date_invoice" attrs="{'readonly':[('state','=','sale')]}"/>
+                <field name="date_invoice" attrs="{'readonly':[('state','=','sale')]}" string = "Last Invoice Date"/>
                 <field name="invoice_amount" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                 <field name="percentage" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                 <field name="first_approval" readonly="1"/>
@@ -81,9 +86,9 @@
                 <field name="categ_id" invisible="0"/>
                 <field name="recomputable" invisible="0"/>
             </xpath>
-             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
+            <!--  <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
                 <field name="code" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
-            </xpath>
+            </xpath> -->
 
             <!-- Making tree fields readonly -->
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="attributes">
@@ -174,6 +179,17 @@
         </field>
     </record>
 
+    <act_window
+        id="create_invoices_action_button"
+        name="Create Invoices"
+        res_model="create.invoice.wizard"
+        binding_model="sale.order"
+        target="new"
+        view_mode="form"
+       />
+
+   <!--  <act_window  id="create_invoices_action_button" name="Create Invoices" src_model="sale.order" res_model="create.invoice.wizard" key2="client_action_multi" target="new" view_mode="form" multi="False" />
+ -->
     <menuitem id="sale.menu_sale_quotations"
         action="sale.action_quotations_with_onboarding"
         parent="sale.sale_order_menu"

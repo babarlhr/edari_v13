@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+    	<record id="edari_payslip_report_template" model="report.paperformat">
+            <field name="name">European A4 low margin</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">4</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">10</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <report
+            id="edari_payslip_report_id" 
+            model="hr.payslip"
+            name="edari_payslip_report.edari_payslip_report_report"
+            file="edari_payslip_report.edari_payslip_report_report"
+            report_type="qweb-html"
+            paperformat="edari_payslip_report_template"
+            string="Edari Payslip Report"/>
+
+<!-- 
+        <record id="hr_salary_rule_form_view_ext" model="ir.ui.view"> 
+            <field name="name">hr_salary_rule_form_view_ext</field> 
+            <field name="model">hr.salary.rule</field>
+            <field name="inherit_id" ref="hr_payroll.hr_salary_rule_form"/>
+            <field name="type">form</field> 
+            <field name="arch" type="xml">
+                
+                <xpath expr="//field[@name='code']" position="after">
+                    <field name="arabic_name"/>
+                </xpath>
+
+            </field> 
+        </record> -->
+
+    </data>
+</odoo>

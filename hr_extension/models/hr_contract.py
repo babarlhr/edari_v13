@@ -62,7 +62,10 @@ class HrContractExtension(models.Model):
 			self.wage = self.cost_card.per_month_gross_salary
 			self.date_end = self.date_start + relativedelta(months=int(self.cost_card.no_of_months))- relativedelta(days=1) 
 					
-				
+class HRPayslipExtension(models.Model):
+	_inherit = 'hr.payslip.input'
+
+	description = fields.Char(string = "Details")				
 
 	
 

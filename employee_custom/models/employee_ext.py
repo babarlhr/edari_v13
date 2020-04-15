@@ -183,6 +183,76 @@ class Employee(models.Model):
         ('saudi', 'Saudi'),
     ], string="Visa Category")
 
+
+
+    # New fields by jaffar raza
+    allow_multiple_loans = fields.Boolean(string="Allow Multiple Loans")
+    loan_defaulter = fields.Boolean(string="Loan Defaulter")
+    education = fields.Many2one('hr.education', string="Education")
+    country = fields.Many2one('res.country', string="Country")
+    cv = fields.Char(string="CV to be Uploaded")
+    university = fields.Char(string="University")
+    contact_no = fields.Char(string="Contact No")
+    client_email = fields.Char(string="Client Email")
+    sick_leaves = fields.Char(string="Sick Leaves")
+    branch_name = fields.Char(string="Branch Name")
+    beneficiary_name = fields.Char(string="Beneficiary Name")
+    account_no = fields.Char(string="Account No")
+    iban = fields.Char(string="IBAN")
+    swift_routing_no = fields.Char(string="Swift or Routing No")
+
+    uae_visa_held = fields.Selection([
+        ('yes', 'Yes'),
+        ('no', 'No'),
+    ], string="UAE Visa Held")
+    level_of_education = fields.Selection([
+        ('high_school', 'High School'),
+        ('bachelors', 'Bachelors'),
+        ('masters', 'Masters'),
+        ('phd', 'Phd'),
+    ], string="Level of Education")
+    prob_period = fields.Selection([
+        ('3', '3 Months'),
+        ('6', '6 Months'),
+    ], string="Probation Period")
+    notice_period = fields.Selection([
+        ('1', '1 Months'),
+        ('3', '3 Months'),
+    ], string="Notice Period")
+    work_days = fields.Selection([
+        ('22', '22 Days'),
+    ], string="Working Days")
+    visa_entity = fields.Selection([
+        ('levo', 'Levo'),
+        ('edari', 'Edari'),
+    ], string="Visa Entity")
+    child_depend = fields.Selection([
+        ('1', 'High School'),
+        ('2', 'Bachelors'),
+        ('3', 'Masters'),
+        ('4', 'Phd'),
+        ('5', 'Phd'),
+        ('6', 'Phd'),
+        ('7', 'Phd'),
+        ('8', 'Phd'),
+        ('9', 'Phd'),
+        ('10', 'Phd'),
+    ], string="Children (Dependent)")
+    relation = fields.Selection([
+        ('spouse', 'Spouse'),
+        ('child1', 'Child 1'),
+        ('child2', 'Child 2'),
+        ('child3', 'Child 3'),
+        ('child4', 'Child 4'),
+        ('child5', 'Child 5'),
+        ('child6', 'Child 6'),
+        ('child7', 'Child 7'),
+        ('parent1', 'Parent 7'),
+        ('parent2', 'Parent 7'),
+    ], string="Relationship)")
+
+
+
     @api.model
     def create(self, vals):
         res = super(Employee, self).create(vals)
@@ -205,3 +275,9 @@ class Employee(models.Model):
                 'Employee with name {0} and Iqama No {1} already exist. You can not create duplicate records'.format(
                     self.name, self.iqama_no))
         return res
+
+class HeEducation(models.Model):
+    _name = 'hr.education'
+    _rec_name = 'name'
+
+    name = fields.Char(string="Name")
