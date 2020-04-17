@@ -12,19 +12,13 @@ class CreateInvWizard(models.Model):
 
 
 	def confirm(self):
-		so_recs = self.env['sale.order'].search([('contract.state','=','open')])
-		for index in so_recs:
-			try:
-				if not index.date_invoice:
-					raise ValidationError("Invoice Date Not Available!")
-				if not index.contract_start_date:
-					raise ValidationError("Contract Start Date Not Available!")
-				if not index.contract_end_date:
-					raise ValidationError("contract End Date Not Available!")
-				if index.date_invoice.month == self.month.month and index.date_invoice.year == self.month.year:
-					index.create_invoice()
-			except Exception as e:
-				raise ValidationError("Cost Card: "+index.name+"\n"+str(e))
-
-
+		active_invoices =self.env['sale.order'].browse(self._context.get('active_ids'))
+		to_invoice = active_invoices.search([('state','=','done'),('contract_start_date','<=',self.month),('contract_end_date','>=',self.month),('costcard_type','=',"cost_card")])
 		
+		for index in to_invoice:
+			if index.contract.state == "open":
+				print (index)
+				index.create_invoice(self.month)
+				index.state = "sale"
+				index.date_invoice = self.month
+				index.state = "done"

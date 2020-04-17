@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+    	<record id="customer_invoice_report_template" model="report.paperformat">
+            <field name="name">European A4 low margin</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_left">10</field>
+            <field name="margin_right">10</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">10</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <report
+            id="customer_invoice" 
+            model="account.move"
+            name="customer_invoice_report.customer_invoice"
+            file="customer_invoice_report.customer_invoice"
+            report_type="qweb-html"
+            paperformat="customer_invoice_report_template"
+            string="Customer Invoice Report"/>
+
+    </data>
+</odoo>

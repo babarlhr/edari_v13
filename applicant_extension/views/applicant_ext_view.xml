@@ -14,20 +14,24 @@
             <field name="arch" type="xml">
                 
                 <xpath expr="//field[@name='type_id']" position="after">
-                    <field name="cost_card" options="{'no_edit_create':True}"/>
+                    <field name="cost_card" options="{'no_edit_create':True}" readonly="1"/>
                     <field name="approve_stage" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='availability']" position="after">
                     <field name="payroll_structure" options="{'no_edit_create':True}"/>
                 </xpath>
                 <xpath expr="//field[@name='department_id']" position="after">
-                    <field name="contract" options="{'no_edit_create':True}"/>
+                    <field name="contract" options="{'no_edit_create':True}" readonly="1"/>
                 </xpath>
                 <xpath expr="//header" position="inside">
                     <!-- <button name="create_so" string="Create Cost Card" type="object" class='oe_highlight'/> -->
-                    <button name="approve_btn" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':[('approve_stage','=', True)]}"/>
-                    <button class="oe_highlight" name="create_so" string="Cost Cards" type="object"/>
-                    <button name="create_contract" string="Create Contract" type="object" class='oe_highlight' attrs="{'invisible':[('emp_id','=',False)]}"/>
+                    <!-- <button name="approve_btn" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':[('approve_stage','=', True)]}"/> -->
+                    <button class="oe_highlight" name="create_so" string="Create Cost Card" type="object" attrs="{'invisible':[('approve_stage','=',True)]}"/>
+                    
+
+                    <!-- <button name="FirstApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|',('first_approval','!=',False),('stage_id','!=',%(applicant_extension.in_approval_hr_recruitment_stage)d)]}"/>
+                    
+                    <button name="SecondApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|',('second_approval','!=',False),('stage_id','!=',%(applicant_extension.in_approval_hr_recruitment_stage)d)]}"/> -->
                 </xpath>
 
                 <!-- <xpath expr="//div[@name='button_box']" position="inside">
@@ -42,12 +46,24 @@
                     <attribute name="attrs">{'invisible':[('approve_stage','=', False)]}</attribute>
                 </xpath>
 
+                <!-- <xpath expr="//button[@name='approve_btn']" position="attributes"> -->
+                    <!-- <attribute name="attrs">{'invisible':[('cost_card','=', False)]}</attribute> -->
+                    <!-- <attribute name="invisible">1</attribute> -->
+                <!-- </xpath> -->
+
                 <!-- <xpath expr="//field[@name='name']" position="replace">
                     <field name="name" nolabel="1" invisible="1"/>
                 </xpath> -->
                 <xpath expr="//field[@name='name']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+
+
+                <!-- <xpath expr="//field[@name='source_id']" position="after">
+                    <field name="first_approval" readonly="1"/>
+                    <field name="second_approval" readonly="1"/>
+
+                </xpath> -->
 
             </field> 
         </record>
@@ -57,7 +73,12 @@
             <field name="name">Approved</field>
         </record>
 
+        <record id="in_approval_hr_recruitment_stage" model="hr.recruitment.stage">
+            <field name="name">In Approvals</field>
+        </record>
+
     <!--********************* [] *********************-->
+
     
 </data>
 </odoo>

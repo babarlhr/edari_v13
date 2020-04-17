@@ -16,6 +16,7 @@
     'data': [
         'views/hr_employee.xml',
         'views/hr_contract.xml',
+        'views/payroll.xml',
     ],
 
 }

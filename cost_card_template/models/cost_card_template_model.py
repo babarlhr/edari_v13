@@ -14,8 +14,21 @@ class CostCardTemplate(models.Model):
 	customer = fields.Many2one('res.partner', string="Customer")
 	
 	active = fields.Boolean(string="Active", default=True)
+	working_days_type = fields.Char(string="Working Days Type")
+	leave_type = fields.Char(string="Leave Type")
 
-	template_tree = fields.One2many('costcard.template.tree', 'tree_link')
+	work_days_type = fields.Selection([
+		('twenty_two_days','22 Days'),
+		('calender_days','Calender Days'),
+		('actual_working_days','Actual Working Days'),
+		('twenty_six_days','26 Days'),
+		], string='Work Days Type', default="twenty_two_days", required = True)
+	leave_type = fields.Selection([
+		('one_day','One Day / Week'),
+		('two_days','Two Days / Week'),
+		], string='Leave Type', default="two_days")
+
+	template_tree = fields.One2many('costcard.template.tree', 'tree_link', copy=True)
 
 
 class CostCardTemplateTree(models.Model):
@@ -36,6 +49,7 @@ class CostCardTemplateTree(models.Model):
 	computation_qty = fields.Text(string="Computation Qty")
 	# fixed = fields.Boolean(string="Fixed")
 	based_on_wd = fields.Boolean(string="Based on WD")
+	recomputable = fields.Boolean(string="Recomputable")
 
 	payment_type = fields.Selection([
         ('upfront','Upfront'),

@@ -24,6 +24,7 @@ class PartnerExtension(models.Model):
 	address_line_2 = fields.Char("Address line 2")
 	city_emirate = fields.Char("City/Emirate")
 	po_box = fields.Char("PO Box")
+	default_edari_percentage = fields.Float(string="Default Edari Percentage" ,digits=(4,4))
 
 
 
