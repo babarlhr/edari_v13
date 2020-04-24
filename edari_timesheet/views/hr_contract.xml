@@ -8,11 +8,14 @@
             <field name="type">form</field>
 
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='department_id']" position="after">
+                    <field name="customer" />
+                    <field name="timesheet_approver_1" />
+                    <field name="timesheet_approver_2" />
+                </xpath>
                 <xpath expr="//field[@name='hr_responsible_id']" position="after">
                     <field name="timesheet_cycle" />
                     <field name="timesheet_mode" />
-                    <field name="timesheet_approver_1" />
-                    <field name="timesheet_approver_2" />
                 </xpath>
             </field>
         </record>

@@ -27,7 +27,10 @@
         # 'security/ir.model.access.csv',
         'views/views.xml',
         # 'views/templates.xml',
+        'views/contact.xml',
+        'views/hr_applicant.xml',
         'views/hr_contract.xml',
+        'views/hr_employee.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

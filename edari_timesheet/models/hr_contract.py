@@ -21,8 +21,9 @@ class Contract(models.Model):
         ('hourly','Hourly'),
         ], string='Timesheet Mode', default='daily')
 
-    timesheet_approver_1 = fields.Many2one('hr.employee', string='Timesheet Approver 1', tracking=True, domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
-    timesheet_approver_2 = fields.Many2one('hr.employee', string='Timesheet Approver 2', tracking=True, domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
+    customer = fields.Many2one(related="cost_card.job_pos.customer")
+    timesheet_approver_1 = fields.Many2one('res.partner', string='Timesheet Approver 1', tracking=True, domain="['&', '|', ('company_id', '=', False), ('company_id', '=', company_id), ('type', '=', 'contact'), ('parent_id', '=', customer)]")
+    timesheet_approver_2 = fields.Many2one('res.partner', string='Timesheet Approver 2', tracking=True, domain="['&', '|', ('company_id', '=', False), ('company_id', '=', company_id), ('type', '=', 'contact'), ('parent_id', '=', customer)]")
     
     @api.model
     def create(self, values):
