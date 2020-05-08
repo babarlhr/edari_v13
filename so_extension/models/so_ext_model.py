@@ -149,6 +149,7 @@ class SaleOrderExt(models.Model):
 			'currency_id': self.pricelist_id.currency_id.id,
 			'campaign_id': self.campaign_id.id,
 			'medium_id': self.medium_id.id,
+			'automated_invoice': True,
 			'source_id': self.source_id.id,
 			'invoice_user_id': self.user_id and self.user_id.id,
 			'team_id': self.team_id.id,
