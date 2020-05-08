@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 <data>
+
+    <record id="first_approval_cost_card_group"   model="res.groups">
+        <field name="name">First Approval Cost Card</field>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <record id="second_approval_cost_card_group"   model="res.groups">
+        <field name="name">Second Approval Cost Card</field>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <record id="cancel_after_approved"   model="res.groups">
+        <field name="name">Cancel After Approved</field>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
     <!--===================== [Sale Order Extension Form View-START] ====================-->
@@ -15,7 +30,6 @@
             <xpath expr="//form/header/button[@name='action_confirm'][2]" position="attributes">
                 <attribute name="string" >Send for Approval</attribute>
             </xpath>
-
 
 
             <xpath expr="//field[@name='order_line']/tree" position="attributes">
@@ -34,9 +48,11 @@
                 <button name="create_edari_fee" string="Create Edari Fee" type="object" class="oe_highlight" invisible="1"/>
                 <!-- <button name="approve_applicant" string="Send for Approval" type="object" class="oe_highlight" attrs="{'invisible':[('applicant','=',False),('applicant_approve_check','=',False),]}"/> -->
                 
-                <button name="FirstApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|',('first_approval','!=',False),('state','!=','sale')]}"/>
+                <button name="FirstApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|',('first_approval','!=',False),('state','!=','sale')]}" groups = "so_extension.first_approval_cost_card_group"/>
                     
-                <button name="SecondApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|',('second_approval','!=',False),('state','!=','sale')]}"/>
+                <button name="SecondApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|',('second_approval','!=',False),('state','!=','sale')]}" groups = "so_extension.second_approval_cost_card_group"/>
+
+                <button name="ActionCancel" string="Cancel" type="object" class='oe_highlight' groups = "so_extension.cancel_after_approved" attrs="{'invisible':[('state','!=','done')]}"/>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="applicant" options="{'no_create_edit':True}" readonly="1"/>
@@ -56,16 +72,18 @@
             </xpath>
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <!-- <field name="interval"/> -->
+                <field name="customer_po_no" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                 <field name="work_days_type" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                 <field name="leave_type" attrs="{'invisible':[('work_days_type','!=','actual_working_days')]}"/>
                 <field name="contract_start_date" attrs="{'readonly':[('state','=','sale')]}" invisible = "1"/>
                 <field name="contract_end_date" attrs="{'readonly':[('state','=','sale')]}" invisible = "1"/>
                 <field name="estimated_start_date" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
-                <field name="date_invoice" attrs="{'readonly':[('state','=','sale')]}" string = "Last Invoice Date"/>
-                <field name="invoice_amount" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                <field name="date_invoice" attrs="{'readonly':[('state','=','sale')]}" string = "Last Invoice Month"/>
+                <!-- <field name="invoice_amount" attrs="{'readonly':[('state','in',['sale','done'])]}"/> -->
                 <field name="percentage" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                 <field name="first_approval" readonly="1"/>
                 <field name="second_approval" readonly="1"/>
+                <field name="sequence_number" invisible="1"/>
             </xpath>
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']" position="attributes">
                 <attribute name="attrs">{'readonly': [('state', 'in', ('done','cancel','sale'))]}</attribute>
@@ -86,6 +104,10 @@
                 <field name="categ_id" invisible="0"/>
                 <field name="recomputable" invisible="0"/>
             </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='qty_delivered']" position="replace">
+            </xpath>
+           <!--  <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='qty_invoiced']" position="replace">
+            </xpath> -->
             <!--  <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
                 <field name="code" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
             </xpath> -->
@@ -139,6 +161,9 @@
             </xpath>
         </field> 
     </record>
+
+
+    
 
     <!-- Changing name of SO action -->
     <record id="sale.action_orders" model="ir.actions.act_window">
@@ -195,6 +220,12 @@
         parent="sale.sale_order_menu"
         name="Cost Cards Quotations"
         sequence="1" groups="sales_team.group_sale_salesman"/>
+
+
+    <record id="activity_type"   model="mail.activity.type">
+        <field name="name">Cost Card Approvals</field>
+        <field name="res_model_id" ref="sale.model_sale_order"/>
+    </record>
 
     
 </data>
