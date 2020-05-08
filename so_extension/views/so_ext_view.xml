@@ -206,7 +206,7 @@
 
     <act_window
         id="create_invoices_action_button"
-        name="Create Invoices"
+        name="Create Cost Card Invoices"
         res_model="create.invoice.wizard"
         binding_model="sale.order"
         target="new"
