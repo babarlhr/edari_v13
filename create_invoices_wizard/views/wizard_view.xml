@@ -28,7 +28,7 @@
 
     <!--=============================== [Action-START] ===============================-->
         <record model="ir.actions.act_window" id="create_invoice_wizard_action">
-            <field name="name">Create Cost Card Invoices</field>
+            <field name="name">Create Invoices</field>
             <field name="res_model">create.invoice.wizard</field>
             <field name="view_mode">form</field>
             <field name="target">new</field>
@@ -38,7 +38,7 @@
 
     <!--=============================== [Menu] =================================-->
 
-        <menuitem name="Create Cost Card Invoices" id="create)invoices_wizard_menu" parent="sale.menu_sale_invoicing" sequence="2" groups="base.group_user" action="create_invoice_wizard_action"/>
+        <menuitem name="Create Invoices" id="create)invoices_wizard_menu" parent="sale.menu_sale_invoicing" sequence="2" groups="base.group_user" action="create_invoice_wizard_action"/>
     
 </data>
 </odoo>
