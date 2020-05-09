@@ -8,21 +8,25 @@ from dateutil.relativedelta import *
 class HrContractExtension(models.Model):
 	_inherit = 'hr.contract'
 
+	customer = fields.Many2one()
 	contract_length = fields.Char("Contract Length")
 	cost_card = fields.Many2one('sale.order',"Cost Card")
-
-	# @api.depends('employee_id.cost_card')
-	# def get_wage(self):
-	# 	for x in self:
-	# 		if x.employee_id:
-	# 			if x.employee_id.cost_card:
-	# 				x.wage = x.employee_id.cost_card.per_month_gross_salary
+	line_manager_client = fields.Many2one('res.partner')
+	line_manager_domain = fields.Many2many('res.partner',compute = "_filtered_managers")
 
 
-	def write(self,vals):
-		rec = super(HrContractExtension,self).write(vals)
-		self.UpdateSo()
-		return rec
+
+
+	@api.depends("customer")
+	def _filtered_managers(self):
+		id_list = []
+		for index in self.customer.child_ids:
+			id_list.append(index.id)
+		
+		self.line_manager_domain = [(6,0, id_list)]
+
+
+
 
 
 
@@ -31,8 +35,15 @@ class HrContractExtension(models.Model):
 		new_record = super(HrContractExtension, self).create(vals)
 		# updating wage in contract
 		new_record.UpdateSo()
+		new_record.UpdateLineManager()
 		
 		return new_record
+
+	def write(self,vals):
+		rec = super(HrContractExtension,self).write(vals)
+		self.UpdateSo()
+		self.UpdateLineManager()
+		return rec
 
 	# @api.onchange('date_start')
 	# def get_default_values(self):
@@ -45,6 +56,10 @@ class HrContractExtension(models.Model):
 					
 			# 	if not self.wage:
 
+
+	def UpdateLineManager(self):
+		if not self.line_manager_client.parent_id:
+			self.line_manager_client.parent_id = self.customer.id
 
 	def UpdateSo(self):
 		if self.cost_card:
