@@ -13,16 +13,18 @@
         <field name="arch" type="xml">
             
             <xpath expr="//field[@name='address_id']" position="after">
-                <field name="customer" required="1"/>
-                <field name="hiring_manager"/>
+                <field name="customer" required="1" string = "Client"/>
+                <field name="hiring_manager_client" options="{'no_create_edit':True}"/>
                 <field name="job_type"/>
                 <field name="anticipated_start_date"/>
                 <field name="budget"/>
                 <field name="contract_length"/>
-                <field name="template" options="{'no_create_edit':True}"/>
-                <field name="hiring_manager_client" options="{'no_create_edit':True}"/>
+                <field name="template" options="{'no_create_edit':True}" string = "Cost Card Template"/>
                 <field name="estimated_gross_salary"/>
+                <field name="hiring_manager" string = "Hiring Manager Edari" invisible = "1"/>
             </xpath>
+
+           
 
             <xpath expr="//header" position="inside">
                 <button name="create_so" string="Create Master Cost Card" type="object" class="oe_highlight"/>
@@ -36,6 +38,23 @@
         </field> 
     </record>
 
+
+    <record id="jobs_form_view_extension_survey" model="ir.ui.view"> 
+        <field name="name">jobs_form_view_extension_survey</field> 
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_job_survey"/>
+        <field name="type">form</field> 
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='no_of_recruitment']" position="before">
+                 <field name="job_position_status"/>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                 <attribute name="string">Edari Job Owner</attribute>
+            </xpath>
+        </field> 
+    </record>
+
     <record id="hr_job_survey_form_view_extension" model="ir.ui.view"> 
         <field name="name">hr_job_survey_form_view_extension</field> 
         <field name="model">hr.job</field>
@@ -44,7 +63,7 @@
         <field name="arch" type="xml">
             
             <xpath expr="//field[@name='user_id']" position="after">
-                <field name="costcard_template" options="{'no_create_edit':True}"/>
+                <field name="costcard_template" options="{'no_create_edit':True}" string = "Master Cost Card"/>
                 <field name="visa_entity"/>
                 <!-- <field name="annual_leaves"/> -->
                 <!-- <field name="sick_leaves"/> -->
