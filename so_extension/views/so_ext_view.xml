@@ -106,8 +106,9 @@
             </xpath>
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='qty_delivered']" position="replace">
             </xpath>
-           <!--  <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='qty_invoiced']" position="replace">
-            </xpath> -->
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='qty_invoiced']" position="replace">
+                <field name="qty_invoiced" invisible="1"/>
+            </xpath>
             <!--  <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
                 <field name="code" attrs="{'readonly':[('costcard_type','=','fixed')]}"/>
             </xpath> -->
