@@ -33,6 +33,11 @@ class JobsExtension(models.Model):
 		('one_day','One Day / Week'),
 		('two_days','Two Days / Week'),
 		], string='Leave Type', default="two_days")
+
+	job_position_status = fields.Selection([
+		('open','Open'),
+		('closed','Closed'),
+		], string='Job Position Status')
 	# annual_leaves = fields.Float(string="Annual Leaves")
 	# sick_leaves = fields.Float(string="Sick Leaves")
 	template = fields.Many2one('costcard.template', string="Template")

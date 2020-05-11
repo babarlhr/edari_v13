@@ -18,6 +18,11 @@
                     <field name="contract_length"/>
                 </xpath>
 
+                <xpath expr="//field[@name='department_id']" position="after">
+                    <field name="line_manager_client" domain = "[('id','in',line_manager_domain)]" />
+                    <field name="line_manager_domain" invisible = "1"/>
+                </xpath>
+
             </field> 
         </record>
 

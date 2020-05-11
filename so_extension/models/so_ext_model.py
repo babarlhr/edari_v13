@@ -14,12 +14,13 @@ class SaleOrderExt(models.Model):
 	_inherit='sale.order'
 
 	no_of_months = fields.Float(string="No of Months")
+	sequence_number = fields.Char(string="Sequence No", copy = False)
 	per_month_gross_salary = fields.Float(string="Per Month Gross Salary")
 	template = fields.Many2one('costcard.template', string="Template")
 	job_pos = fields.Many2one('hr.job', string="Job Position")
 	version = fields.Char(string="Version No")
-	first_approval = fields.Many2one('res.users',string = "First Approval")
-	second_approval = fields.Many2one('res.users',string = "Second Approval")
+	first_approval = fields.Many2one('res.users',string = "First Approval", copy = False)
+	second_approval = fields.Many2one('res.users',string = "Second Approval", copy = False)
 	# interval = fields.Integer(string="Interval")
 	contract_start_date = fields.Date(string="Contract Start Date")
 	contract_end_date = fields.Date(string="Contract End Date")
@@ -32,6 +33,7 @@ class SaleOrderExt(models.Model):
 	employee = fields.Many2one('hr.employee', string="Employee")
 	contract = fields.Many2one('hr.contract', string="Contract")
 	candidate_name = fields.Char(string="Candidate Name")
+	customer_po_no = fields.Char(string="Customer PO Number")
 	month_days_deduction = fields.Boolean(string="Month Days Deduction")
 	monthly_deduction = fields.Boolean(string="Monthly Deduction")
 	applicant_approve_check = fields.Boolean(string="Approved Applicant")
@@ -70,6 +72,9 @@ class SaleOrderExt(models.Model):
 			self.state = "done"
 			self.applicant.approve_btn()
 
+	def ActionCancel(self):
+		self.state = "draft"
+
 
 	@api.depends('order_line.invoice_lines')
 	def _get_invoiced(self):
@@ -99,6 +104,23 @@ class SaleOrderExt(models.Model):
 				costcard_line_rec = self.env['costcard.template.tree'].search([('service_name','=',lines.product_id.id),('tree_link','=',self.template.id)])
 				lines.handle = costcard_line_rec.handle
 
+	def UpdateSOName(self):
+		cost_card_name = ""
+		if self.costcard_type == "estimate":
+			cost_card_name = "Estimate"
+		if self.costcard_type == "cost_card":
+			cost_card_name = "Cost Card"
+
+		applicant_name = ""
+		if self.contract:
+			applicant_name = self.contract.employee_id.name
+		else:
+			applicant_name = self.applicant_name.partner_name
+		if not self.sequence_number:
+			self.sequence_number = self.name
+		self.name = self.sequence_number + "-" + cost_card_name + "-" + applicant_name
+
+
 
 
 	# @api.onchange('contract_start_date','no_of_months')
@@ -114,7 +136,7 @@ class SaleOrderExt(models.Model):
 	#   print ("Create Journal Entry")
 
 	# new way of creating invoice START
-	def prepare_invoice(self):
+	def prepare_invoice(self,date_invoice):
 		journal = self.env['account.move'].with_context(force_company=self.company_id.id, default_type='out_invoice')._get_default_journal()
 		if not journal:
 			raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (self.company_id.name, self.company_id.id))
@@ -127,14 +149,16 @@ class SaleOrderExt(models.Model):
 			'currency_id': self.pricelist_id.currency_id.id,
 			'campaign_id': self.campaign_id.id,
 			'medium_id': self.medium_id.id,
+			'automated_invoice': True,
 			'source_id': self.source_id.id,
 			'invoice_user_id': self.user_id and self.user_id.id,
 			'team_id': self.team_id.id,
 			'partner_id': self.partner_invoice_id.id,
+			'employee': self.contract.employee_id.id,
 			'partner_shipping_id': self.partner_shipping_id.id,
 			'fiscal_position_id': self.fiscal_position_id.id or self.partner_invoice_id.property_account_position_id.id,
 			'invoice_origin': self.name,
-			'invoice_date':self.date_invoice,
+			'invoice_date':date_invoice,
 			'invoice_payment_term_id': self.payment_term_id.id,
 			'invoice_payment_ref': self.reference,
 			'sale_order_id': self.id,
@@ -452,7 +476,7 @@ class SaleOrderExt(models.Model):
 		if not self.contract_end_date:
 			raise ValidationError("Please input Contract End Date")
 		invoice_vals_list = []
-		invoice_vals = self.prepare_invoice()
+		invoice_vals = self.prepare_invoice(date_invoice)
 		# for line in self.order_line:
 
 		#####################################################################################
@@ -588,6 +612,8 @@ class SaleOrderExt(models.Model):
 
 		# 3) Create invoices.
 		moves = self.env['account.move'].with_context(default_type='out_invoice').create(invoice_vals_list)
+
+		return moves
 
 	# new way of creating invoice ENDS
 
@@ -771,31 +797,63 @@ class SaleOrderExt(models.Model):
 		else:
 			self.order_line = None
 
+
+	def CreateActivities(self):
+		users = []
+		first_approval = self.env.ref('so_extension.first_approval_cost_card_group')
+		second_approval = self.env.ref('so_extension.second_approval_cost_card_group')
+		for fir in first_approval.users:
+			if fir.id not in [1,2]:
+				users.append(fir.id)
+		for sec in second_approval.users:
+			if sec.id not in [1,2]:
+				if sec.id not in users:
+					users.append(sec.id)
+
+		for us in users:
+			self.env['mail.activity'].create({
+	                'res_id': self.id,
+	                'res_model_id': self.env['ir.model']._get('sale.order').id,
+	                'activity_type_id': self.env.ref('so_extension.activity_type').id,
+	                'summary': "Cost Card Number-" +self.name + " Needs your approval",
+	                'note': "Cost Card Number-" +self.name + " Needs your approval",
+	                'user_id': us,
+	            })
+
+	def action_confirm(self):
+		res = super(SaleOrderExt, self).action_confirm()
+		if not self.first_approval and not self.second_approval:
+			self.CreateActivities()
+		if self.first_approval and self.second_approval:
+			self.state = "done"
+		return res
+
 	def create_edari_fee(self):
-		if self.percentage > 0:
-			edari_service_charges = self.env['product.product'].search([('name','=','Edari Service Fee')])
-			for x in self.order_line:
-				if x.product_id.id == edari_service_charges.id:
-					x.unlink()
-			charable_sum = 0
-			for x in self.order_line:
-				if x.chargable:
-					# charable_sum += x.price_subtotal
-					charable_sum += x.price_unit
-			if charable_sum > 0:
-				edari_service_charges = self.env['product.product'].search([('name','=','Edari Service Fee')])
-				price = 0
-				price = charable_sum*(self.percentage/100)
-				self.order_line.create({
-					'product_id':edari_service_charges.id,
-					'name':"Service Charges",
-					'code':"SC",
-					# 'product_uom_qty':1,
-					'product_uom_qty':self.no_of_months,
-					'price_unit':price,
-					'order_id':self.id,
-					'payment_type':'interval',
-					})
+		return True
+		# if self.percentage > 0:
+		# 	edari_service_charges = self.env['product.product'].search([('name','=','Edari Service Fee')])
+		# 	for x in self.order_line:
+		# 		if x.product_id.id == edari_service_charges.id:
+		# 			x.unlink()
+		# 	charable_sum = 0
+		# 	for x in self.order_line:
+		# 		if x.chargable:
+		# 			# charable_sum += x.price_subtotal
+		# 			charable_sum += x.price_unit
+		# 	if charable_sum > 0:
+		# 		edari_service_charges = self.env['product.product'].search([('name','=','Edari Service Fee')])
+		# 		price = 0
+		# 		price = charable_sum*(self.percentage/100)
+		# 		self.order_line.create({
+		# 			'product_id':edari_service_charges.id,
+		# 			'name':"Service Charges",
+		# 			'code':"SC",
+		# 			# 'product_uom_qty':1,
+		# 			'product_uom_qty':self.no_of_months,
+		# 			'price_unit':price,
+		# 			'order_id':self.id,
+		# 			'payment_type':'interval',
+		# 			})
 
 	@api.model
 	def create(self, vals):
@@ -835,6 +893,9 @@ class SaleOrderExt(models.Model):
 		if before != after:
 			self.get_order_lines()
 			self.get_handle_sequence()
+
+		if 'name' not in vals:
+			self.UpdateSOName()
 			# self.create_edari_fee()
 			# if self.actual_start_date:
 			# if self.contract_start_date:
