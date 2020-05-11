@@ -10,14 +10,14 @@
 
             <field name="arch" type="xml">
                 <!-- When editing contact stand alone -->
-                <xpath expr="//form//sheet" position="before">
-                    <header>
-                        <button name="generate_invite_token" string="Invite To Portal" type="object" class='oe_highlight' attrs="{'invisible':['|', '|', ('invite_token','!=', False), ('id','=', False), ('type', '!=', 'contact')]}" />
-                    </header>
-                </xpath>
-                <xpath expr="//field[@name='category_id']" position="after">
-                    <field name="invite_token" invisible="1" />
-                </xpath>
+<!--                <xpath expr="//form//sheet" position="before">-->
+<!--                    <header>-->
+<!--                        <button name="generate_invite_token" string="Invite To Portal" type="object" class='oe_highlight' attrs="{'invisible':['|', '|', ('invite_token','!=', False), ('id','=', False), ('type', '!=', 'contact')]}" />-->
+<!--                    </header>-->
+<!--                </xpath>-->
+<!--                <xpath expr="//field[@name='category_id']" position="after">-->
+<!--                    <field name="invite_token" invisible="1" />-->
+<!--                </xpath>-->
 
                 <!-- When editing contact through popup in customer -->
                 <xpath expr="//page[1]//field[@name='user_id']" position="after">
