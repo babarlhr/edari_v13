@@ -14,9 +14,22 @@
             
 
             <xpath expr="//field[@name='ref']" position="after">
-                <field name="sale_order_id" readonly="1"/>
+                <field name="sale_order_id"  options="{'no_create_edit':True}" attrs="{'readonly':[('automated_invoice','=',True)]}"/>
+                <field name="employee" readonly = "1" />
+                <field name="automated_invoice" readonly = "1"/>
             </xpath>
 
+        </field> 
+    </record>
+
+    <record id="InvoiceTreeViewExtension" model="ir.ui.view"> 
+        <field name="name">InvoiceTreeViewExtension</field> 
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name ='invoice_date']" position="after">
+                <field name="employee" readonly = "1"/>
+            </xpath>
         </field> 
     </record>
 
