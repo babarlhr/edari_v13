@@ -3,8 +3,8 @@ import logging, secrets
 
 _logger = logging.getLogger(__name__)
 
-class Contact(models.Model):
-    _inherit = 'res.partner'
+class User(models.Model):
+    _inherit = 'res.users'
 
     invite_token = fields.Char('Invite Token')
     portal_uid = fields.Char('Portal UID')
@@ -19,5 +19,5 @@ class Contact(models.Model):
         for record in self:
             record.invite_url = False
             if record.invite_token:
-                record.invite_url = "https://clients.edari.io?type=customer&invite_token={}".format(
+                record.invite_url = "https://admin.edari.io?type=edari&invite_token={}".format(
                     self.invite_token)

@@ -31,6 +31,7 @@
         'views/hr_applicant.xml',
         'views/hr_contract.xml',
         'views/hr_employee.xml',
+        'views/user.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
