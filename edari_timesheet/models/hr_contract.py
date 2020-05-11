@@ -40,10 +40,9 @@ class Contract(models.Model):
         """ Create an analytic account for contract
             Note: create it before calling super() to avoid raising the ValidationError from _check_allow_timesheet
         """
-        if not self.get('analytic_account_id'):
-            analytic_account = self._create_analytic_account_from_values(values)
-            values['analytic_account_id'] = analytic_account.id
         response = super(Contract, self).write(values)
+        if not self.analytic_account_id and not values.get('analytic_account_id'):
+            self._create_analytic_account()
         return response
 
     def _create_analytic_account_from_values(self, values):
@@ -60,7 +59,7 @@ class Contract(models.Model):
             analytic_account = self.env['account.analytic.account'].create({
                 'name': contract.name,
                 'company_id': contract.company_id.id,
-                # 'partner_id': contract.partner_id.id,
+                'partner_id': contract.customer.id,
                 'active': True,
             })
             contract.write({'analytic_account_id': analytic_account.id})
