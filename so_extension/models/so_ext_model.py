@@ -114,8 +114,10 @@ class SaleOrderExt(models.Model):
 		applicant_name = ""
 		if self.contract:
 			applicant_name = self.contract.employee_id.name
+		elif self.job_pos:
+			applicant_name = self.job_pos.partner_name
 		else:
-			applicant_name = self.applicant_name.partner_name
+			applicant_name = self.partner_id.partner_name
 		if not self.sequence_number:
 			self.sequence_number = self.name
 		self.name = self.sequence_number + "-" + cost_card_name + "-" + applicant_name
