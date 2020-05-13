@@ -19,5 +19,5 @@ class User(models.Model):
         for record in self:
             record.invite_url = False
             if record.invite_token:
-                record.invite_url = "https://admin.edari.io?type=edari&invite_token={}".format(
+                record.invite_url = "https://admin.edarihub.com?type=edari&invite_token={}".format(
                     self.invite_token)

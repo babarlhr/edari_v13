@@ -19,5 +19,5 @@ class Contact(models.Model):
         for record in self:
             record.invite_url = False
             if record.invite_token:
-                record.invite_url = "https://clients.edari.io?type=customer&invite_token={}".format(
+                record.invite_url = "https://clients.edarihub.com?type=customer&invite_token={}".format(
                     self.invite_token)
