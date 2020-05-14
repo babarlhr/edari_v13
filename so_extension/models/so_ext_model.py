@@ -38,6 +38,16 @@ class SaleOrderExt(models.Model):
 	monthly_deduction = fields.Boolean(string="Monthly Deduction")
 	applicant_approve_check = fields.Boolean(string="Approved Applicant")
 	budget = fields.Float(string="Budget", related="job_pos.budget")
+
+	order_line_2 = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
+
+
+
+	so_type = fields.Selection([
+		('cost_card','Cost Card'),
+		('sale_order','Sale Order'),
+		], string='SO Type')
+
 	costcard_type = fields.Selection([
 		('estimate','Estimate'),
 		('cost_card','Cost Card'),
@@ -860,30 +870,35 @@ class SaleOrderExt(models.Model):
 	@api.model
 	def create(self, vals):
 		new_record = super(SaleOrderExt, self).create(vals)
-		if new_record.job_pos:
-			print (new_record.job_pos.name)
-			records = self.env['sale.order'].search([('job_pos','=',new_record.job_pos.id),('state','not in',['cancel','done'])])
-			rec_len = len(records)
-			if records:
-				new_record.version = "V"+str(rec_len)
-				print (new_record.version)
-			else:
-				new_record.version = "V1"
-				print (new_record.version)
-		new_record.get_handle_sequence()
 
-		# new_record.get_contract_end_date()
-		new_record.get_order_lines()
+		if new_record.so_type == 'cost_card':
 
-		# updating wage in employee
-		if new_record.employee:
-			new_record.employee.wage = new_record.per_month_gross_salary
+			if new_record.job_pos:
+				print (new_record.job_pos.name)
+				records = self.env['sale.order'].search([('job_pos','=',new_record.job_pos.id),('state','not in',['cancel','done'])])
+				rec_len = len(records)
+				if records:
+					new_record.version = "V"+str(rec_len)
+					print (new_record.version)
+				else:
+					new_record.version = "V1"
+					print (new_record.version)
+			new_record.get_handle_sequence()
+
+			# new_record.get_contract_end_date()
+			new_record.get_order_lines()
+
+			# updating wage in employee
+			if new_record.employee:
+				new_record.employee.wage = new_record.per_month_gross_salary
 		return new_record
 
 	def write(self, vals):
 		before=self.write_date
 
 		rec = super(SaleOrderExt, self).write(vals)
+
+
 		if 'per_month_gross_salary' in vals:
 			self.applicant.salary_expected = vals['per_month_gross_salary']
 
@@ -893,11 +908,13 @@ class SaleOrderExt(models.Model):
 
 		after = self.write_date
 		if before != after:
-			self.get_order_lines()
-			self.get_handle_sequence()
+			if self.so_type == 'cost_card':
+				self.get_order_lines()
+				self.get_handle_sequence()
 
 		if 'name' not in vals:
-			self.UpdateSOName()
+			if self.so_type == 'cost_card':
+				self.UpdateSOName()
 			# self.create_edari_fee()
 			# if self.actual_start_date:
 			# if self.contract_start_date:
@@ -1033,3 +1050,4 @@ class SOLineExt(models.Model):
 		('manual','Manual'),
 		('calculation','Calculation'),
 		], string='Type')
+
