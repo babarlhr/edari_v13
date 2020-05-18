@@ -87,6 +87,7 @@
                                 background: #EEE;
                             }
                             .totaled {
+                                font-weight: bold;
                                 background: #E1E1E1;
                             }
                             .header,
@@ -245,74 +246,79 @@
                             <t t-set="total_of_net" t-value="0" />
                             <t t-set="total_of_gross" t-value="0" />
                             <tbody>
-                                <t t-foreach="docs" t-as="rec">
+                                <!-- <t t-foreach="docs" t-as="rec"> -->
                                     <!-- <tr>
                                         <td t-att-colspan="total_size" class="departmental">
                                             <span t-esc="rec.name"></span>
                                         </td>
                                     </tr> -->
 
-                                    <span t-esc="collect_records(rec)"></span>
-                                    <t t-set="depart_basic" t-value="0" />
-                                    <t t-set="depart_net" t-value="0" />
-                                    <t t-set="depart_gross" t-value="0" />
+                                <!-- <span t-esc="collect_records(rec)"></span> -->
+                                <span t-esc="collect_records()"></span>
+                                <t t-set="depart_basic" t-value="0" />
+                                <t t-set="depart_net" t-value="0" />
+                                <t t-set="depart_gross" t-value="0" />
 
-                                    <t t-foreach="employee" t-as="o">
-                                        <tr style="height: 60px;">
+                                <t t-foreach="employee" t-as="o">
+                                    <tr style="height: 60px;">
 
-                                            <td>
-                                                <span t-esc="sr_no"></span>
-                                                <t t-set="sr_no" t-value="sr_no + 1" />
-                                            </td>
+                                        <td>
+                                            <span t-esc="sr_no"></span>
+                                            <t t-set="sr_no" t-value="sr_no + 1" />
+                                        </td>
 
-                                            <td class="namer">
-                                                <span t-esc="o.employee_id.name"></span>
-                                            </td>
+                                        <td class="namer">
+                                            <span t-esc="o.employee_id.name"></span>
+                                        </td>
 
-                                            <td class="namer">
-                                                <span t-esc="o.employee_id.id"></span>
-                                            </td>
-
-                                            <t t-foreach="categs" t-as="categ">
-                                                <t t-foreach="GetCategRules(categ)" t-as="rule">
-                                                    <td>
-
-                                                        <t t-set="value" t-value="get_amount(o,rule.code)" />
-                                                        
-                                                        <t t-if="value == 0">
-                                                            <span class="dasher"> - </span>
-                                                        </t>
-
-                                                        <t t-if="value > 0">
-                                                            <t t-if="rule.code == 'WD' or rule.code == 'oth'">
-                                                                <span t-esc="'{0:,.2f}'.format(float(value))"></span>
-                                                            </t>
-
-                                                            <t t-if="rule.code != 'WD' and rule.code != 'oth'">
-                                                                <span t-esc="'{:0,.2f}'.format(int(float(value)))"></span>
-                                                            </t>
-
-                                                        </t>
-
-                                                    </td>
-                                                </t>
-                                            </t>
-                                        </tr>
-                                    </t>
-                                    
-                                    <tr class="totaled">
-                                        <td colspan="3">Total</td>
+                                        <td class="namer">
+                                            <span t-esc="o.employee_id.id"></span>
+                                        </td>
 
                                         <t t-foreach="categs" t-as="categ">
                                             <t t-foreach="GetCategRules(categ)" t-as="rule">
-                                                <td><span t-esc="'{:0,.2f}'.format(int(float(depart_totale(rule.code))))"></span></td>
+                                                <td>
+
+                                                    <t t-set="value" t-value="get_amount(o,rule.code)" />
+                                                    
+                                                    <t t-if="value == 0">
+                                                        <span class="dasher"> - </span>
+                                                    </t>
+
+                                                    <t t-if="value > 0">
+                                                        <t t-if="rule.code == 'WD' or rule.code == 'oth'">
+                                                            <span t-esc="'{0:,.2f}'.format(float(value))"></span>
+                                                        </t>
+
+                                                        <t t-if="rule.code != 'WD' and rule.code != 'oth'">
+                                                            <span t-esc="'{:0,.2f}'.format(int(float(value)))"></span>
+                                                        </t>
+
+                                                    </t>
+
+                                                </td>
                                             </t>
                                         </t>
-
                                     </tr>
                                 </t>
+                                
+                                <tr class="totaled">
+                                    <td colspan="3">Total</td>
 
-                                <tr class="total-row">
+                                    <t t-foreach="categs" t-as="categ">
+                                        <t t-foreach="GetCategRules(categ)" t-as="rule">
+                                            <td>
+                                                <b>
+                                                    <span t-esc="'{:0,.2f}'.format(int(float(depart_totale(rule.code))))"></span>
+                                                </b>
+                                            </td>
+                                        </t>
+                                    </t>
+
+                                </tr>
+                                <!-- </t> -->
+
+                                <!-- <tr class="total-row">
                                     <td colspan="3">Grand Total</td>
 
                                     <t t-foreach="categs" t-as="categ">
@@ -320,7 +326,7 @@
                                             <td><span t-esc="'{:0,.2f}'.format(int(float(totaled(rule.code))))"></span></td>
                                         </t>
                                     </t> 
-                                </tr>
+                                </tr> -->
                             </tbody>
 
                         </table>         

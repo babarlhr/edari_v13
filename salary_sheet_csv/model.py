@@ -98,11 +98,11 @@ class SalarySheetCSVrep(models.AbstractModel):
         # if not resigned:
 
         employee = []
-        def collect_records(depart):
+        def collect_records():
             del employee[:]
             for x in records:
-                if x.employee_id.department_id == depart:
-                    employee.append(x)
+                # if x.employee_id.department_id == depart:
+                employee.append(x)
 
 
         # if resigned:

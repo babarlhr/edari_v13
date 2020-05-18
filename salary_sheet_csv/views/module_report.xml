@@ -279,14 +279,15 @@
                             <t t-set="total_of_net" t-value="0" />
                             <t t-set="total_of_gross" t-value="0" />
                             <tbody>
-                                <t t-foreach="docs" t-as="rec">
+                                <!-- <t t-foreach="docs" t-as="rec"> -->
                                    <!--  <tr>
                                         <td t-att-colspan="total_size" class="departmental">
                                             <span t-esc="rec.name"></span>
                                         </td>
                                     </tr> -->
 
-                                    <span t-esc="collect_records(rec)"></span>
+                                    <!-- <span t-esc="collect_records(rec)"></span> -->
+                                    <span t-esc="collect_records()"></span>
                                     <t t-set="depart_basic" t-value="0" />
                                     <t t-set="depart_net" t-value="0" />
                                     <t t-set="depart_gross" t-value="0" />
@@ -347,7 +348,7 @@
                                         </t>
 
                                     </tr> -->
-                                </t>
+                                <!-- </t> -->
 
                                 <!-- <tr class="total-row">
                                     <td colspan="3">Grand Total</td>
