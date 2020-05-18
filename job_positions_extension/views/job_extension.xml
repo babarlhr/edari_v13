@@ -46,9 +46,9 @@
         <field name="type">form</field> 
         <field name="arch" type="xml">
             
-            <xpath expr="//field[@name='no_of_recruitment']" position="before">
+            <!-- <xpath expr="//field[@name='no_of_recruitment']" position="before">
                  <field name="job_position_status"/>
-            </xpath>
+            </xpath> -->
             <xpath expr="//field[@name='user_id']" position="attributes">
                  <attribute name="string">Edari Job Owner</attribute>
             </xpath>
