@@ -25,6 +25,7 @@ class PartnerExtension(models.Model):
 	city_emirate = fields.Char("City/Emirate")
 	po_box = fields.Char("PO Box")
 	default_edari_percentage = fields.Float(string="Default Edari Percentage" ,digits=(4,4))
+	client_owner = fields.Many2one('hr.employee', string='Client Owner')
 
 
 

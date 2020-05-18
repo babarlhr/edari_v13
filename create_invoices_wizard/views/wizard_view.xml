@@ -13,10 +13,20 @@
                     <h2>Select Date for Invoices</h2>
                     <group>
                         <group>
-                            <field name="month" invisible="0"/>
+                            <field name="month" required="1"/>
                         </group>
-                        <group></group>
+                        <group>
+                            <field name="invoice_date" required="1"/>
+                        </group>
+                        <field name="skip_reason_lines" readonly = "1">
+                            <tree editable="bottom">
+                                <field name="cost_card_number" />
+                                <field name="skip_reason" />
+                                <field name="invoice_wizard_id" invisible = "1"/>
+                            </tree>
+                    </field>
                     </group>
+                    
                     <footer>
                         <button name="confirm" type="object" string="Confirm" class="oe_highlight"/>
                     </footer>
@@ -31,7 +41,7 @@
             <field name="name">Create Invoices</field>
             <field name="res_model">create.invoice.wizard</field>
             <field name="view_mode">form</field>
-            <field name="target">new</field>
+            <field name="target">current</field>
         </record>
 
     <!--******************************* [Action-ENDS] ********************************-->

@@ -48,14 +48,14 @@
                 <button name="create_edari_fee" string="Create Edari Fee" type="object" class="oe_highlight" invisible="1"/>
                 <!-- <button name="approve_applicant" string="Send for Approval" type="object" class="oe_highlight" attrs="{'invisible':[('applicant','=',False),('applicant_approve_check','=',False),]}"/> -->
                 
-                <button name="FirstApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|',('first_approval','!=',False),('state','!=','sale'),('so_type','=','sale_order')]}" groups = "so_extension.first_approval_cost_card_group"/>
+                <button name="FirstApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|','|',('first_approval','!=',False),('state','!=','sale'),('so_type','=','sale_order')]}" groups = "so_extension.first_approval_cost_card_group"/>
                     
-                <button name="SecondApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|',('second_approval','!=',False),('state','!=','sale'),('so_type','=','sale_order')]}" groups = "so_extension.second_approval_cost_card_group"/>
+                <button name="SecondApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|','|',('second_approval','!=',False),('state','!=','sale'),('so_type','=','sale_order')]}" groups = "so_extension.second_approval_cost_card_group"/>
 
                 <button name="ActionCancel" string="Cancel" type="object" class='oe_highlight' groups = "so_extension.cancel_after_approved" attrs="{'invisible':['|',('state','!=','done'),('so_type','=','sale_order')]}"/>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="so_type"/>
+                <field name="so_type" required = "0"/>
                 <field name="applicant" options="{'no_create_edit':True}" readonly="1" attrs="{'invisible':[('so_type','=','sale_order')]}"/>
                 <field name="employee" options="{'no_create_edit':True}" readonly="1" attrs="{'invisible':[('so_type','=','sale_order')]}"/>
                 <field name="contract" options="{'no_create_edit':True}" readonly = "1" attrs="{'invisible':[('so_type','=','sale_order')]}"/>
@@ -339,6 +339,18 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name ='partner_id']" position="after">
                 <field name="candidate_name"/>
+            </xpath>
+        </field> 
+    </record>
+
+
+    <record id="accruing_account_product" model="ir.ui.view"> 
+        <field name="name">accruing_account_product</field> 
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name ='property_account_income_id']" position="after">
+                <field name="accruing_account_id"/>
             </xpath>
         </field> 
     </record>

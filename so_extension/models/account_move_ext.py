@@ -13,4 +13,10 @@ class AccMoveExt(models.Model):
 	sale_order_id = fields.Many2one('sale.order',string="Sale Order")
 	employee = fields.Many2one('hr.employee', string="Employee")
 	automated_invoice = fields.Boolean(string = "Automated Invoice")
-	
+	invoice_month = fields.Date(string= "Invoice Month")
+
+
+class ProductExtension(models.Model):
+	_inherit='product.product'
+
+	accruing_account_id = fields.Many2one('account.account',string = "Accrued Account")

@@ -46,7 +46,7 @@ class SaleOrderExt(models.Model):
 	so_type = fields.Selection([
 		('cost_card','Cost Card'),
 		('sale_order','Sale Order'),
-		], string='SO Type')
+		], string='SO Type',default = 'cost_card')
 
 	costcard_type = fields.Selection([
 		('estimate','Estimate'),
@@ -125,7 +125,7 @@ class SaleOrderExt(models.Model):
 		if self.contract:
 			applicant_name = self.contract.employee_id.name
 		elif self.job_pos:
-			applicant_name = self.job_pos.customer.name
+			applicant_name = self.job_pos.name
 		else:
 			applicant_name = self.partner_id.name
 		if not self.sequence_number:
@@ -148,7 +148,7 @@ class SaleOrderExt(models.Model):
 	#   print ("Create Journal Entry")
 
 	# new way of creating invoice START
-	def prepare_invoice(self,date_invoice):
+	def prepare_invoice(self,date_invoice,month_invoice):
 		journal = self.env['account.move'].with_context(force_company=self.company_id.id, default_type='out_invoice')._get_default_journal()
 		if not journal:
 			raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (self.company_id.name, self.company_id.id))
@@ -170,7 +170,8 @@ class SaleOrderExt(models.Model):
 			'partner_shipping_id': self.partner_shipping_id.id,
 			'fiscal_position_id': self.fiscal_position_id.id or self.partner_invoice_id.property_account_position_id.id,
 			'invoice_origin': self.name,
-			'invoice_date':date_invoice,
+			'invoice_date':month_invoice,
+			'invoice_month':date_invoice,
 			'invoice_payment_term_id': self.payment_term_id.id,
 			'invoice_payment_ref': self.reference,
 			'sale_order_id': self.id,
@@ -482,13 +483,13 @@ class SaleOrderExt(models.Model):
 
 
 
-	def create_invoice(self,date_invoice):
+	def create_invoice(self,date_invoice,month_invoice):
 		if not self.contract_start_date:
 			raise ValidationError("Please input Contract Start Date")
 		if not self.contract_end_date:
 			raise ValidationError("Please input Contract End Date")
 		invoice_vals_list = []
-		invoice_vals = self.prepare_invoice(date_invoice)
+		invoice_vals = self.prepare_invoice(date_invoice,month_invoice)
 		# for line in self.order_line:
 
 		#####################################################################################
@@ -513,31 +514,7 @@ class SaleOrderExt(models.Model):
 			lines_not_to_add = ['end','upfront']
 
 
-		# t_date = self.date_invoice
-
-		# # divisor and working_days variable are used for finding invoice line amount
-		# divisor = self.per_day_devisor(self.date_invoice)
-		# working_days = divisor
-		# month_interval = "regular"
-		# if starting_month == True:
-		# 	t_date = self.contract_start_date
-		# 	# divisor = self.per_day_devisor(t_date)
-		# 	month_interval = "start"
-		# 	working_days = self.calculate_working_days(t_date, month_interval)
-		# if ending_month == True:
-		# 	month_interval = "end"
-		# 	t_date = self.contract_end_date
-		# 	# divisor = self.per_day_devisor(t_date)
-		# 	working_days = self.calculate_working_days(t_date, month_interval)
-
-		# no_of_holidays = 0
-		# no_of_holidays_wd = 0
-		# if self.work_days_type == "actual_working_days":
-		# 	no_of_holidays = self.calculate_holidays("Regular",self.date_invoice)
-		# 	no_of_holidays_wd = self.calculate_holidays(month_interval,self.date_invoice)
-		# 	divisor -= no_of_holidays
-
-		# working_days -= (self.calculate_leave_balance(self.date_invoice) + no_of_holidays_wd)
+		
 		values = self.FinalWorkingDays(date_invoice,starting_month,ending_month)
 		working_days = values[0]
 		divisor = values[1]
@@ -618,16 +595,55 @@ class SaleOrderExt(models.Model):
 			if remaining_amount > 0:
 
 
-				invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(remaining_amount,"Final Inovice Adjustment",None))
+				invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(remaining_amount,"Final Invoice Adjustment",None))
 
 		invoice_vals_list.append(invoice_vals)
+
 
 		# 3) Create invoices.
 		moves = self.env['account.move'].with_context(default_type='out_invoice').create(invoice_vals_list)
 
+
+
+		########### update accrual entries ##################
+
+		for acc in self.order_line:
+			if acc.product_id.accruing_account_id:
+				if acc.product_id.property_account_expense_id:
+					debit_account = acc.product_id.property_account_income_id.id
+				else:
+					debit_account = acc.product_id.categ_id.property_account_income_categ_id.id
+				for mv in moves.line_ids:
+					if mv.name == acc.product_id.name:
+						line_amount = mv.credit
+						break
+
+				if line_amount > 0:
+
+					moves.write({
+						'line_ids': [
+			                    (0, 0, {
+			                        'account_id':debit_account,
+									'name':"Accrued Adjustment",
+									'debit':line_amount,
+									'credit':0,
+									
+			                    }),
+			        
+			                    (0, 0, {
+			                        'account_id':acc.product_id.accruing_account_id.id,
+									'name':"Accrued Adjustment",
+									'debit':0,
+									'credit':line_amount,
+									
+			                    }),
+			                ],
+						}) 
+
+
 		return moves
 
-	# new way of creating invoice ENDS
+
 
 
 	def CalculateLeaveDays(self,record_id):
@@ -834,38 +850,16 @@ class SaleOrderExt(models.Model):
 
 	def action_confirm(self):
 		res = super(SaleOrderExt, self).action_confirm()
-		if not self.first_approval and not self.second_approval:
-			self.CreateActivities()
-		if self.first_approval and self.second_approval:
-			self.state = "done"
+		if self.so_type == "cost_card":
+			if not self.first_approval and not self.second_approval:
+				self.CreateActivities()
+			if self.first_approval and self.second_approval:
+				self.state = "done"
 		return res
 
 	def create_edari_fee(self):
 		return True
-		# if self.percentage > 0:
-		# 	edari_service_charges = self.env['product.product'].search([('name','=','Edari Service Fee')])
-		# 	for x in self.order_line:
-		# 		if x.product_id.id == edari_service_charges.id:
-		# 			x.unlink()
-		# 	charable_sum = 0
-		# 	for x in self.order_line:
-		# 		if x.chargable:
-		# 			# charable_sum += x.price_subtotal
-		# 			charable_sum += x.price_unit
-		# 	if charable_sum > 0:
-		# 		edari_service_charges = self.env['product.product'].search([('name','=','Edari Service Fee')])
-		# 		price = 0
-		# 		price = charable_sum*(self.percentage/100)
-		# 		self.order_line.create({
-		# 			'product_id':edari_service_charges.id,
-		# 			'name':"Service Charges",
-		# 			'code':"SC",
-		# 			# 'product_uom_qty':1,
-		# 			'product_uom_qty':self.no_of_months,
-		# 			'price_unit':price,
-		# 			'order_id':self.id,
-		# 			'payment_type':'interval',
-		# 			})
+
 
 	@api.model
 	def create(self, vals):
@@ -915,13 +909,6 @@ class SaleOrderExt(models.Model):
 		if 'name' not in vals:
 			if self.so_type == 'cost_card':
 				self.UpdateSOName()
-			# self.create_edari_fee()
-			# if self.actual_start_date:
-			# if self.contract_start_date:
-			# 	self.contract.date_start = self.contract_start_date
-			# if self.contract_end_date:
-			# 	self.contract.date_end = self.contract_end_date
-
 
 		return rec
 

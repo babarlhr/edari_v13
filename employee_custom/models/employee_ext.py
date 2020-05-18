@@ -2,6 +2,8 @@ from odoo import models, fields, api
 from odoo.exceptions import UserError
 
 
+
+
 class IrAttachment(models.Model):
     _inherit = "ir.attachment"
     
@@ -173,6 +175,7 @@ class Employee(models.Model):
     emp_event_training_ids = fields.One2many('employee.training.history', 'employee_train_ids', string="Training History")
     emp_event_hse_incident_ids = fields.One2many('employee.hse.incident.history', 'employee_hse_ids', string="HSE Incident History")
     emp_event_career_ids = fields.One2many('employee.career.progression', 'employee_career_ids', string="Career Progression")
+    dependent_tree = fields.One2many('employee.dependent.tree', 'tree_link')
 
     visa_category = fields.Selection([
         ('gems_emp', 'GEMS Employees'),
@@ -189,9 +192,7 @@ class Employee(models.Model):
     allow_multiple_loans = fields.Boolean(string="Allow Multiple Loans")
     loan_defaulter = fields.Boolean(string="Loan Defaulter")
     education = fields.Many2one('hr.education', string="Education")
-    country = fields.Many2one('res.country', string="Country")
-    cv = fields.Char(string="CV to be Uploaded")
-    university = fields.Char(string="University")
+    cv = fields.Binary(string="CV")
     contact_no = fields.Char(string="Contact No")
     client_email = fields.Char(string="Client Email")
     sick_leaves = fields.Char(string="Sick Leaves")
@@ -200,17 +201,14 @@ class Employee(models.Model):
     account_no = fields.Char(string="Account No")
     iban = fields.Char(string="IBAN")
     swift_routing_no = fields.Char(string="Swift or Routing No")
+    education_tree = fields.One2many('hr.education.tree', 'tree_link')
+    address = fields.Char('Address')
+
 
     uae_visa_held = fields.Selection([
         ('yes', 'Yes'),
         ('no', 'No'),
     ], string="UAE Visa Held")
-    level_of_education = fields.Selection([
-        ('high_school', 'High School'),
-        ('bachelors', 'Bachelors'),
-        ('masters', 'Masters'),
-        ('phd', 'Phd'),
-    ], string="Level of Education")
     prob_period = fields.Selection([
         ('3', '3 Months'),
         ('6', '6 Months'),
@@ -226,31 +224,62 @@ class Employee(models.Model):
         ('levo', 'Levo'),
         ('edari', 'Edari'),
     ], string="Visa Entity")
-    child_depend = fields.Selection([
-        ('1', 'High School'),
-        ('2', 'Bachelors'),
-        ('3', 'Masters'),
-        ('4', 'Phd'),
-        ('5', 'Phd'),
-        ('6', 'Phd'),
-        ('7', 'Phd'),
-        ('8', 'Phd'),
-        ('9', 'Phd'),
-        ('10', 'Phd'),
-    ], string="Children (Dependent)")
-    relation = fields.Selection([
-        ('spouse', 'Spouse'),
-        ('child1', 'Child 1'),
-        ('child2', 'Child 2'),
-        ('child3', 'Child 3'),
-        ('child4', 'Child 4'),
-        ('child5', 'Child 5'),
-        ('child6', 'Child 6'),
-        ('child7', 'Child 7'),
-        ('parent1', 'Parent 7'),
-        ('parent2', 'Parent 7'),
-    ], string="Relationship)")
 
+    child_depend = fields.Selection([
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+        ('5', '5'),
+        ('6', '6'),
+        ('7', '7'),
+        ('8', '8'),
+        ('9', '9'),
+        ('10', '10'),
+    ], string="Children (Dependent)")
+
+
+
+
+    # education tabs fields
+    # level_of_education = fields.Selection([
+    #     ('high_school', 'High School'),
+    #     ('bachelors', 'Bachelors'),
+    #     ('masters', 'Masters'),
+    #     ('phd', 'Phd'),
+    # ], string="Level of Education")
+    # university = fields.Char(string="University")
+    # country = fields.Many2one('res.country', string="Country")
+
+    # certificate_2 = fields.Selection([
+    #     ('bachelors', 'Bachelors'),
+    #     ('masters', 'Masters'),
+    #     ('other', 'Other'),
+    # ], string="Certificate Level")
+    # study_field_2 = fields.Char(string="Field of Study")
+    # study_school_2 = fields.Char(string="School")
+    # level_of_education_2 = fields.Selection([
+    #     ('high_school', 'High School'),
+    #     ('bachelors', 'Bachelors'),
+    #     ('masters', 'Masters'),
+    #     ('phd', 'Phd'),
+    # ], string="Level of Education")
+    # university_2 = fields.Char(string="University")
+    # country_2 = fields.Many2one('res.country', string="Country")
+
+    # add_education = fields.Boolean(string='Add Education')
+
+
+
+    @api.onchange('add_education')
+    def emplty_second_education_fields(self):
+        if not self.add_education:
+            self.certificate_2 = None
+            self.study_field_2 = None
+            self.study_school_2 = None
+            self.level_of_education_2 = None
+            self.university_2 = None
+            self.country_2 = None
 
 
     @api.model
@@ -276,8 +305,66 @@ class Employee(models.Model):
                     self.name, self.iqama_no))
         return res
 
+
+class HrEducationTree(models.Model):
+    _name = 'hr.education.tree'
+    _rec_name = 'certificate_level'
+
+    certificate_level = fields.Many2one('certificate.level', string='Certificate Level')
+    field_of_study = fields.Char(string='Field of Study')
+    institute_id = fields.Many2one('education.institute', string='Institute')
+    country_id = fields.Many2one('res.country', string='Country')
+
+    tree_link = fields.Many2one('hr.employee')
+
+
+class CertificateLevel(models.Model):
+    _name = 'certificate.level'
+    _rec_name = 'name'
+
+    name = fields.Char(string='Name')
+
+
+class EducationInstitute(models.Model):
+    _name = 'education.institute'
+    _rec_name = 'name'
+
+    name = fields.Char(string='Name')
+
+
 class HeEducation(models.Model):
     _name = 'hr.education'
     _rec_name = 'name'
 
     name = fields.Char(string="Name")
+
+
+class DependentTree(models.Model):
+    _name = 'employee.dependent.tree'
+    _rec_name = 'display_name'
+
+    display_name = fields.Char(string="Display Name")
+    name_in_passport = fields.Char(string="Name in Passport")
+    country_id = fields.Many2one('res.country', string="Nationality (country)")
+    birthday = fields.Date(string="Date of Birth")
+    relationship = fields.Many2one('employee.dependent.relation')
+
+    # relation = fields.Selection([
+    #     ('spouse', 'Spouse'),
+    #     ('child1', 'Child 1'),
+    #     ('child2', 'Child 2'),
+    #     ('child3', 'Child 3'),
+    #     ('child4', 'Child 4'),
+    #     ('child5', 'Child 5'),
+    #     ('child6', 'Child 6'),
+    #     ('child7', 'Child 7'),
+    #     ('parent1', 'Parent 1'),
+    #     ('parent2', 'Parent 2'),
+    # ], string="Relationship")
+
+    tree_link = fields.Many2one('hr.employee')
+
+class DependentTreeRelation(models.Model):
+    _name = 'employee.dependent.relation'
+
+    name = fields.Char()
