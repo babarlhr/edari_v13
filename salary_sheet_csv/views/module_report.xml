@@ -306,7 +306,7 @@
 
                                             <td class="namer">
                                                 <!-- <span t-esc="o.employee_id.employee_code"></span> -->
-                                                <span t-esc="o.employee_id.id"></span>
+                                                <span t-esc="o.employee_id.employee_code"></span>
                                             </td>
 
                                             <t t-foreach="categs" t-as="categ">
