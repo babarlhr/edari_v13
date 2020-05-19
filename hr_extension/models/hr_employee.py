@@ -35,7 +35,7 @@ class HrEmployeeExtension(models.Model):
 										'phone':new_record.work_phone,
 										'email':new_record.work_email,
 										'mobile':new_record.mobile_phone,
-										'is_employee':True}])
+										}])
 		new_record.partner_id = partner_id.id
 		return new_record
 
