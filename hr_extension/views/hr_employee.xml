@@ -71,6 +71,6 @@
                 <field name="is_employee" />
         </xpath>
     </field> -->
-</record>
+<!-- </record> -->
 </data>
 </odoo>
