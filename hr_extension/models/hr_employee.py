@@ -13,7 +13,7 @@ class HrEmployeeExtension(models.Model):
 	employee_code = fields.Char("Employee Code")
 	cost_card = fields.Many2one("sale.order", "Cost Card")
 	customer = fields.Many2one('res.partner' , 'Customer')
-	# partner_id =fields.Many2one('res.partner',"Partner ID")
+	partner_id =fields.Many2one('res.partner',"Partner ID")
 	wage = fields.Float("Wage")
 
 	employee_type = fields.Selection([
