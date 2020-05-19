@@ -9,7 +9,7 @@ class PartnerExtension(models.Model):
 
 	trade_license_no = fields.Char("Trade License No")
 	trading_as = fields.Char("Trading as")
-	# is_employee = fields.Boolean("Employee")
+	is_employee = fields.Boolean("Employee")
 
 	# billing details fields
 	trade_license_no = fields.Char("Trade License Number")
