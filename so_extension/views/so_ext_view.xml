@@ -27,8 +27,10 @@
         <field name="type">form</field> 
         <field name="arch" type="xml">
 
-            <xpath expr="//form/header/button[@name='action_confirm'][2]" position="attributes">
-                <attribute name="string" >Send for Approval</attribute>
+            <xpath expr="//form/header/button[@name='action_confirm'][2]" position="replace">
+                <button name="action_confirm" string="Confirmed" type="object" attrs="{'invisible': ['|',('state', 'not in', ['draft']),('so_type','=','cost_card')]}"/>
+                <button name="action_confirm" string="Send for Approval" type="object" attrs="{'invisible': ['|','|',('state', 'not in', ['draft']),('so_type','=','sale_order'),('unlock_check','!=',False)]}"/>
+                <button name="action_confirm" string="Lock" type="object" attrs="{'invisible': ['|','|',('state', 'not in', ['draft']),('so_type','=','sale_order'),('unlock_check','=',False)]}"/>
             </xpath>
 
 
@@ -37,6 +39,7 @@
             </xpath>
 
             <xpath expr="//header/button[@name=%(sale.action_view_sale_advance_payment_inv)d]" position="replace">
+                <button name="action_view_sale_advance_payment_inv" string="Create Invoice" type="action" class="btn-primary" attrs="{'invisible': ['|',('invoice_status', '!=', 'to invoice'),('so_type', '=', 'cost_card')]}"/>
                 
             </xpath>
 
@@ -52,10 +55,12 @@
                     
                 <button name="SecondApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|','|',('second_approval','!=',False),('state','!=','sale'),('so_type','=','sale_order')]}" groups = "so_extension.second_approval_cost_card_group"/>
 
-                <button name="ActionCancel" string="Cancel" type="object" class='oe_highlight' groups = "so_extension.cancel_after_approved" attrs="{'invisible':['|',('state','!=','done'),('so_type','=','sale_order')]}"/>
+                <button name="ActionCancel" string="Unlock" type="object" class='oe_highlight' groups = "so_extension.cancel_after_approved" attrs="{'invisible':['|',('state','!=','done'),('so_type','=','sale_order')]}"/>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="so_type" required = "0"/>
+                <field name="unlock_check" invisible = "1"/>
+
                 <field name="applicant" options="{'no_create_edit':True}" readonly="1" attrs="{'invisible':[('so_type','=','sale_order')]}"/>
                 <field name="employee" options="{'no_create_edit':True}" readonly="1" attrs="{'invisible':[('so_type','=','sale_order')]}"/>
                 <field name="contract" options="{'no_create_edit':True}" readonly = "1" attrs="{'invisible':[('so_type','=','sale_order')]}"/>

@@ -78,7 +78,6 @@ class JobsExtension(models.Model):
 
 	@api.onchange('customer')
 	def template_domain(self):
-		print ("0000000000000000000000000")
 		template_recs = self.env['costcard.template'].search([('job_position', '=', self.id),('customer','=',self.customer.id)])
 		template_list = []
 		for x in template_recs:

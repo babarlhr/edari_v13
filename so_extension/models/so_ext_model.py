@@ -38,6 +38,7 @@ class SaleOrderExt(models.Model):
 	monthly_deduction = fields.Boolean(string="Monthly Deduction")
 	applicant_approve_check = fields.Boolean(string="Approved Applicant")
 	budget = fields.Float(string="Budget", related="job_pos.budget")
+	unlock_check = fields.Boolean(string="Un Lock Check")
 
 	order_line_2 = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
 
@@ -84,6 +85,7 @@ class SaleOrderExt(models.Model):
 
 	def ActionCancel(self):
 		self.state = "draft"
+		self.unlock_check = True
 
 
 	@api.depends('order_line.invoice_lines')
@@ -619,6 +621,9 @@ class SaleOrderExt(models.Model):
 						break
 
 				if line_amount > 0:
+					print ("----------------------")
+					print (self.employee.partner_id.id)
+					print ("----------------------")
 
 					moves.write({
 						'line_ids': [
@@ -627,7 +632,7 @@ class SaleOrderExt(models.Model):
 									'name':"Accrued Adjustment",
 									'debit':line_amount,
 									'credit':0,
-									
+									'partner_id':self.contract.employee_id.partner_id.id,
 			                    }),
 			        
 			                    (0, 0, {
@@ -635,6 +640,8 @@ class SaleOrderExt(models.Model):
 									'name':"Accrued Adjustment",
 									'debit':0,
 									'credit':line_amount,
+									'partner_id':self.contract.employee_id.partner_id.id,
+
 									
 			                    }),
 			                ],

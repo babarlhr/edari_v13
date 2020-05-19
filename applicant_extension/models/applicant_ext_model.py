@@ -90,41 +90,47 @@ class HrApplicantExt(models.Model):
 
 
 
+	# def create_so(self):
+	#   rec = self.env['sale.order'].search([('applicant','=',self.id)]).ids
+	#   domain = [('id','in',rec)]
+
+	#   # view_id_tree = self.env['ir.ui.view'].search([('name','=',"semester.tree")])department_id=self.department_id.id)
+	#   return {
+	#   'type': 'ir.actions.act_window',
+	#    'name': ('Job'),
+	#    'res_model': 'sale.order',
+	#    'view_type': 'form',
+	#    'view_mode': 'tree,form',
+	#    # 'views': [(view_id_tree[0].id, 'tree'),(False,'form')],
+	#    'context': {
+	#       'default_candidate_name':self.partner_name,
+	#       # 'partner_id':self.job_id.customer.id,
+	#       'default_applicant':self.id,
+	#       'default_contract':self.contract.id,
+	#       'default_contract_start_date':self.availability,
+	#       'default_per_month_gross_salary':salary_expected_amount,
+	#       'default_job_pos':self.job_id.id,
+	#       'default_template':self.job_id.template.id,
+	#       'default_partner_id':self.job_id.customer.id,
+	#       'default_no_of_months':int(self.job_id.contract_length),
+	#    },
+	#    'view_id ref=" sale.view_quotation_tree_with_onboarding"': '',
+	#    'target': 'current',
+	#    'domain': domain,
+	#   }
 	def create_so(self):
-	  rec = self.env['sale.order'].search([('applicant','=',self.id)]).ids
-	  domain = [('id','in',rec)]
-	  # view_id_tree = self.env['ir.ui.view'].search([('name','=',"semester.tree")])department_id=self.department_id.id)
-	  return {
-	  'type': 'ir.actions.act_window',
-	   'name': ('Job'),
-	   'res_model': 'sale.order',
-	   'view_type': 'form',
-	   'view_mode': 'tree,form',
-	   # 'views': [(view_id_tree[0].id, 'tree'),(False,'form')],
-	   'context': {
-	      'default_candidate_name':self.partner_name,
-	      # 'partner_id':self.job_id.customer.id,
-	      'default_applicant':self.id,
-	      'default_contract':self.contract.id,
-	      'default_contract_start_date':self.availability,
-	      'default_per_month_gross_salary':self.salary_expected,
-	      'default_job_pos':self.job_id.id,
-	      'default_template':self.job_id.template.id,
-	      'default_partner_id':self.job_id.customer.id,
-	      'default_no_of_months':int(self.job_id.contract_length),
-	   },
-	   'view_id ref=" sale.view_quotation_tree_with_onboarding"': '',
-	   'target': 'current',
-	   'domain': domain,
-	  }
-	def create_so(self):
+		salary_amount = 0
+		if self.salary_proposed> 0:
+			salary_amount = self.salary_proposed
+		else:
+			salary_amount = self.job_id.cost_card.per_month_gross_salary
 		if not self.cost_card:
 			so_rec = self.env['sale.order'].create({
 				'candidate_name':self.partner_name,
 				'applicant':self.id,
 				'contract':self.contract.id,
 				# 'contract_start_date':self.availability,
-				'per_month_gross_salary':self.salary_proposed,
+				'per_month_gross_salary':salary_amount,
 				'job_pos':self.job_id.id,
 				'template':self.job_id.template.id,
 				'costcard_type':'cost_card',
@@ -142,7 +148,7 @@ class HrApplicantExt(models.Model):
 				self.cost_card.applicant = self.id
 				self.cost_card.contract = self.contract.id
 				# self.cost_card.contract_start_date = self.availability,
-				self.cost_card.per_month_gross_salary = self.salary_proposed
+				self.cost_card.per_month_gross_salary = salary_amount
 				self.cost_card.job_pos = self.job_id.id
 				self.cost_card.template = self.job_id.template.id
 				self.cost_card.partner_id = self.job_id.customer.id
