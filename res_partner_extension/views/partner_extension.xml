@@ -66,6 +66,9 @@
                         </group>
                    </page>
              </xpath>
+            <xpath expr="//field[@name='ref']" position="after">
+                <field name="is_employee" />
+            </xpath>
 
         </field> 
     </record>
