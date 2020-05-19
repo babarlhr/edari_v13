@@ -94,9 +94,9 @@ class HrEmployeeExtension(models.Model):
 			})
 		create_allocation.action_approve()
 
-# class res_partner_customized(models.Model):
+class res_partner_customized(models.Model):
 
-# 	_inherit = 'res.partner'
-# 	is_employee = fields.Boolean("Employee")
+	_inherit = 'res.partner'
+	is_employee = fields.Boolean("Employee")
 
 

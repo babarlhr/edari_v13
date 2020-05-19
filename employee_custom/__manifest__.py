@@ -8,7 +8,7 @@
     'depends': ['hr', 'hr_gamification', 'mail', 'base', 'account_asset','hr_timesheet'],
     'data': [
         "security/ir.model.access.csv",
-        # 'views/employee_ext_view.xml',
+        'views/employee_ext_view.xml',
         'wizard/excel_report_wizard.xml',
     ],
     'installable' : True,
