@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+    <!--===================== [] ====================-->
+
+
+        <!-- <record id="hr_contract_extension_form_view" model="ir.ui.view"> 
+            <field name="name">hr_contract_extension_form_view</field> 
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="type">form</field> 
+            <field name="arch" type="xml">
+                
+                <xpath expr="//field[@name='hr_responsible_id']" position="after">
+                    <field name="cost_card"/>
+                    <field name="contract_length"/>
+                </xpath>
+
+                <xpath expr="//field[@name='department_id']" position="after">
+                    <field name="line_manager_client" domain = "[('id','in',line_manager_domain)]" />
+                    <field name="line_manager_domain" invisible = "1"/>
+                </xpath>
+
+            </field> 
+        </record> -->
+
+    <!--********************* [] *********************-->
+    
+</data>
+</odoo>

@@ -1,0 +1,21 @@
+.main_div {
+    width: 100%;
+}
+.left_div {
+    width: 20%;
+    float: left;
+}
+.mid_div {
+    width: 5%;
+    float: left;
+    margin-left: 20px;
+}
+.right_div {
+    width: 5%;
+    float: left;
+    margin-left: 20px;
+}
+.o_kanban_view .o_kanban_record::after {
+    opacity: 0.4 !important;
+    width: 100% !important;
+}

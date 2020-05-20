@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+    <!--===================== [] ====================-->
+
+    <record id="customers_form_view_extension" model="ir.ui.view"> 
+        <field name="name">customers_form_view_extension</field> 
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="type">form</field> 
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="default_edari_percentage"/>
+                <!-- <field name="trading_as"/> -->
+                <field name="trade_license_no"/>
+            </xpath>
+            <xpath expr="//field[@name='type']" position="before">
+                <field name="client_owner" domain="[('employee_type','=','edari_employee')]" options="{'no_create_edit':True}"/>
+            </xpath>
+            <xpath expr="//sheet/div[2]/h1" position="after">
+                <br/><label for="trading_as">Trading As: </label>
+                <field name="trading_as" placeholder="e.g Abbreviated as ..."/>
+            </xpath>
+
+            <xpath expr="//page[1]" position="after">
+                   <page name="document_page" string="Documents">
+                           <field name="document_tree" >
+                                <tree editable="bottom">
+                                    <field name="name" required="1"/>
+                                    <field name="document_number"/>
+                                    <field name="issue_date"/>
+                                    <field name="expiry_date"/>
+                                    <field name="issued_by"/>
+                                    <field name="place_of_issue"/>
+                                    <field name="country_of_issue"/>
+                                    <field name="upload_doc"/>
+                                    <field name="doc_count"/>
+                                </tree>
+                            </field>
+                   </page>
+
+                   <page name="billing_detail" string="Billing Details">
+                        <group>
+                            <group>
+                                <field name="trade_license_no"/>
+                                <field name="branch_name"/>
+                                <field name="beneficiary_name"/>
+                                <field name="account_number"/>
+                                <field name="iban"/>
+                                <field name="swift_or_route"/>
+                                        
+                            </group>
+                            <group>
+                                <field name="vat"/>
+                                <field name="vat_reg_no"/>
+                                <field name="billing_address"/>
+                                <field name="address_line_1"/>
+                                <field name="address_line_2"/>
+                                <field name="city_emirate"/>
+                                <field name="po_box"/>
+                                
+                            </group>
+                        </group>
+                   </page>
+             </xpath>
+            <!-- <xpath expr="//field[@name='ref']" position="after">
+                <field name="is_employee" />
+            </xpath> -->
+
+        </field> 
+    </record>
+
+
+    <!-- changing string from Customers to Clients -->
+    <!-- <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="name">Cost Cards Quotations</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="view_mode">tree,kanban,form,calendar,pivot,graph,activity</field>
+        <field name="search_view_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+        <field name="context">{'search_default_my_quotation': 1}</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a new quotation, the first step of a new sale!
+          </p><p>
+            Once the quotation is confirmed by the customer, it becomes a sales order.<br/> You will be able to create an invoice and collect the payment.
+          </p>
+        </field>
+    </record>
+
+
+    <menuitem id="sale.menu_sale_quotations"
+        action="sale.action_quotations_with_onboarding"
+        parent="sale.sale_order_menu"
+        name="Cost Cards Quotations"
+        sequence="1" groups="sales_team.group_sale_salesman"/> -->
+
+
+    <record id="account.res_partner_action_customer" model="ir.actions.act_window">
+        <field name="name">Clients</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{'search_default_customer': 1,'res_partner_search_mode': 'customer', 'default_is_company': True, 'default_customer_rank': 1}</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a new client in your address book
+          </p><p>
+            Odoo helps you easily track all activities related to a client.
+          </p>
+        </field>
+    </record>
+
+
+    <menuitem id="account.menu_finance_receivables" name="Clients" parent="account.menu_finance" sequence="2"/>
+
+    <menuitem id="sale.res_partner_menu" parent="sale.sale_order_menu" action="account.res_partner_action_customer" sequence="4" groups="sales_team.group_sale_salesman" name='Clients'/>
+
+    <menuitem id="account.menu_account_customer" name="Clients" parent="account.menu_finance_receivables" action="account.res_partner_action_customer" sequence="110"/>
+
+    <!--********************* [] *********************-->
+    
+</data>
+</odoo>

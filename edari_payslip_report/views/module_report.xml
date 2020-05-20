@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<data>
+
+		<template id="edari_payslip_report_report">
+			<t t-call="web.html_container">
+				<t t-call="web.internal_layout">
+					<t t-foreach="docs" t-as="o">
+
+						<div class="page">
+							
+							<style type="text/css">
+								@media (min-width: 1200px) {
+									.container {
+									   width: 100%;
+									}
+								}
+								@media (min-width: 992px) {
+									.container {
+									   width: 100%;
+									}
+								}
+								@media (min-width: 768px) {
+									.container {
+									   width: 100%;
+									}
+								}
+								.container {
+								   width: 100%;
+								}
+								body.o_in_iframe {
+
+									margin: 0px !important;
+									padding: 0px !important;
+								}
+								.header,
+								.footer {
+
+									display: none;
+								}
+								.main_wraper {
+
+									width: 1000px;
+									margin:0px auto; 
+								}
+								table {
+									border-collapse: collapse;
+									border:1px solid black;
+									background:1px solid gray;
+								}
+								th {
+									border-collapse: collapse;
+									border:1px solid black;
+									text-align: left;
+									font-weight: bold;
+									padding: 5px;
+									font-size: 15px;
+									padding-left: 13px;
+								}
+								td {
+									border-collapse: collapse;
+									text-align: left;
+									font-weight: bold;
+									padding: 5px;
+									padding-left: 13px;
+									font-size: 13px;
+									border-left: 1px solid lightgray;
+								}
+								h1 {
+									text-align: center;
+									font-size: 25px;
+									font-weight: bold;
+									margin-top: 50px;
+								}
+								p {
+									font-size: 15px;
+									font-weight: bold;
+								}
+								img {
+									height: 160px;
+									float: right;
+									margin-bottom: 20px;
+                                    width: 50%;
+								}
+								.left_div {
+									text-align: right;
+								}
+								.left_text {
+									text-align: left;
+								}
+								.main_div {
+									width: 100%;
+									margin-top: 50px;
+								}
+								.leftt_div {
+									width: 50%;
+									float: left;
+								}
+								.right_div {
+									width: 50%;
+									float: left;
+								}
+                                .left {
+                                    width: 45%;
+                                    display: inline-block;
+                                    float: left;
+                                }
+                                .right {
+                                    margin-left: 20px;
+                                    width: 50%;
+                                    display: inline-block;
+                                    float: left;
+                                }
+                                .no-margin {
+                                    margin-top: 0px;
+                                    margin-bottom: 0px;
+                                }
+                                .com-name {
+                                    font-size: 20px;
+                                    font-weight: bold;
+                                    text-decoration: underline;
+                                }
+								.clear_float {
+									float: none;
+									display: block;
+									clear: both;
+									width: 1px;
+									height: 1px;
+								}
+								.right_text {
+									text-align: right;
+									padding-right: 11px;
+								}
+								.liquid {
+									border-bottom: 1px solid;
+									display: inline-block;
+									width: 72%;
+									float: right;
+									min-height: 15px;
+								}
+							</style>
+							
+							<div class="main_wraper">
+
+                                <div class="main_div">
+
+                                    <div class="left">
+
+                                        <t t-foreach="company" t-as="c">
+
+                                            <p class="com-name">
+                                                <span t-esc="c.name"></span>
+                                            </p>
+
+                                            <p class="no-margin">
+                                                <span t-esc="c.street"></span>
+                                            </p>
+
+                                            <p class="no-margin">
+                                                <span t-esc="c.street2"></span>
+                                            </p>
+
+                                            <p class="no-margin">
+                                                <span t-esc="c.city"></span>
+                                            </p>
+
+                                            <p class="no-margin">
+                                                <span t-esc="c.country_id.name"></span>
+                                            </p>
+
+                                            <p class="no-margin">
+                                                <span class="solid">Mobile:</span>
+                                                <span t-esc="c.phone"></span>
+                                            </p>
+
+                                            <p class="no-margin">
+                                                <span class="solid">Email:</span>
+                                                <span t-esc="c.email"></span>
+                                            </p>
+
+                                        </t>
+
+                                    </div>
+
+                                    <div class="right">
+                                        <img t-att-src="'/edari_payslip_report/static/src/img/logo.png'"/>
+                                       <!--  <t t-foreach="company" t-as="c">
+                                            <span t-field="c.logo" t-field-options='{"widget": "image"}'/> 
+                                        </t> -->
+                                        
+                                    </div>
+
+                                </div>
+                                <br class="clear_float"/>
+
+								<!-- <div>
+									<span t-field="company.logo" t-field-options='{"widget": "image"}'></span>
+								</div> -->
+
+								<h1>Pay Slip Report</h1>
+
+                                <div class="main_div">
+
+                                    <div class="left">
+
+										<p>
+											<span class="solid">Employee Name:</span>
+											<span class="liquid">
+												<span t-esc="o.employee_id.name"></span>
+											</span>
+										</p>
+										<p>
+											<span class="solid">Period:</span>
+											<span class="liquid" style="width: 84%;">
+												<span t-esc="o.date_from"></span>  - 
+												<span t-esc="o.date_to"></span>
+											</span>
+										</p>
+										<p>
+											<span class="solid">Payslip Name:</span>
+											<span class="liquid">
+												<span t-esc="o.name"></span>
+											</span>
+										</p>
+										<p>
+											<span class="solid">Work Days:</span>
+											<span class="liquid"> 
+												<t t-set="worked_days" t-value="0"/>
+												<t t-foreach="o.line_ids" t-as="w">
+	                    							<t t-if="w.code == 'WD'">
+														<t t-set="worked_days" t-value="worked_days+w.total"/>
+													</t>
+												</t>
+												<span t-esc="'{0:,.2f}'.format(float(worked_days))"></span>
+											</span>
+										</p>
+
+                                    </div>
+
+                                    <div class="right">
+
+										<p>
+											<span class="solid">Contract:</span>
+											<span class="liquid" style="width: 84%;">
+												<span t-esc="o.contract_id.name"></span>
+											</span>
+										</p>
+										<p>
+											<span class="solid">Structure:</span>
+											<span class="liquid" style="width: 84%;">
+												<span t-esc="o.struct_id.name"></span>
+											</span>
+										</p>
+										<p>
+											<span class="solid">Reference:</span>
+											<span class="liquid" style="width: 84%;">
+												<span t-esc="o.number"></span>
+											</span>
+										</p>
+                                        
+                                    </div>
+
+                                </div>
+
+                                <br class="clear_float"/>
+                                <br class="clear_float"/>
+
+								<table width="100%">
+
+									<tr>
+										<th>Name</th>
+										<th>Code</th>
+										<!-- <th>Qty</th> -->
+										<!-- <th>Rule</th> -->
+										<!-- <th class="right_text">Amount</th> -->
+										<th class="right_text">Total</th>
+									</tr>
+									<t t-set="amt" t-value="0"/>
+									<t t-set="tot" t-value="0"/>
+									<t t-foreach="o.line_ids" t-as="data">
+                    					<t t-if="data.salary_rule_id.appears_on_payslip">
+	                    					<t t-if="data.category_id.name != 'Net'">
+												<tr>
+													<td>
+														<span t-esc="data.name"></span>
+													</td>
+													<td>
+														<span t-esc="data.code"></span>
+													</td>
+													<!-- <td>
+														<span t-esc="data.quantity"></span>
+													</td> -->
+													<!-- <td>
+														<span t-esc="data.salary_rule_id.name"></span>
+													</td>
+													<td class="right_text">
+														<span t-esc="'{0:,.2f}'.format(float(data.amount))"></span>
+														<t t-set="amt" t-value="amt+data.amount"/>
+													</td> -->
+													<td class="right_text">
+														<span t-esc="'{0:,.2f}'.format(float(data.total))"></span>
+														<t t-set="tot" t-value="tot+data.total"/>
+													</td>
+												</tr>
+											</t>
+										</t>
+									</t>
+
+									<tr>
+										<th colspan="2">Total</th>
+										<!-- <th>-</th>
+										<th class="right_text">
+											<span t-esc="'{0:,.2f}'.format(float(amt))"></span>
+										</th> -->
+										<th class="right_text">
+											<span t-esc="'{0:,.2f}'.format(float(tot))"></span>
+										</th>
+									</tr>
+
+								</table>
+
+								<!-- <div class="main_div">
+
+									<div class="leftt_div">
+										<table width="100%">
+
+											<tr>
+												<th>Earnings</th>
+												<th></th>
+												<th class="left_div">الأجر</th>
+											</tr>
+											<t t-set="earning_tot" t-value="0"/>
+											<t t-foreach="earning_list" t-as="data">
+												<tr>
+													<td class="left_text">
+														<span t-esc="data.name"></span>
+													</td>
+													<td>
+														<span t-esc="'{0:,.2f}'.format(float(data.amount))"></span>
+														<t t-set="earning_tot" t-value="earning_tot+data.amount"/>
+													</td>
+													<td class="left_div">
+													</td>
+												</tr>
+											</t>
+											<tr>
+												<th>Total Earnings</th>
+												<th>
+													<center>
+														<span t-esc="'{0:,.2f}'.format(float(earning_tot))"></span>
+													</center>
+												</th>
+												<th class="left_div">الإجمالي</th>
+											</tr>
+
+										</table>
+
+									</div>
+
+									<div class="right_div">
+										<table width="100%">
+											<tr>
+												<th>Deductions</th>
+												<th></th>
+												<th class="left_div">الخصم</th>
+											</tr>
+											<t t-set="ded_tot" t-value="0"/>
+											<t t-foreach="deduction_list" t-as="data">
+												<tr>
+													<td class="left_text">
+														<span t-esc="data.name"></span>
+													</td>
+													<td>
+														<span t-esc="'{0:,.2f}'.format(float(data.amount))"></span>
+														<t t-set="ded_tot" t-value="ded_tot+data.amount"/>
+													</td>
+													<td class="left_div">
+													</td>
+												</tr>
+											</t>
+											<tr>
+												<th>Total Deductions</th>
+												<th>
+													<center>
+														<span t-esc="'{0:,.2f}'.format(float(ded_tot))"></span>
+													</center>
+												</th>
+												<th class="left_div"> إجمالي الخصم</th>
+											</tr>
+										</table>
+									</div>
+
+								</div>
+
+								<br class="clear_float"/> -->
+
+									<table width="50%" style="margin-left: 100px; margin-top:30px;">
+									<tr>
+										<th>Net Salary</th>
+										<th>
+											<center>
+												<span t-esc="'{0:,.2f}'.format(float(net_sal))"></span>
+											</center>
+										</th>
+									</tr>
+								</table><br/><br/>
+
+								<p> 
+									<span>Remarks:</span>
+									<br/>
+									<span style="margin-left: 90px;"></span>
+								</p>
+							</div>
+						</div><!--end of page-->
+					</t>
+				</t>
+			</t>
+		</template>
+	</data>
+</odoo>

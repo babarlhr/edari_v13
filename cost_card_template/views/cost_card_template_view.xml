@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+    <!--===================== [Product Extension Form View-START] ====================-->
+ 
+        <record id="cost_card_template_main_form_view" model="ir.ui.view">
+            <field name="name">cost_card_template_main_form_view</field>
+            <field name="model">costcard.template</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+
+                <form string="Cost Card Template">
+
+                   <!-- <header>
+                        <button name="set_to_draft" type="object" string="Draft" class = "oe_highlight" attrs="{'invisible':[('state','=','draft')]}"/>
+                        <button name="set_to_approved" type="object" string="Approve" class = "oe_highlight" attrs="{'invisible':[('state','=','approved')]}"/>
+                        <button name="get_assigned_fields" type="object" string="Assgin" class = "oe_highlight"/>
+                        <field name="state" widget="statusbar"/>
+                    </header> -->
+
+                    <sheet>
+                        <group name="top">
+                            <group name = "left">
+                                <field name="template_name" required="1"/>
+                                <field name="active"/>
+                            </group>
+                            <group name="right">
+                                <field name="job_position" options="{'no_create_edit':True}"/>
+                                <field name="customer" options="{'no_create_edit':True}"/>
+                                <field name="work_days_type"/>
+                                <field name="leave_type"/>
+                            </group>
+                        </group>
+                        <field name="template_tree" options="{'reload_on_button': true}">
+                            <tree editable="bottom">
+                                <field name="handle" widget='handle'/>
+                                <field name="sequence"/>
+                                <field name="service_name" required="1"/>
+                                <field name="code" />
+                                <field name="service_category" />
+                                <field name="payment_type" required = "1"/>
+                                <field name="based_on_wd"/>
+                                <field name="chargable" />
+                                <field name="account_head" />
+                                <field name="costcard_type" />
+                                <field name="recomputable" />
+                                <field name="computation_formula" />
+                                <field name="computation_qty" />
+                            </tree>
+                        </field>
+                    </sheet>
+
+                    <!-- Track visibility portion -->
+                    <!-- <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div> -->
+                </form>
+            </field>
+        </record>
+    <!--********************* [Product Extension Form View-ENDS] *********************-->
+            
+
+    <!--============================= [Tree View-STARTS] =============================-->
+        <record id="cost_card_template_main_tree_view" model="ir.ui.view"> 
+            <field name="name">Cost Card Template</field> 
+            <field name="model">costcard.template</field> 
+            <field name="type">tree</field> 
+            <field name="arch" type="xml">
+
+                <!-- <tree create="false"> -->
+                <tree>
+                    <field name="template_name"/>
+                    <field name="job_position"/>
+                </tree>
+
+            </field> 
+        </record>
+
+    <!--***************************** [Tree View-ENDS] *******************************-->
+
+
+    <!--=============================== [Action-START] ===============================-->
+        <record model="ir.actions.act_window" id="action_cost_card_template">
+            <field name="name">Cost Card Template</field>
+            <field name="res_model">costcard.template</field>
+            <!-- <field name="view_type">form</field> -->
+            <field name="view_mode">tree,form</field>
+            <!-- <field name="domain">[('state','=','draft')]</field> -->
+            <!-- <field name="context">{'readonly_by_pass': True}</field> -->
+        </record>
+
+    <!--******************************* [Action-ENDS] ********************************-->
+
+    <!--=============================== [Menus-START] =================================-->
+
+        <menuitem name="Cost Card" id="cost_card_main_menu" groups="base.group_user"/>
+
+        <menuitem name="Cost Card" id="cost_card_menu" parent="cost_card_main_menu" sequence="1" groups="base.group_user"/>
+        <menuitem name="Cost card Template" id="cost_card_template_main_menu" parent="cost_card_main_menu" sequence="2" groups="base.group_user" action="action_cost_card_template"/>
+
+
+      
+    <!--******************************* [Menus-ENDS] **********************************-->
+
+    <!--******************************* [Sequence Views-START] **********************************-->
+
+        <record id="cost_card_sequence" model="ir.sequence">
+            <field name="name">cost_card_sequence</field>
+            <field name="code">cost.card.seq</field>
+            <field name="prefix">CC-</field>
+            <field name="padding">4</field>
+        </record>
+    <!--******************************* [Sequence Views-ENDS] **********************************-->
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+
+</data>
+</odoo>

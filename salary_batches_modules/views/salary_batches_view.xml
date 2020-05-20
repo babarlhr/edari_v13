@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+    <!--===================== [Hr Contract Extension Form View-START] ====================-->
+
+    <record id="hr_contract_main_view_ext" model="ir.ui.view"> 
+        <field name="name">hr_contract_main_view_ext</field> 
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="type">form</field> 
+        <field name="arch" type="xml">
+            
+            <!-- <xpath expr="//header" position="inside">
+                <button name="get_order_lines" string="Get Order Lines" type="object" class="oe_highlight"/>
+                <button name="create_invoice" string="Create Invoice" type="object" class="oe_highlight"/>
+                <button name="create_edari_fee" string="Create Edari Fee" type="object" class="oe_highlight"/>
+            </xpath> -->
+            <xpath expr="//field[@name='date_start']" position="before">
+                <field name="salary_batch_interval"/>
+            </xpath>
+           
+        </field> 
+    </record>
+
+    <!--********************* [Hr Contract Extension Form View-ENDS] *********************-->
+
+
+    <!--===================== [Hr Payslip Run Form View-START] ====================-->
+
+    <record id="hr_payslip_run_main_view_ext" model="ir.ui.view"> 
+        <field name="name">hr_payslip_run_main_view_ext</field> 
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="hr_payroll.hr_payslip_run_form"/>
+        <field name="type">form</field> 
+        <field name="arch" type="xml">
+        
+            <xpath expr="//field[@name='credit_note']" position="before">
+                <field name="salary_batch_interval"/>
+            </xpath>
+           
+        </field> 
+    </record>
+
+    <!--********************* [Hr Payslip Run Form View-ENDS] *********************-->
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+</data>
+</odoo>

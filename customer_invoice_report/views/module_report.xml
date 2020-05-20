@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<data>
+
+		<template id="customer_invoice">
+			<t t-call="web.html_container">
+				<t t-call="web.internal_layout">
+					<t t-foreach="docs" t-as="o">
+
+						<div class="page">
+
+							<style type="text/css">
+								@media (min-width: 1200px) {
+									.container {
+									   width: 100%;
+									}
+								}
+								@media (min-width: 992px) {
+									.container {
+									   width: 100%;
+									}
+								}
+								@media (min-width: 768px) {
+									.container {
+									   width: 100%;
+									}
+								}
+								.container {
+								   width: 100%;
+								}
+								body.o_in_iframe {
+									margin: 0px !important;
+									padding: 0px !important;
+								}
+								.header,
+								.footer {
+									display: none;
+								}
+								.main_wraper {
+									width: 1000px;
+									margin:0px auto; 
+								}
+								.h1_div {
+									font-weight: bold;
+									font-size: 20px;
+									width: 50%;
+									margin-top: 50px;
+									margin-bottom: 50px;
+									float: left;
+								}
+								.h2_div {
+									margin-top: 50px;
+								    width: 50%;
+								    font-weight: bold;
+								    font-size: 20px;
+								    float: left;
+								}
+								.h3_div {
+									font-weight: bold;
+									font-size: 25px;
+								}
+								.company_info {
+									font-size: 14px;
+								}
+								.main_div {
+									width: 100%
+								}
+								.left_div {
+									font-size: 20px;
+									width: 50%;
+									float: left;
+
+								}
+								.right_div {
+									font-size: 20px;
+									float: left;
+									width: 50%;
+								}
+								.clear_float {
+									float: none;
+									clear: both;
+									width: 1
+									height: 1px;
+								}
+								th {
+									text-align: left;
+									font-size: 15px;
+									font-weight: bold;
+									padding: 8px;
+								}
+								td {
+									text-align: left;
+									border-top: 1px solid black;
+									font-weight: bold;
+									font-size: 13px;
+									padding: 5px;
+									border-bottom: 1px solid black;
+								}
+								img {
+									width: 50%;
+									height: 100px;
+								}
+								.solid {
+    								font-weight: bold;
+    								margin-right: 15px;
+								}
+								h3 {
+								    font-weight: bold;
+								}
+								.bill {
+									border-bottom: 1px solid;
+									display: inline-block;
+									width: 350px;
+								}
+								.sod { 
+									font-size: 13px;
+								}
+							</style>
+								<!-- .liquid {
+									float: right;
+								} -->
+							<div class="main_wraper">
+								<h1 class="h1_div">
+									<span> INVOICE#</span>
+									<span t-esc="o.invoice_sequence_number_next_prefix"></span>
+									<span t-esc="o.invoice_sequence_number_next"></span>
+								</h1>
+								<!-- <span t-esc="company.image_1920"  t-field-options='{"widget": "image"}'></span> -->
+								<p class="h2_div">TAX INVOICE</p>
+								<br class="clear_float"/>
+								<div class="main_div">
+									<div class="left_div">
+										<img src="/customer_invoice_report/static/src/img/logo.jpeg"/>	
+									</div>
+									<div class="right_div">
+										<p class="h3_div">
+											<span t-esc="company.name"></span>
+										</p>
+										<p class="company_info">
+											<span t-esc="company.street"></span>
+											<span t-esc="company.street2"></span>
+											<span t-esc="company.city"></span>
+											<span t-esc="company.country_id.name"></span>
+										</p>
+										<p class="company_info">
+											<span class="solid">TEL:</span>
+											<span t-esc="company.phone"></span> 
+											<!-- <span>Mobile:</span> -->
+											<!-- <span t-esc="company.mobile"></span> -->
+										</p>
+										<p class="company_info">
+											<span class="solid">TRN:</span>
+											<span t-esc="company.vat"></span>
+										</p>
+										<p class="company_info">
+											<span class="solid">Requestor/Billing Contact: </span>
+											<span> -- </span>
+										</p>
+									</div>
+								</div>
+								<p>
+									<span class="solid">BILL TO:</span>
+									<span class="bill" t-esc="o.partner_id.name"></span>
+								</p>
+								<p>
+									<span class="solid sod">Invoice date:</span>
+									<span class="solid sod">Client TRN Number: </span>
+									<span class="solid sod">SO Number: </span>
+								</p>
+								<p>
+									<span class="sod" t-esc="o.invoice_date"></span>
+									<span class="sod" t-esc="o.partner_id.vat"></span>
+									<!-- <span class="sod" t-esc="o.sale_order_id.name"></span> -->
+								</p>
+								<br class="clear_float"/>
+								<br class="clear_float"/>
+								<table width="100%">
+									<tr>
+										<th>DETAILS</th>
+										<th>AMOUNT</th>
+									</tr>
+									<t t-foreach="o.invoice_line_ids" t-as="data">
+										<tr>
+											<td>
+												<span t-esc="data.name"></span>
+											</td>
+											<td>
+												<span t-esc="'{0:,.2f}'.format(float(data.price_subtotal))"></span>
+											</td>
+										</tr>
+									</t>
+									<!-- <t t-foreach="o.invoice_line_ids" t-as="data"> -->
+
+										<tr>
+											<th style="text-align:right;">Vat@5%:</th>
+											<th>
+												<!-- <span t-esc="'{0:,.2f}'.format(float(o.amount_by_group[0][1]))"></span> -->
+											</th>
+										</tr>
+
+										<tr>
+											<th style="text-align: right;padding-right: 35px;">Total:</th>
+											<th>
+												<span t-esc="'{0:,.2f}'.format(float(o.amount_total))"></span>
+											</th>
+										</tr>
+									<!-- </t> -->
+								</table>
+								<h3>Payment Instructions:</h3>
+								<div class="main_div">
+									<div class="left_div">
+										<p>
+											<span class="solid sod">Bank Transfer:</span>
+											<span class="sod">Abu Dhabi Commercial Bank</span>
+										</p>
+										<p>
+											<span class="solid sod">Bank name:</span>
+											<span class="sod" t-esc="o.invoice_partner_bank_id.bank_id.name"></span>
+										</p>
+									</div>
+									<div class="right_div">
+										<p>
+											<span class="solid sod">IBAN:</span>
+											<span class="liquid sod" t-esc="o.invoice_partner_bank_id.acc_number"></span>
+										</p>
+										<p>
+											<span class="solid sod">Account Holder:</span>
+											<span class="liquid sod" t-esc="o.invoice_partner_bank_id.partner_id.name"></span>
+										</p>
+									</div>
+								</div>
+								<br class="clear_float"/>
+								<br class="clear_float"/>
+								<div class="main_div">
+									<div class="left_div">
+										<p>
+											<span class="solid sod">SWIFT:</span>
+											<span class="sod" t-esc="o.invoice_partner_bank_id.bank_id.bic" ></span> 
+										</p>
+										<p>
+											<span class="solid sod">Payment Terms:</span>
+											<span class="solid sod" t-esc="o.invoice_payment_term_id.name"></span>
+										</p>
+									</div>
+								</div> 
+								<br class="clear_float"/>
+								<p style="font-size: 20px;">
+									If you have any questions concerning this invoice please contact Tunji Abiola at <span t-esc="company.website"></span>
+								</p>
+							</div>
+						</div><!--end of page-->
+					</t>
+				</t>
+			</t>
+		</template>
+	</data>
+</odoo>

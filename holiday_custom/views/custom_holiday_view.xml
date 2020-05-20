@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+    <!--===================== [Custom Holiday Form View-START] ====================-->
+ 
+        <record id="custom_holiday_main_form" model="ir.ui.view">
+            <field name="name">custom.holiday.main.form</field>
+            <field name="model">custom.holiday</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+
+                <form string="Holiday">
+
+                   <header>
+                        <button name="set_to_draft" type="object" string="Draft" class = "oe_highlight" attrs="{'invisible':[('state','=','draft')]}"/>
+                        <button name="set_to_approved" type="object" string="Approve" class = "oe_highlight" attrs="{'invisible':[('state','=','approved')]}"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="year" required="1" attrs="{'readonly':[('state','=','approved')]}"/>
+                            </group>
+                            <group>
+                                <field name="no_of_days" readonly="1"/>
+                            </group>
+                        </group>
+                        <field name="holidays_tree" attrs="{'readonly':[('state','=','approved')]}">
+                            <tree editable="bottom">
+                                <!-- <field name="handle" widget='handle'/> -->
+                                <field name="date" required="1"/>
+                                <field name="day" readonly="1"/>
+                                <field name="description" />
+                            </tree>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    <!--********************* [Custom Holiday Form View-ENDS] *********************-->
+            
+
+    <!--============================= [Tree View-STARTS] =============================-->
+        <record id="custom_holiday_main_tree_view" model="ir.ui.view"> 
+            <field name="name">Custom Holiday Tree</field> 
+            <field name="model">custom.holiday</field> 
+            <field name="type">tree</field> 
+            <field name="arch" type="xml">
+                <!-- <tree create="false"> -->
+                <tree>
+                    <field name="year"/>
+                    <field name="no_of_days"/>
+                </tree>
+            </field> 
+        </record>
+
+    <!--***************************** [Tree View-ENDS] *******************************-->
+
+
+    <!--=============================== [Action-START] ===============================-->
+        <record model="ir.actions.act_window" id="action_custom_holiday">
+            <field name="name">Holidays</field>
+            <field name="res_model">custom.holiday</field>
+            <field name="view_mode">tree,form</field>
+            <!-- <field name="domain">[('state','=','draft')]</field> -->
+            <!-- <field name="context">{'readonly_by_pass': True}</field> -->
+        </record>
+
+    <!--******************************* [Action-ENDS] ********************************-->
+
+    <!--=============================== [Menus-START] =================================-->
+
+        <menuitem name="Holidays" id="custom_holiday_main_menu" parent="hr_holidays.menu_hr_holidays_root" sequence="4" groups="base.group_user"/>
+        <menuitem name="Holidays" id="custom_holiday_sub_menu" parent="custom_holiday_main_menu" sequence="1" groups="base.group_user" action="action_custom_holiday"/>
+
+
+      
+    <!--******************************* [Menus-ENDS] **********************************-->
+
+    <!--******************************* [Sequence Views-START] **********************************-->
+
+        <!-- <record id="cost_card_sequence" model="ir.sequence">
+            <field name="name">cost_card_sequence</field>
+            <field name="code">cost.card.seq</field>
+            <field name="prefix">CC-</field>
+            <field name="padding">4</field>
+        </record> -->
+    <!--******************************* [Sequence Views-ENDS] **********************************-->
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+
+</data>
+</odoo>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+    <!--===================== [Sale Order Extension Form View-START] ====================-->
+
+    <record id="so_form_view_extension" model="ir.ui.view"> 
+        <field name="name">so_form_view_extension</field> 
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="type">form</field> 
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="no_of_months"/>
+                <field name="per_month_gross_salary"/>
+                <field name="job_pos" options="{'no_create_edit': True}"/>
+                <field name="template" options="{'no_create_edit': True}"/>
+                <field name="version"/>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
+                <field name="code"/>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button name="get_order_lines" string="Get Order Lines" type="object" class="oe_highlight"/>
+            </xpath>
+
+        </field> 
+    </record>
+
+    <!--********************* [Sale Order Extension Form View-ENDS] *********************-->
+    
+</data>
+</odoo>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+    <!--===================== [Job Position Extension Form View-START] ====================-->
+
+    <record id="jobs_form_view_extension" model="ir.ui.view"> 
+        <field name="name">jobs_form_view_extension</field> 
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_hr_job_form"/>
+        <field name="type">form</field> 
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='address_id']" position="after">
+                <field name="customer" required="1" string = "Client"/>
+                <field name="hiring_manager_client" options="{'no_create_edit':True}"/>
+                <field name="job_type"/>
+                <field name="anticipated_start_date"/>
+                <field name="budget"/>
+                <field name="contract_length"/>
+                <field name="template" options="{'no_create_edit':True}" string = "Cost Card Template"/>
+                <field name="estimated_gross_salary"/>
+                <field name="hiring_manager" string = "Hiring Manager Edari" invisible = "1"/>
+            </xpath>
+
+           
+
+            <xpath expr="//header" position="inside">
+                <button name="create_so" string="Create Master Cost Card" type="object" class="oe_highlight"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" name="so_smart_button"
+                                    string="Cost Cards" type="object"
+                                    icon="fa-bars">
+                </button>
+            </xpath>
+        </field> 
+    </record>
+
+
+    <record id="jobs_form_view_extension_survey" model="ir.ui.view"> 
+        <field name="name">jobs_form_view_extension_survey</field> 
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_job_survey"/>
+        <field name="type">form</field> 
+        <field name="arch" type="xml">
+            
+            <!-- <xpath expr="//field[@name='no_of_recruitment']" position="before">
+                 <field name="job_position_status"/>
+            </xpath> -->
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                 <attribute name="string">Edari Job Owner</attribute>
+            </xpath>
+        </field> 
+    </record>
+
+    <record id="hr_job_survey_form_view_extension" model="ir.ui.view"> 
+        <field name="name">hr_job_survey_form_view_extension</field> 
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_job_survey"/>
+        <field name="type">form</field> 
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="costcard_template" options="{'no_create_edit':True}" string = "Master Cost Card"/>
+                <field name="visa_entity"/>
+                <!-- <field name="annual_leaves"/> -->
+                <!-- <field name="sick_leaves"/> -->
+                <field name="probation_period"/>
+                <field name="notice_period"/>
+                <field name="working_days"/>
+                <field name="work_days_type"/>
+                <field name="leave_type" attrs="{'invisible':[('work_days_type','!=','actual_working_days')]}"/>
+            </xpath>
+        </field> 
+    </record>
+
+    <!--********************* [Job Position Extension Form View-ENDS] *********************-->
+
+    <record id="hr_recruitment.create_job_simple" model="ir.actions.act_window">
+        <field name="name">Create a Job Position</field>
+        <field name="res_model">hr.job</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="hr.view_hr_job_form"/>
+        <field name="target">new</field>
+    </record>
+        <!-- <field name="view_id" ref="hr_job_simple_form"/> -->
+
+    <!-- adding default group by -->
+    <record id="jobs_form_view_extension_search" model="ir.ui.view"> 
+        <field name="name">jobs_form_view_extension_search</field> 
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_job_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='department']" position="after">
+                <filter string="Customer" name="customer" domain="[]" context="{'group_by': 'customer'}"/>
+            </xpath>
+        </field> 
+    </record>
+
+
+    <record id="hr.action_hr_job" model="ir.actions.act_window">
+        <field name="name">Job Positions</field>
+        <field name="res_model">hr.job</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="hr.view_job_filter"/>
+        <field name="context">{"search_default_customer":1}</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Ready to recruit more efficiently?
+          </p><p>
+            Let's create a job position.
+          </p>
+        </field>
+    </record>
+
+    
+</data>
+</odoo>

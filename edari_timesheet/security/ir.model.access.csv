@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_edari_timesheet_edari_timesheet,edari_timesheet.edari_timesheet,model_edari_timesheet_edari_timesheet,,1,0,0,0

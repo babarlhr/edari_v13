@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+    <!--===================== [Job Type Form View-START] ====================-->
+ 
+        <record id="visa_entity_main_form_view" model="ir.ui.view">
+            <field name="name">visa_entity_main_form_view</field>
+            <field name="model">visa.entity</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+
+                <form string="Visa Entity">
+
+                   <!-- <header>
+                        <button name="set_to_draft" type="object" string="Draft" class = "oe_highlight" attrs="{'invisible':[('state','=','draft')]}"/>
+                        <button name="set_to_approved" type="object" string="Approve" class = "oe_highlight" attrs="{'invisible':[('state','=','approved')]}"/>
+                        <button name="get_assigned_fields" type="object" string="Assgin" class = "oe_highlight"/>
+                        <field name="state" widget="statusbar"/>
+                    </header> -->
+
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" required="1"/>
+                            </group>
+                            <group>
+                                <!-- <field name="job_position"/> -->
+                            </group>
+                        </group>
+                        <!-- <field name="template_tree">
+                            <tree editable="bottom">
+                                <field name="handle" widget='handle'/>
+                                <field name="sequence"/>
+                                <field name="service_name" required="1"/>
+                                <field name="code" />
+                                <field name="service_category" />
+                                <field name="chargable" />
+                                <field name="account_head" />
+                                <field name="fixed" />
+                                <field name="computation_formula" />
+                            </tree>
+                        </field> -->
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    <!--********************* [Job Type Form View-ENDS] *********************-->
+            
+
+    <!--============================= [Tree View-STARTS] =============================-->
+        <record id="visa_entity_main_ext_tree_view" model="ir.ui.view"> 
+            <field name="name">Visa Entity</field> 
+            <field name="model">visa.entity</field> 
+            <field name="type">tree</field> 
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                </tree>
+
+            </field> 
+        </record>
+
+    <!--***************************** [Tree View-ENDS] *******************************-->
+
+
+    <!--=============================== [Action-START] ===============================-->
+        <record model="ir.actions.act_window" id="visa_entity_action_main">
+            <field name="name">Visa Entity</field>
+            <field name="res_model">visa.entity</field>
+            <!-- <field name="view_type">form</field> -->
+            <field name="view_mode">tree,form</field>
+            <!-- <field name="domain">[('state','=','draft')]</field> -->
+            <!-- <field name="context">{'readonly_by_pass': True}</field> -->
+        </record>
+
+    <!--******************************* [Action-ENDS] ********************************-->
+
+    <!--=============================== [Menus-START] =================================-->
+
+        <menuitem name="Visa Entity" id="visa_entity_main_menu" parent="hr_recruitment.menu_crm_case_categ0_act_job" sequence="10" groups="base.group_user" action="visa_entity_action_main"/>
+
+
+      
+    <!--******************************* [Menus-ENDS] **********************************-->
+
+    <!--******************************* [Sequence Views-START] **********************************-->
+
+    <!--******************************* [Sequence Views-ENDS] **********************************-->
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+
+</data>
+</odoo>

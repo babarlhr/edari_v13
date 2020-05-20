@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>
+
+        <template id="cost_card">
+            <t t-call="web.html_container">
+                <t t-call="web.internal_layout">
+                    <t t-foreach="docs" t-as="o">
+
+                        <div class="page">
+                            
+                            <style type="text/css">
+                                @media (min-width: 1200px) {
+                                    .container {
+                                       width: 100%;
+                                    }
+                                }
+                                @media (min-width: 992px) {
+                                    .container {
+                                       width: 100%;
+                                    }
+                                }
+                                @media (min-width: 768px) {
+                                    .container {
+                                       width: 100%;
+                                    }
+                                }
+                                .container {
+                                   width: 100%;
+                                }
+                                body.o_in_iframe {
+                                    margin: 0px !important;
+                                    padding: 0px !important;
+                                }
+                                .header,
+                                .footer {
+                                    display: none;
+                                }
+                                .main_wraper {
+                                    width: 1000px;
+                                    margin: 0px auto;
+                                }
+                                h1 {
+                                    text-align: center;
+                                    border: 1px solid lightgray;
+                                    background: #dee2e6;
+                                    width: 35%;
+                                    border-radius: 7px;
+                                    font-family: fantasy;
+                                    margin-bottom: 20px;
+                                }
+                                .main_div {
+                                    width   :100%;
+                                }
+                                .left {
+                                    width :49%;
+                                    float:left;
+                                }
+                                .right {
+                                    width:49%;
+                                    float:left;
+                                }
+                                table {
+                                    border:1px solid lightgray;
+                                    border-collapse: collapse;   
+                                }
+                                th {
+                                    border:1px solid lightgray;
+                                    border-collapse:collapse;
+                                    text-align:center;
+                                    padding: 5px;
+                                    background: #dee2e6;
+                                }
+                                td {
+                                    text-align:center;
+                                    padding: 3px;
+                                    border:1px solid lightgray;
+                                    border-collapse:collapse;
+                                }
+                                .clear_float {
+                                    float:none;
+                                    clear:both;
+                                    display:block;
+                                    width:1px;
+                                    height:1px;
+                                }
+                                .one_div {
+                                    width :25%;
+                                    float:left ;
+                                    display:inline-block;
+                                }
+                                .two_div {
+                                    width:25%;
+                                    float:left;
+                                    display:inline-block;
+                                }
+                                .three_div {
+                                    width :25%;
+                                    float:left ;
+                                    display:inline-block;
+                                }
+                                .four_div {
+                                    width:25%;
+                                    float:left;
+                                    display:inline-block;
+                                }
+                                .solid {    
+                                    font-weight: bold;
+                                }
+                                .liquid {    
+                                    width: 65%;
+                                    float: right;
+                                    margin-right: 15px;
+                                    border-bottom: 1px solid lightgray;
+                                    display: inline-block;
+                                    min-height: 15px;
+                                }
+                                .liquid2 {    
+                                    width: 80%;
+                                    float: right;
+                                    margin-right: 15px;
+                                    border-bottom: 1px solid lightgray;
+                                    display: inline-block;
+                                    min-height: 15px;
+                                }
+                                .liquid3 {    
+                                    width: 70%;
+                                    float: right;
+                                    margin-right: 15px;
+                                    border-bottom: 1px solid lightgray;
+                                    display: inline-block;
+                                    min-height: 15px;
+                                }
+                                .no-margin {
+                                    margin-top: 0px;
+                                    margin-bottom: 0px;
+                                }
+                                .com-name {
+                                    font-size: 20px;
+                                    font-weight: bold;
+                                    text-decoration: underline;
+                                }
+                                .main_div {
+                                    width: 100%;
+                                }
+                                .left {
+                                    width: 50%;
+                                    display: inline-block;
+                                    float: left;
+                                }
+                                .right {
+                                    width: 50%;
+                                    display: inline-block;
+                                    float: left;
+                                }
+                                img {
+                                    width: 50%;
+                                    float: right;    
+                                }
+                                .prod {
+                                    text-align: left;
+                                    padding-left: 10px;
+                                }
+
+                            </style>
+
+                            <div class="main_wraper">
+
+                                <div class="main_div">
+
+                                    <div class="left">
+
+                                        <t t-foreach="company" t-as="c">
+
+                                            <p class="com-name">
+                                                <span t-esc="c.name"></span>
+                                            </p>
+
+                                            <p class="no-margin">
+                                                <span t-esc="c.street"></span>
+                                            </p>
+
+                                            <p class="no-margin">
+                                                <span t-esc="c.street2"></span>
+                                            </p>
+
+                                            <p class="no-margin">
+                                                <span t-esc="c.city"></span>
+                                            </p>
+
+                                            <p class="no-margin">
+                                                <span t-esc="c.country_id.name"></span>
+                                            </p>
+
+                                            <p class="no-margin">
+                                                <span class="solid">Mobile:</span>
+                                                <span t-esc="c.phone"></span>
+                                            </p>
+
+                                            <p class="no-margin">
+                                                <span class="solid">Email:</span>
+                                                <span t-esc="c.email"></span>
+                                            </p>
+
+                                        </t>
+
+                                    </div>
+
+                                    <div class="right">
+                                        <img t-att-src="'/cost_card_report/static/src/img/logo.png'"/>
+                                       <!--  <t t-foreach="company" t-as="c">
+                                            <span t-field="c.logo" t-field-options='{"widget": "image"}'/> 
+                                        </t> -->
+                                        
+                                    </div>
+
+                                </div>
+
+                                <br class="clear_float"/>
+                                <t t-if="o.state == 'draft'">
+                                    <h1>Draft</h1>
+                                </t>
+                                <t t-elif="o.state == 'cancel'">
+                                    <h1>Cancelled</h1>
+                                </t>
+                                <t t-else="">
+                                    <h1>Cost Card Report</h1>
+                                </t>
+
+                                <div class="main_div">
+
+                                    <div class="left">
+                                        <p>
+                                            <span class="solid">Date:</span>
+                                            <span class="liquid2">
+                                                <!-- <t t-if="o.date_order">
+                                                    <span t-esc="datetime.datetime.strptime(o.date_order, '%Y-%m-%d %H:%M:%S').strftime('%B %d,%Y')"/>
+                                                </t> -->
+                                                <span t-esc="o.date_order"/>
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <span class="solid">Client:</span>
+                                            <span class="liquid2">
+                                                <span t-esc="o.partner_id.name"></span>
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <span class="solid">Candidate Name:</span>
+                                            <span class="liquid3">
+                                                <span t-esc="o.candidate_name"></span>
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <span class="solid">Position:</span>
+                                            <span class="liquid2">
+                                                <span t-esc="o.job_pos.name"></span>
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                    <div class="right">
+
+                                        <p>
+                                            <span class="solid">Number of Months:</span>
+                                            <span class="liquid">
+                                                <span t-esc="o.no_of_months"></span>
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <span class="solid">Service Type:</span>
+                                            <span class="liquid3">
+                                                <span t-esc="o.template.template_name"></span>
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <span class="solid">Gross Monthly Salary:</span>
+                                            <span class="liquid">
+                                                <span t-esc="'{0:,}'.format(int(o.per_month_gross_salary))"></span>
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <span class="solid">Version No:</span>
+                                            <span class="liquid">
+                                                <span t-esc="'{0:,}'.format(int(o.version))"></span>
+                                            </span>
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                                <br class="clear_float"/>
+                                 
+
+                                <table width="100%">
+
+                                    <t t-set="grand_monthly_cost" t-value="0"/> 
+                                    <t t-set="grand_total_cost" t-value="0"/>
+                                    <t t-foreach="main_liste" t-as="l">
+                                        <tr>
+                                            <th>
+                                                <span t-esc="l['categ']"></span>
+                                            </th>
+                                            <th>Total Cost</th>
+                                            <th>Monthly Cost</th>
+                                        </tr>
+                                        <t t-set="sub_monthly_cost" t-value="0"/> 
+                                        <t t-set="sub_total_cost" t-value="0"/> 
+                                        <t t-foreach="l['list']" t-as="data">
+
+                                            <tr>
+                                                <td class="prod">
+                                                    <span t-esc="data['product']"></span>
+                                                </td>
+                                                <td>
+                                                    <t t-if="data['total_cost']">
+                                                        <span t-esc="'{0:,}'.format(int(data['total_cost']))"></span>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span>-</span>
+                                                    </t>
+                                                    <t t-set="sub_total_cost" t-value="sub_total_cost+data['total_cost']"/> 
+                                                </td>
+                                                <td>
+                                                    <t t-if="data['monthly_cost']">
+                                                        <span t-esc="'{0:,}'.format(int(data['monthly_cost']))"></span>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span>-</span>
+                                                    </t>
+                                                    <t t-set="sub_monthly_cost" t-value="sub_monthly_cost+data['monthly_cost']"/> 
+                                                </td>
+                                            </tr>
+
+                                        </t>
+                                        <tr>
+                                            <td>Sub Total:</td>
+                                            <td>
+                                                <t t-if="sub_total_cost">
+                                                    <span t-esc="'{0:,}'.format(int(sub_total_cost))"></span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span>-</span>
+                                                </t>
+                                                <t t-set="grand_total_cost" t-value="grand_total_cost+sub_total_cost"/> 
+                                            </td>
+                                            <td>
+                                                <t t-if="sub_monthly_cost">
+                                                    <span t-esc="'{0:,}'.format(int(sub_monthly_cost))"></span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span>-</span>
+                                                </t>
+                                                <t t-set="grand_monthly_cost" t-value="grand_monthly_cost+sub_monthly_cost"/> 
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr>
+                                        <th>Grand Total:</th>
+                                        <th>
+                                            <t t-if="grand_total_cost">
+                                                <span t-esc="'{0:,}'.format(int(grand_total_cost))"></span>
+                                            </t>
+                                            <t t-else="">
+                                                <span>-</span>
+                                            </t>
+                                        </th>
+                                        <th>
+                                            <t t-if="grand_monthly_cost">
+                                                <span t-esc="'{0:,}'.format(int(grand_monthly_cost))"></span>
+                                            </t>
+                                            <t t-else="">
+                                                <span>-</span>
+                                            </t>
+                                        </th>
+                                    </tr>
+
+                                </table>
+
+                            </div>
+
+                        </div><!--end of page-->
+                    </t>
+                </t>
+            </t>
+
+        </template>
+    </data>
+</odoo>

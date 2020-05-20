@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>   
+
+        <template id="salary_sheet_id">
+
+            <t t-call="web.html_container">
+
+                <t t-call="web.internal_layout">
+
+                    <div class="page" style="font-size: 7pt;">
+
+                        <style>
+                            @media (min-width: 1200px) {
+                                .container {
+                                   width: 100%;
+                                }
+                            }
+                            @media (min-width: 992px) {
+                                .container {
+                                   width: 100%;
+                                }
+                            }
+                            @media (min-width: 768px) {
+                                .container {
+                                   width: 100%;
+                                }
+                            }
+                            .container {
+                               width: 100%;
+                            }
+                            table {
+                                width: 100%;
+                                min-width: 100%;
+                                max-width: 100%;
+                            }
+                            table tr th,
+                            .total-row {
+                                background: #ccc;
+                            }
+                            table tr th,
+                            table tr td {
+                                text-align: center;
+                                vertical-align: middle !important;
+                                padding: 5px !important;
+                            }
+                            table tr th.namer {
+                                min-width: 135px;
+                            }
+                            table tr td.namer {
+                                text-align: center;
+                            }
+                            table tr th,
+                            table tr td {
+                                min-width: 35px;
+
+                            }
+                            address {
+                                display: none;
+                            }
+                            h1,h2 {
+                                font-size: 20px !important;
+                            }
+                            h2 {
+                                margin: 15px 0px 0px;
+                                text-align: center;
+                            }
+                            p {
+                                font-size: 14px;
+                            }
+                            .heading {
+                                text-align: center;
+                                text-decoration: underline;
+                                margin: 0px 0px 15px 0px;
+                            }
+                            .dasher {
+                                display: block;
+                                text-align: center;
+                            }
+                            .total-row td {
+                                font-weight: bold;
+                            }
+                            .departmental {
+                                font-size: 11px;
+                                font-weight: bold;
+                                background: #EEE;
+                            }
+                            .totaled {
+                                font-weight: bold;
+                                background: #E1E1E1;
+                            }
+                            .header,
+                            .footer {
+
+                                display: none;
+                            }
+                            @media print {
+                                thead {display: table-header-group;}
+                            }
+                            tr { 
+                                page-break-inside: avoid !important;
+                            }
+                            td { 
+                                page-break-inside: avoid !important;
+                            }
+                            td {
+                                page-break-after: always;
+                            }
+                            .main_div {
+                                width: 100%;
+                                margin-top: 50px;
+                            }
+                            .left {
+                                width: 50%;
+                                float: left;
+                            }
+                            .right {
+                                width: 50%;
+                                float: left;
+                            }
+                            img {
+                                height: 160px;
+                                float: right;
+                                margin-bottom: 20px;
+                            }
+                            .no-margin {
+                                margin-top: 0px;
+                                margin-bottom: 0px;
+                            }
+                            .com-name {
+                                font-size: 20px;
+                                font-weight: bold;
+                                text-decoration: underline;
+                            }
+                            .clear_float {
+                                float: none;
+                                display: block;
+                                clear: both;
+                                width: 1px;
+                                height: 1px;
+                            }
+
+                        </style>
+
+                        <div class="main_div">
+
+                            <div class="left">
+
+                                <t t-foreach="company" t-as="c">
+
+                                    <p class="com-name">
+                                        <span t-esc="c.name"></span>
+                                    </p>
+
+                                    <p class="no-margin">
+                                        <span t-esc="c.street"></span>
+                                    </p>
+
+                                    <p class="no-margin">
+                                        <span t-esc="c.street2"></span>
+                                    </p>
+
+                                    <p class="no-margin">
+                                        <span t-esc="c.city"></span>
+                                    </p>
+
+                                    <p class="no-margin">
+                                        <span t-esc="c.country_id.name"></span>
+                                    </p>
+
+                                    <p class="no-margin">
+                                        <span class="solid">Mobile:</span>
+                                        <span t-esc="c.phone"></span>
+                                    </p>
+
+                                    <p class="no-margin">
+                                        <span class="solid">Email:</span>
+                                        <span t-esc="c.email"></span>
+                                    </p>
+
+                                </t>
+
+                            </div>
+
+                            <div class="right">
+                                <!-- <img t-att-src="'/edari_payslip_report/static/src/img/logo.png'"/> -->
+                               <!--  <t t-foreach="company" t-as="c">
+                                    <span t-field="c.logo" t-field-options='{"widget": "image"}'/> 
+                                </t> -->
+                               <t t-foreach="company" t-as="c">
+                                    <img t-attf-src="data:image/*;base64,{{c.logo}}" t-att-alt="c.name"/>
+                                </t> 
+                                
+                            </div>
+
+                        </div>
+                        <br class="clear_float"/>
+                        <h2 class="heading">Salary Sheet For <span t-esc="monthee"></span> <span t-esc="yearr"></span> </h2>
+                        <!-- For <span t-esc="date_getter()"></span> -->
+
+                        <t t-set="rules_size" t-value="0" />
+                        <t t-foreach="rules" t-as="a">
+                            <t t-set="rules_size" t-value="rules_size + 1" />
+                        </t>
+
+
+                        <table class="table table-condensed table-bordered">
+                            <thead>
+                                <tr style="border: 1px solid grey;">
+                                    <th>Sr No.</th>
+                                    <th class="namer">Employee Name</th>
+                                    <th class="namer">Employee Code</th>
+                                    <!-- <th class="namer">Department</th> -->
+                                    <!-- <th>Job Title</th> -->
+                                    <!-- <t t-foreach="categs" t-as="categ">
+                                        <t t-set="colsize" t-value="GetCategSize(categ)" />
+                                        <th t-att-colspan="colsize">
+                                            <span t-esc="categ.name"></span>
+                                        </th>
+                                    </t> -->
+
+                                    <t t-set="rules_size_2" t-value="0" />
+                                    <t t-foreach="categs" t-as="categ">
+                                        <t t-foreach="GetCategRules(categ)" t-as="rule">
+                                            <t t-set="rules_size_2" t-value="rules_size_2+1" />
+                                            <th><span t-esc="rule.name"></span></th>
+                                        </t>
+                                    </t>
+                                    <t t-set="total_size" t-value="rules_size_2 + 3"/>
+                                   <!--  <th style="width: 150px;min-width: 150px;max-width: 150px;">Account No</th>
+                                    <th>Payslip#</th> -->
+                                </tr>
+
+                                <!-- <tr style="border: 1px solid grey;">
+                                    <t t-foreach="categs" t-as="categ">
+                                        <t t-foreach="GetCategRules(categ)" t-as="rule">
+                                            <th><span t-esc="rule.name"></span></th>
+                                        </t>
+                                    </t>
+                                </tr> -->
+                            </thead>
+
+                            <t t-set="sr_no" t-value="1" />
+                            <t t-set="total_of_basic" t-value="0" />
+                            <t t-set="total_of_net" t-value="0" />
+                            <t t-set="total_of_gross" t-value="0" />
+                            <tbody>
+                                <!-- <t t-foreach="docs" t-as="rec"> -->
+                                    <!-- <tr>
+                                        <td t-att-colspan="total_size" class="departmental">
+                                            <span t-esc="rec.name"></span>
+                                        </td>
+                                    </tr> -->
+
+                                <!-- <span t-esc="collect_records(rec)"></span> -->
+                                <span t-esc="collect_records()"></span>
+                                <t t-set="depart_basic" t-value="0" />
+                                <t t-set="depart_net" t-value="0" />
+                                <t t-set="depart_gross" t-value="0" />
+
+                                <t t-foreach="employee" t-as="o">
+                                    <tr style="height: 60px;">
+
+                                        <td>
+                                            <span t-esc="sr_no"></span>
+                                            <t t-set="sr_no" t-value="sr_no + 1" />
+                                        </td>
+
+                                        <td class="namer">
+                                            <span t-esc="o.employee_id.name"></span>
+                                        </td>
+
+                                        <td class="namer">
+                                            <span t-esc="o.employee_id.employee_code"></span>
+                                        </td>
+
+                                        <t t-foreach="categs" t-as="categ">
+                                            <t t-foreach="GetCategRules(categ)" t-as="rule">
+                                                <td>
+
+                                                    <t t-set="value" t-value="get_amount(o,rule.code)" />
+                                                    
+                                                    <t t-if="value == 0">
+                                                        <span class="dasher"> - </span>
+                                                    </t>
+
+                                                    <t t-if="value > 0">
+                                                        <t t-if="rule.code == 'WD' or rule.code == 'oth'">
+                                                            <span t-esc="'{0:,.2f}'.format(float(value))"></span>
+                                                        </t>
+
+                                                        <t t-if="rule.code != 'WD' and rule.code != 'oth'">
+                                                            <span t-esc="'{:0,.2f}'.format(int(float(value)))"></span>
+                                                        </t>
+
+                                                    </t>
+
+                                                </td>
+                                            </t>
+                                        </t>
+                                    </tr>
+                                </t>
+                                
+                                <tr class="totaled">
+                                    <td colspan="3">Total</td>
+
+                                    <t t-foreach="categs" t-as="categ">
+                                        <t t-foreach="GetCategRules(categ)" t-as="rule">
+                                            <td>
+                                                <b>
+                                                    <span t-esc="'{:0,.2f}'.format(int(float(depart_totale(rule.code))))"></span>
+                                                </b>
+                                            </td>
+                                        </t>
+                                    </t>
+
+                                </tr>
+                                <!-- </t> -->
+
+                                <!-- <tr class="total-row">
+                                    <td colspan="3">Grand Total</td>
+
+                                    <t t-foreach="categs" t-as="categ">
+                                        <t t-foreach="GetCategRules(categ)" t-as="rule">
+                                            <td><span t-esc="'{:0,.2f}'.format(int(float(totaled(rule.code))))"></span></td>
+                                        </t>
+                                    </t> 
+                                </tr> -->
+                            </tbody>
+
+                        </table>         
+                    </div>
+
+                </t>
+                
+            </t>
+
+        </template>
+
+    </data>
+
+</odoo>
