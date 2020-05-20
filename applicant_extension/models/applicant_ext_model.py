@@ -123,7 +123,7 @@ class HrApplicantExt(models.Model):
 		if self.salary_proposed> 0:
 			salary_amount = self.salary_proposed
 		else:
-			salary_amount = self.job_id.cost_card.per_month_gross_salary
+			salary_amount = self.job_id.costcard_template.per_month_gross_salary
 		if not self.cost_card:
 			so_rec = self.env['sale.order'].create({
 				'candidate_name':self.partner_name,
