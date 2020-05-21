@@ -237,21 +237,24 @@ class SaleOrderExt(models.Model):
 		return temp
 
 	############## Function to calculate leave balance total START ##############
-	def calculate_leave_balance(self,date_invoice):
+	def calculate_leave_balance(self,date_invoice,leave_name):
 
 
-
+		
 		unique_holidays = []
 		holiday_rec = self.env['custom.holiday.tree'].search([('tree_link.year','=',str(date_invoice.year))])
 		for holiday_index in holiday_rec:
 			if not holiday_index.day in unique_holidays:
 				unique_holidays.append(holiday_index.date)
 
-		leaves = self.env['hr.leave'].search([('employee_id','=',self.employee.id),('state','=','validate')])
+		leaves = self.env['hr.leave'].search([('employee_id','=',self.contract.employee_id.id),('state','=','validate')])
 		total_leaves = 0
+		leave_name_days = 0
 		for x in leaves:
 			per_request_leaves = 0
 			leave_days_list = []
+			leave_name_days = 0
+			leave_days_list_specific = []
 
 			if date_invoice.replace(day=1) == x.request_date_from.replace(day=1) or date_invoice.replace(day=1) == x.request_date_to.replace(day=1):
 
@@ -265,15 +268,28 @@ class SaleOrderExt(models.Model):
 								leave_days_list.append(day)
 								if x.request_unit_half:
 									total_leaves += 0.5
+									if x.holiday_status_id.name == leave_name:
+										leave_name_days += 0.5
+										leave_days_list_specific.append(day)
+
 								else:
 									total_leaves += 1
+									if x.holiday_status_id.name == leave_name:
+										leave_name_days += 1
+										leave_days_list_specific.append(day)
 						if self.leave_type == "one_day":
 							if day.weekday() != 4 :
 								leave_days_list.append(day)
 								if x.request_unit_half:
 									total_leaves += 0.5
+									if x.holiday_status_id.name == leave_name:
+										leave_name_days += 0.5
+										leave_days_list_specific.append(day)
 								else:
 									total_leaves += 1
+									if x.holiday_status_id.name == leave_name:
+										leave_name_days += 1
+										leave_days_list_specific.append(day)
 
 
 				for z in unique_holidays:
@@ -281,8 +297,15 @@ class SaleOrderExt(models.Model):
 						leave_days_list.remove(z)
 						
 						total_leaves -= 1
+					if z in leave_days_list_specific:
+						leave_days_list_specific.remove(z)
+						
+						leave_name_days -= 1
 
-		return total_leaves
+		return [total_leaves,leave_name_days]
+
+	def CalculateLeavesPayroll(self,date,leave_name):
+		return self.calculate_leave_balance(date,leave_name)[1]
 
 
 
@@ -479,9 +502,11 @@ class SaleOrderExt(models.Model):
 			no_of_holidays_wd = self.calculate_holidays(month_interval,date_invoice)
 			divisor -= no_of_holidays
 
-		working_days -= (self.calculate_leave_balance(date_invoice) + no_of_holidays_wd)
+		working_days -= (self.calculate_leave_balance(date_invoice,None)[0] + no_of_holidays_wd)
 
 		return [working_days,divisor]
+
+
 
 
 
