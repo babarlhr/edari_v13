@@ -5,6 +5,7 @@
             <field name="name">Approved</field>
         </record>
 
+
         <record id="in_approval_hr_recruitment_stage" model="hr.recruitment.stage">
             <field name="name">In Approvals</field>
     </record>
