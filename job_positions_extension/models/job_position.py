@@ -13,6 +13,7 @@ class JobsExtension(models.Model):
 	job_type = fields.Many2one('job.type', string="Job Type")
 	customer = fields.Many2one('res.partner', string="Customer")
 	hiring_manager_client = fields.Many2one('res.partner', string="Hiring Manager Client")
+	hiring_manager_client_dom = fields.Many2many('res.partner',compute = "GetClientManagers")
 	anticipated_start_date = fields.Date(string="Anticipated Start Date")
 	budget = fields.Float(string="Budget")
 	contract_length = fields.Float(string="Contract Length")
@@ -76,13 +77,22 @@ class JobsExtension(models.Model):
 		if not self.user_id:
 			self.user_id = self.env.uid
 
-	@api.onchange('customer')
-	def template_domain(self):
-		template_recs = self.env['costcard.template'].search([('job_position', '=', self.id),('customer','=',self.customer.id)])
-		template_list = []
-		for x in template_recs:
-			template_list.append([x.id])
-		self.domain_template = [(6, 0, template_list)]
+
+	def GetClientManagers(self):
+		for x in self:
+			id_list = []
+			for index in x.customer.child_ids:
+				id_list.append(index.id)
+
+		self.hiring_manager_client_dom = [(6, 0, id_list)]
+
+	# @api.onchange('customer')
+	# def template_domain(self):
+	# 	template_recs = self.env['costcard.template'].search([('job_position', '=', self.id),('customer','=',self.customer.id)])
+	# 	template_list = []
+	# 	for x in template_recs:
+	# 		template_list.append([x.id])
+	# 	self.domain_template = [(6, 0, template_list)]
 
 	# def _compute_so_count(self):
 	# 	# so_data = self.env['sale.order'].sudo().read_group([('job_pos','in',self.ids)],['job_pos'],['job_pos'])

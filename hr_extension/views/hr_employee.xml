@@ -14,7 +14,7 @@
             <field name="arch" type="xml">
                 
                 <xpath expr="//field[@name='work_location']" position="after">
-                    <field name="customer" options="{'no_create_edit': True}"/>
+                    <field name="customer" domain = "[('parent_id','=',False),('customer_rank','!=',0)]" options="{'no_create_edit':True}"/>
                     <field name="employee_type"/>
                     <field name="cost_card" options="{'no_create_edit': True}"/>
                     <field name="wage"/>
