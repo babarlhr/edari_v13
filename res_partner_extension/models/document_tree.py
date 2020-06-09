@@ -9,7 +9,8 @@ class DocumentTree(models.Model):
 	_rec_name = 'name'
 
 
-	name = fields.Char(string="Name")
+	document_type = fields.Many2one('document.tree.type',string = "Document")
+	name = fields.Char()
 	document_number = fields.Char(string="Document Number")
 	issue_date = fields.Date(string="Issue Date")
 	expiry_date = fields.Date(string="Expiry Date")
@@ -20,4 +21,11 @@ class DocumentTree(models.Model):
 	doc_count = fields.Integer(string="DOC Count")
 
 	partner_link = fields.Many2one('res.partner')
+
+
+class DocumentTreeType(models.Model):
+	_name='document.tree.type'
+	_rec_name = 'name'
+
+	name = fields.Char(string = "Name")
 	

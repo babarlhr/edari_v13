@@ -30,7 +30,8 @@
                    <page name="document_page" string="Documents">
                            <field name="document_tree" >
                                 <tree editable="bottom">
-                                    <field name="name" required="1"/>
+                                    <field name="document_type" required="1"/>
+                                    <field name="name"/>
                                     <field name="document_number"/>
                                     <field name="issue_date"/>
                                     <field name="expiry_date"/>
