@@ -86,29 +86,26 @@ class JobsExtension(models.Model):
 
 		self.hiring_manager_client_dom = [(6, 0, id_list)]
 
-	# @api.onchange('customer')
-	# def template_domain(self):
-	# 	template_recs = self.env['costcard.template'].search([('job_position', '=', self.id),('customer','=',self.customer.id)])
-	# 	template_list = []
-	# 	for x in template_recs:
-	# 		template_list.append([x.id])
-	# 	self.domain_template = [(6, 0, template_list)]
+	def UpdateHiringManager(self):
+		if not self.hiring_manager_client.parent_id:
+			self.hiring_manager_client.parent_id = self.customer.id
 
-	# def _compute_so_count(self):
-	# 	# so_data = self.env['sale.order'].sudo().read_group([('job_pos','in',self.ids)],['job_pos'],['job_pos'])
-	# 	# result = dict((data['job_pos'][0], data['so_id_count']) for data in so_data)
-	# 	for jobs in self:
-	# 		print ("XXXXXXXXXXXXXXXXXXXXXXXXX")
-	# 		print ("XXXXXXXXXXXXXXXXXXXXXXXXX")
-	# 		print (jobs.id)
-	# 		recs = self.env['sale.order'].search(['job_pos','=',jobs.id])
-	# 		print (recs)
-	# 		print (count)
-	# 		print (type(count))
-	# 		print ("XXXXXXXXXXXXXXXXXXXXXXXXX")
-	# 		print ("XXXXXXXXXXXXXXXXXXXXXXXXX")
-	# 		jobs.so_count = int(count)
-	
+
+	@api.model
+	def create(self, vals):
+		new_record = super(JobsExtension, self).create(vals)
+		# updating wage in contract
+		new_record.UpdateHiringManager()
+		
+		return new_record
+
+	def write(self,vals):
+		rec = super(JobsExtension,self).write(vals)
+		
+		self.UpdateHiringManager()
+		
+		return rec
+
 
 	def create_so(self):
 		# rec = self.env['sale.order'].search([('job_pos','=',self.id)]).ids
