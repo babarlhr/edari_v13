@@ -15,6 +15,8 @@
     # always loaded
     'data': [
         'views/wizard_view.xml',
+        'security/security.xml',
+        'security/ir.model.access.csv',
     ],
 
 }

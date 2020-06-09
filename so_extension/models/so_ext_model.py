@@ -102,11 +102,14 @@ class SaleOrderExt(models.Model):
 				# invoices = order.order_line.invoice_lines.move_id.filtered(lambda r: r.type in ('out_invoice', 'out_refund'))
 				order.invoice_ids = invoices
 				order.invoice_count = len(invoices)
-		if self.so_type == "sale_order":
+		elif self.so_type == "sale_order":
 			for order in self:
 				invoices = order.order_line.invoice_lines.move_id.filtered(lambda r: r.type in ('out_invoice', 'out_refund'))
 				order.invoice_ids = invoices
 				order.invoice_count = len(invoices)
+		else:
+			for order in self:
+				order.invoice_count = 0
 
 
 

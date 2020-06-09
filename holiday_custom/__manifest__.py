@@ -19,6 +19,7 @@
     # always loaded
     'data': [
         'views/custom_holiday_view.xml',
+        "security/ir.model.access.csv",
     ],
 
 }

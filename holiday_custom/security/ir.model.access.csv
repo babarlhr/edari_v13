@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_holiday_custom,Holiday Custom,holiday_custom.model_custom_holiday,,1,1,1,1
+access_holiday_custom_tree,Holiday Custom Tree,holiday_custom.model_custom_holiday_tree,,1,1,1,1

@@ -15,6 +15,7 @@
     # always loaded
     'data': [
         'views/partner_extension.xml',
+        "security/ir.model.access.csv",
     ],
 
 }
