@@ -18,12 +18,13 @@
                 <field name="trade_license_no"/>
             </xpath>
             <xpath expr="//field[@name='type']" position="before">
+                <field name="trading_as" placeholder="e.g Abbreviated as ..."/>
                 <field name="client_owner" domain="[('employee_type','=','edari_employee')]" options="{'no_create_edit':True}"/>
             </xpath>
-            <xpath expr="//sheet/div[2]/h1" position="after">
+            <!-- <xpath expr="//sheet/div[2]/h1" position="after">
                 <br/><label for="trading_as">Trading As: </label>
-                <field name="trading_as" placeholder="e.g Abbreviated as ..."/>
-            </xpath>
+                
+            </xpath> -->
 
             <xpath expr="//page[1]" position="after">
                    <page name="document_page" string="Documents">
