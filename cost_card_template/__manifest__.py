@@ -20,6 +20,8 @@
     # always loaded
     'data': [
         'views/cost_card_template_view.xml',
+        'security/security.xml',
+        'security/ir.model.access.csv',
     ],
 
 }

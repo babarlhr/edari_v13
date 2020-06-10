@@ -1,0 +1,10 @@
+<odoo>
+    <data noupdate="0">
+
+        <record id="cost_card_template"   model="res.groups">
+            <field name="name">Cost Card Template</field>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+
+    </data>
+</odoo>

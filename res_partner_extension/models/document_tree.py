@@ -14,8 +14,8 @@ class DocumentTree(models.Model):
 	document_number = fields.Char(string="Document Number")
 	issue_date = fields.Date(string="Issue Date")
 	expiry_date = fields.Date(string="Expiry Date")
-	issued_by = fields.Char(string="Expiry Date")
-	place_of_issue = fields.Char(string="Place of Issue")
+	issued_by = fields.Char(string="Issued By")
+	place_of_issue = fields.Many2one('place.of.issue',string="Place of Issue")
 	country_of_issue = fields.Many2one('res.country', string="Country of Issue")
 	upload_doc = fields.Binary(string="Upload Doc")
 	doc_count = fields.Integer(string="DOC Count")
@@ -25,6 +25,13 @@ class DocumentTree(models.Model):
 
 class DocumentTreeType(models.Model):
 	_name='document.tree.type'
+	_rec_name = 'name'
+
+	name = fields.Char(string = "Name")
+
+
+class PlaceofIssue(models.Model):
+	_name='place.of.issue'
 	_rec_name = 'name'
 
 	name = fields.Char(string = "Name")

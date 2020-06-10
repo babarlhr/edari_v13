@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_partner_document_tree,Parnter Document Tree,res_partner_extension.model_document_tree,,1,1,1,1
 access_partner_document_tree_type,Partner Docuemnt Tree Type,res_partner_extension.model_document_tree_type,,1,1,1,1
+access_partner_document_palce_of_issue,Partner Place of Issue,res_partner_extension.model_place_of_issue,,1,1,1,1

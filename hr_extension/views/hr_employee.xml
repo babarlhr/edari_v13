@@ -14,7 +14,7 @@
             <field name="arch" type="xml">
                 
                 <xpath expr="//field[@name='work_location']" position="after">
-                    <field name="customer" domain = "[('parent_id','=',False),('customer_rank','!=',0)]" options="{'no_create_edit':True}"/>
+                    <field name="customer" domain = "[('parent_id','=',False),('customer_rank','!=',0)]" options="{'no_create_edit':True}" string = "Client"/>
                     <field name="employee_type"/>
                     <field name="cost_card" options="{'no_create_edit': True}"/>
                     <field name="wage"/>
@@ -38,7 +38,7 @@
         <field name="inherit_id" ref="hr.view_employee_filter"/>
         <field name="arch" type="xml">
             <xpath expr="//filter[@name='inactive']" position="after">
-                <filter string="Customer" name="customer" domain="[]" context="{'group_by': 'customer'}"/>
+                <filter string="Client" name="customer" domain="[]" context="{'group_by': 'customer'}"/>
             </xpath>
         </field> 
     </record>
