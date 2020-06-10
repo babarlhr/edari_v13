@@ -22,10 +22,3 @@ class ProductExtension(models.Model):
 	accruing_account_id = fields.Many2one('account.account',string = "Accrued Account")
 
 
-# class PartnerExtensionSo(models.Model):
-# 	_inherit='res.partner'
-
-# 	function_contact = fields.Selection([
-# 		('primary','Primary'),
-# 		('billing','Billing'),
-# 		], string='Function', default="primary")

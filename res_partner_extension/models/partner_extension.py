@@ -13,10 +13,10 @@ class PartnerExtension(models.Model):
 
 	# billing details fields
 	trade_license_no = fields.Char("Trade License Number")
-	# function_contact = fields.Selection([
-	# 	('primary','Primary'),
-	# 	('billing','Billing'),
-	# 	], string='Function', default="primary")
+	function_contact = fields.Selection([
+		('primary','Primary'),
+		('billing','Billing'),
+		], string='Function', default="primary")
 	branch_name = fields.Char("Branch Name")
 	beneficiary_name = fields.Char("Beneficiary Name")
 	account_number = fields.Char("Account Number")
