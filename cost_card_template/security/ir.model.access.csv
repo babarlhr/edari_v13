@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+cost_card_template_access,Cost Card Template,cost_card_template.model_costcard_template,cost_card_template.cost_card_template,1,1,1,1
+cost_card_template_lines_access,Cost Card Template Lines,cost_card_template.model_costcard_template_tree,cost_card_template.cost_card_template,1,1,1,1

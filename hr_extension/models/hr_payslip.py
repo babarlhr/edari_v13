@@ -17,7 +17,7 @@ class HRPayslipExt(models.Model):
 				if self.move_id.state == 'posted':
 					self.move_id.button_draft()
 				for x in self.move_id.line_ids:
-					x.partner_id = 14
+					x.partner_id = self.employee_id.partner_id.id
 
 		return res
 

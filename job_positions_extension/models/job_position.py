@@ -13,6 +13,7 @@ class JobsExtension(models.Model):
 	job_type = fields.Many2one('job.type', string="Job Type")
 	customer = fields.Many2one('res.partner', string="Customer")
 	hiring_manager_client = fields.Many2one('res.partner', string="Hiring Manager Client")
+	hiring_manager_client_dom = fields.Many2many('res.partner',compute = "GetClientManagers")
 	anticipated_start_date = fields.Date(string="Anticipated Start Date")
 	budget = fields.Float(string="Budget")
 	contract_length = fields.Float(string="Contract Length")
@@ -76,29 +77,35 @@ class JobsExtension(models.Model):
 		if not self.user_id:
 			self.user_id = self.env.uid
 
-	@api.onchange('customer')
-	def template_domain(self):
-		template_recs = self.env['costcard.template'].search([('job_position', '=', self.id),('customer','=',self.customer.id)])
-		template_list = []
-		for x in template_recs:
-			template_list.append([x.id])
-		self.domain_template = [(6, 0, template_list)]
 
-	# def _compute_so_count(self):
-	# 	# so_data = self.env['sale.order'].sudo().read_group([('job_pos','in',self.ids)],['job_pos'],['job_pos'])
-	# 	# result = dict((data['job_pos'][0], data['so_id_count']) for data in so_data)
-	# 	for jobs in self:
-	# 		print ("XXXXXXXXXXXXXXXXXXXXXXXXX")
-	# 		print ("XXXXXXXXXXXXXXXXXXXXXXXXX")
-	# 		print (jobs.id)
-	# 		recs = self.env['sale.order'].search(['job_pos','=',jobs.id])
-	# 		print (recs)
-	# 		print (count)
-	# 		print (type(count))
-	# 		print ("XXXXXXXXXXXXXXXXXXXXXXXXX")
-	# 		print ("XXXXXXXXXXXXXXXXXXXXXXXXX")
-	# 		jobs.so_count = int(count)
-	
+	def GetClientManagers(self):
+		for x in self:
+			id_list = []
+			for index in x.customer.child_ids:
+				id_list.append(index.id)
+
+		self.hiring_manager_client_dom = [(6, 0, id_list)]
+
+	def UpdateHiringManager(self):
+		if not self.hiring_manager_client.parent_id:
+			self.hiring_manager_client.parent_id = self.customer.id
+
+
+	@api.model
+	def create(self, vals):
+		new_record = super(JobsExtension, self).create(vals)
+		# updating wage in contract
+		new_record.UpdateHiringManager()
+		
+		return new_record
+
+	def write(self,vals):
+		rec = super(JobsExtension,self).write(vals)
+		
+		self.UpdateHiringManager()
+		
+		return rec
+
 
 	def create_so(self):
 		# rec = self.env['sale.order'].search([('job_pos','=',self.id)]).ids

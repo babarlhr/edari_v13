@@ -28,7 +28,7 @@
                             </group>
                             <group name="right">
                                 <field name="job_position" options="{'no_create_edit':True}"/>
-                                <field name="customer" options="{'no_create_edit':True}"/>
+                                <field name="customer" options="{'no_create_edit':True}" string = "Client"/>
                                 <field name="work_days_type"/>
                                 <field name="leave_type"/>
                             </group>

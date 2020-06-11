@@ -3,7 +3,7 @@ import logging, secrets
 
 _logger = logging.getLogger(__name__)
 
-class Contact(models.Model):
+class ContactExtension(models.Model):
     _inherit = 'res.partner'
 
     invite_token = fields.Char('Invite Token')

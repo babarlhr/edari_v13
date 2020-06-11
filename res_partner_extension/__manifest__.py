@@ -9,12 +9,13 @@
     'category': 'Uncategorized',
     'version': '0.1',
 
-    # any module necessary for this one to work correctly
+    # any modules necessary for this one to work correctly
     'depends': ['base','sale','hr','account','sales_team'],
 
     # always loaded
     'data': [
         'views/partner_extension.xml',
+        "security/ir.model.access.csv",
     ],
 
 }

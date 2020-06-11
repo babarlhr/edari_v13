@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_job_position_job_type,Job Position Job Type,job_positions_extension.model_job_type,,1,1,1,1
+access_job_position_viza_entity,Job Position Viza Entity,job_positions_extension.model_visa_entity,,1,1,1,1

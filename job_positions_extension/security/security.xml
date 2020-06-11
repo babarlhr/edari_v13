@@ -1,0 +1,10 @@
+<odoo>
+    <data noupdate="0">
+
+        <!-- <record id="hr_employee_data_datatables"   model="res.groups">
+            <field name="name">Employee Information Tables</field>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record> -->
+
+    </data>
+</odoo>
