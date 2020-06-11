@@ -94,11 +94,22 @@ class SaleOrderExt(models.Model):
 		# lines, and we also search for possible refunds created directly from
 		# existing invoices. This is necessary since such a refund is not
 		# directly linked to the SO.
-		for order in self:
-			invoices = self.env['account.move'].search([('sale_order_id','=',order.id)])
-			# invoices = order.order_line.invoice_lines.move_id.filtered(lambda r: r.type in ('out_invoice', 'out_refund'))
-			order.invoice_ids = invoices
-			order.invoice_count = len(invoices)
+
+		if self.so_type == "cost_card":
+
+			for order in self:
+				invoices = self.env['account.move'].search([('sale_order_id','=',order.id)])
+				# invoices = order.order_line.invoice_lines.move_id.filtered(lambda r: r.type in ('out_invoice', 'out_refund'))
+				order.invoice_ids = invoices
+				order.invoice_count = len(invoices)
+		elif self.so_type == "sale_order":
+			for order in self:
+				invoices = order.order_line.invoice_lines.move_id.filtered(lambda r: r.type in ('out_invoice', 'out_refund'))
+				order.invoice_ids = invoices
+				order.invoice_count = len(invoices)
+		else:
+			for order in self:
+				order.invoice_count = 0
 
 
 
@@ -237,7 +248,7 @@ class SaleOrderExt(models.Model):
 		return temp
 
 	############## Function to calculate leave balance total START ##############
-	def calculate_leave_balance(self,date_invoice):
+	def calculate_leave_balance(self,date_invoice,leave_name):
 
 
 
@@ -249,9 +260,12 @@ class SaleOrderExt(models.Model):
 
 		leaves = self.env['hr.leave'].search([('employee_id','=',self.employee.id),('state','=','validate')])
 		total_leaves = 0
+		leave_name_days = 0
 		for x in leaves:
 			per_request_leaves = 0
 			leave_days_list = []
+			leave_name_days = 0
+			leave_days_list_specific = []
 
 			if date_invoice.replace(day=1) == x.request_date_from.replace(day=1) or date_invoice.replace(day=1) == x.request_date_to.replace(day=1):
 
@@ -265,15 +279,27 @@ class SaleOrderExt(models.Model):
 								leave_days_list.append(day)
 								if x.request_unit_half:
 									total_leaves += 0.5
+									if x.holiday_status_id.name == leave_name:
+										leave_name_days += 0.5
+										leave_days_list_specific.append(day)
 								else:
 									total_leaves += 1
+									if x.holiday_status_id.name == leave_name:
+										leave_name_days += 1
+										leave_days_list_specific.append(day)
 						if self.leave_type == "one_day":
 							if day.weekday() != 4 :
 								leave_days_list.append(day)
 								if x.request_unit_half:
 									total_leaves += 0.5
+									if x.holiday_status_id.name == leave_name:
+										leave_name_days += 0.5
+										leave_days_list_specific.append(day)
 								else:
 									total_leaves += 1
+									if x.holiday_status_id.name == leave_name:
+										leave_name_days += 1
+										leave_days_list_specific.append(day)
 
 
 				for z in unique_holidays:
@@ -281,8 +307,17 @@ class SaleOrderExt(models.Model):
 						leave_days_list.remove(z)
 						
 						total_leaves -= 1
+					if z in leave_days_list_specific:
+						leave_days_list_specific.remove(z)
 
-		return total_leaves
+						leave_name_days -= 1
+
+
+		return [total_leaves,leave_name_days]
+
+
+		def CalculateLeavesPayroll(self,date,leave_name):
+			return self.calculate_leave_balance(date,leave_name)[1]
 
 
 
@@ -479,7 +514,7 @@ class SaleOrderExt(models.Model):
 			no_of_holidays_wd = self.calculate_holidays(month_interval,date_invoice)
 			divisor -= no_of_holidays
 
-		working_days -= (self.calculate_leave_balance(date_invoice) + no_of_holidays_wd)
+		working_days -= (self.calculate_leave_balance(date_invoice,None)[0] + no_of_holidays_wd)
 
 		return [working_days,divisor]
 
@@ -627,24 +662,24 @@ class SaleOrderExt(models.Model):
 
 					moves.write({
 						'line_ids': [
-			                    (0, 0, {
-			                        'account_id':debit_account,
+								(0, 0, {
+									'account_id':debit_account,
 									'name':"Accrued Adjustment",
 									'debit':line_amount,
 									'credit':0,
 									'partner_id':self.contract.employee_id.partner_id.id,
-			                    }),
-			        
-			                    (0, 0, {
-			                        'account_id':acc.product_id.accruing_account_id.id,
+								}),
+					
+								(0, 0, {
+									'account_id':acc.product_id.accruing_account_id.id,
 									'name':"Accrued Adjustment",
 									'debit':0,
 									'credit':line_amount,
 									'partner_id':self.contract.employee_id.partner_id.id,
 
 									
-			                    }),
-			                ],
+								}),
+							],
 						}) 
 
 
@@ -847,13 +882,13 @@ class SaleOrderExt(models.Model):
 
 		for us in users:
 			self.env['mail.activity'].create({
-	                'res_id': self.id,
-	                'res_model_id': self.env['ir.model']._get('sale.order').id,
-	                'activity_type_id': self.env.ref('so_extension.activity_type').id,
-	                'summary': "Cost Card Number-" +self.name + " Needs your approval",
-	                'note': "Cost Card Number-" +self.name + " Needs your approval",
-	                'user_id': us,
-	            })
+					'res_id': self.id,
+					'res_model_id': self.env['ir.model']._get('sale.order').id,
+					'activity_type_id': self.env.ref('so_extension.activity_type').id,
+					'summary': "Cost Card Number-" +self.name + " Needs your approval",
+					'note': "Cost Card Number-" +self.name + " Needs your approval",
+					'user_id': us,
+				})
 
 	def action_confirm(self):
 		res = super(SaleOrderExt, self).action_confirm()

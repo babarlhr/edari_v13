@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+create_invoice_wizard_access,Create Invoices Wizard,create_invoices_wizard.model_create_invoice_wizard,create_invoices_wizard.create_invoices_wizard,1,1,1,1
+skip_reasons_access,Skip Reasons,create_invoices_wizard.model_skipping_reasons,create_invoices_wizard.create_invoices_wizard,1,1,1,1

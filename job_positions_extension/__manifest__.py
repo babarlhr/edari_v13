@@ -17,6 +17,7 @@
         'views/job_extension.xml',
         'views/job_type_extension.xml',
 	'views/visa_entity_view.xml',
+    "security/ir.model.access.csv",
     ],
 
 }

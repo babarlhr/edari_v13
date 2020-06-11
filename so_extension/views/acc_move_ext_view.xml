@@ -34,6 +34,22 @@
             <xpath expr="//field[@name ='invoice_date']" position="after">
                 <field name="employee" readonly = "1"/>
             </xpath>
+            <xpath expr="//field[@name ='invoice_partner_display_name']" position="replace">
+                <field name="invoice_partner_display_name" string  = "Client"/>
+            </xpath>
+        </field> 
+    </record>
+
+
+    <record id="InvoiceFormViewExtension" model="ir.ui.view"> 
+        <field name="name">InvoiceFormViewExtension</field> 
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/group/group/div/label[@for='partner_id']" position="attributes">
+                <attribute name="string">Client</attribute>
+            </xpath>
+            
         </field> 
     </record>
 

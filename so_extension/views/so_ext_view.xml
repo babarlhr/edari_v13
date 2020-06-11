@@ -39,7 +39,7 @@
             </xpath>
 
             <xpath expr="//header/button[@name=%(sale.action_view_sale_advance_payment_inv)d]" position="replace">
-                <button name="action_view_sale_advance_payment_inv" string="Create Invoice" type="action" class="btn-primary" attrs="{'invisible': ['|',('invoice_status', '!=', 'to invoice'),('so_type', '=', 'cost_card')]}"/>
+                <button name="sale.action_view_sale_advance_payment_inv" string="Create Invoice" type="action" class="btn-primary" attrs="{'invisible': ['|',('invoice_status', '!=', 'to invoice'),('so_type', '=', 'cost_card')]}"/>
                 
             </xpath>
 

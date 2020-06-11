@@ -7,3 +7,9 @@ access_employee_vacation_history,employee.vacation.history,model_employee_vacati
 access_employee_training_history,employee.training.history,model_employee_training_history,,1,1,1,1
 access_employee_hse_incident_history,employee.hse.incident.history,model_employee_hse_incident_history,,1,1,1,1
 access_employee_career_progression,employee.career.progression.history,model_employee_career_progression,,1,1,1,1
+access_employee_education_tree,Employee Education Tree,employee_custom.model_hr_education_tree,,1,1,1,1
+access_employee_certificate_level,Employee Certificate Level,employee_custom.model_certificate_level,,1,1,1,1
+access_employee_education_institute,Employee Education Institute,employee_custom.model_education_institute,,1,1,1,1
+access_employee_hr_education,Employee HR Education,employee_custom.model_hr_education,,1,1,1,1
+access_employee_dependent_tree,Employee Dependent Tree,employee_custom.model_employee_dependent_tree,,1,1,1,1
+access_employee_dependent_relation,Employee Dependent Relation,employee_custom.model_employee_dependent_relation,,1,1,1,1
