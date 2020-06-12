@@ -20,8 +20,9 @@ class HrContractExtension(models.Model):
 	@api.depends("customer")
 	def _filtered_managers(self):
 		id_list = []
-		for index in self.customer.child_ids:
-			id_list.append(index.id)
+		if self.customer:
+			for index in self.customer.child_ids:
+				id_list.append(index.id)
 		
 		self.line_manager_domain = [(6,0, id_list)]
 
