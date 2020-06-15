@@ -203,6 +203,7 @@ class Employee(models.Model):
     swift_routing_no = fields.Char(string="Swift or Routing No")
     education_tree = fields.One2many('hr.education.tree', 'tree_link')
     address = fields.Char('Address')
+    year_of_graduation = fields.Char(string = "Year of Graduation")
 
 
     uae_visa_held = fields.Selection([

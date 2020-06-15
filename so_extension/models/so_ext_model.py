@@ -316,8 +316,8 @@ class SaleOrderExt(models.Model):
 		return [total_leaves,leave_name_days]
 
 
-		def CalculateLeavesPayroll(self,date,leave_name):
-			return self.calculate_leave_balance(date,leave_name)[1]
+	def CalculateLeavesPayroll(self,date,leave_name):
+		return self.calculate_leave_balance(date,leave_name)[1]
 
 
 
