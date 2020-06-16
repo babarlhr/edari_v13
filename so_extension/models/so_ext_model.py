@@ -667,7 +667,7 @@ class SaleOrderExt(models.Model):
 									'name':"Accrued Adjustment",
 									'debit':line_amount,
 									'credit':0,
-									'partner_id':self.contract.employee_id.partner_id.id,
+									'partner_id':self.partner_id.id,
 								}),
 					
 								(0, 0, {
