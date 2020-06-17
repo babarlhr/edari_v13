@@ -258,7 +258,12 @@ class SaleOrderExt(models.Model):
 			if not holiday_index.day in unique_holidays:
 				unique_holidays.append(holiday_index.date)
 
-		leaves = self.env['hr.leave'].search([('employee_id','=',self.employee.id),('state','=','validate')])
+		employee_id = None
+		if self.employee:
+			employee_id = self.employee.id
+		elif self.contract:
+			employee_id = self.contract.employee_id.id
+		leaves = self.env['hr.leave'].search([('employee_id','=',employee_id),('state','=','validate')])
 		total_leaves = 0
 		leave_name_days = 0
 		for x in leaves:
