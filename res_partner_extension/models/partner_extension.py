@@ -16,6 +16,8 @@ class PartnerExtension(models.Model):
 	function_contact = fields.Selection([
 		('primary','Primary'),
 		('billing','Billing'),
+		('inv_requestor','Invoice Requestor'),
+		('inv_buyer','Invoice Buyer'),
 		], string='Function', default="primary")
 	branch_name = fields.Char("Branch Name")
 	beneficiary_name = fields.Char("Beneficiary Name")
@@ -32,7 +34,15 @@ class PartnerExtension(models.Model):
 	default_edari_percentage = fields.Float(string="Default Edari Percentage" ,digits=(4,4))
 	client_owner = fields.Many2one('hr.employee', string='Client Owner')
 
+	inv_attention = fields.Char("Invoice Attention")
 
 
 	document_tree = fields.One2many('document.tree', 'partner_link')
+
+
+
+class BankExt(models.Model):
+	_inherit='res.bank'
+
+	swift = fields.Char("SWIFT")
 	

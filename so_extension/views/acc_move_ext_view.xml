@@ -49,6 +49,13 @@
             <xpath expr="//form/sheet/group/group/div/label[@for='partner_id']" position="attributes">
                 <attribute name="string">Client</attribute>
             </xpath>
+            <xpath expr="//field[@name='journal_id']" position="after">
+                <field name='from_date'/>
+                <field name='to_date'/>
+                <field name='pro_rate_adjust'/>
+                <field name='leave_taken'/>
+                <field name='sick_days_taken'/>
+            </xpath>
             
         </field> 
     </record>

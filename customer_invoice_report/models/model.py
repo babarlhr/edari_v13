@@ -33,7 +33,32 @@ class customer_invoice_report(models.AbstractModel):
         record = self.env['account.move'].browse(docids)
 
         company = self.env['res.company'].search([('id','=',1)])
+        contacts = {}
+        
+        inv_attention = ""
+        inv_requestor = ""
+        inv_buyer = ""
+        inv_attention = record.partner_id.inv_attention
+        for x in record.partner_id.child_ids:
+            if x.function_contact == 'inv_requestor':
+                inv_requestor = x.name
+            if x.function_contact == 'inv_buyer':
+                inv_buyer = x.name
 
+
+        sale_vat_percent = self.env['account.tax'].search([('type_tax_use','=','sale')])
+        vat_amount = sale_vat_percent.amount
+
+        bank_name = ""
+        iban = ""
+        swift = ""
+        bank_name = company.partner_id.bank_ids[0].bank_id.name
+        swift = company.partner_id.bank_ids[0].bank_id.swift
+        iban = company.partner_id.bank_ids[0].acc_number
+
+        contract = self.env['hr.contract'].search([('employee_id','=',record.employee.id)])
+
+        line_man = contract.line_manager_client.name
 
 
 
@@ -42,6 +67,14 @@ class customer_invoice_report(models.AbstractModel):
             'doc_ids': docids,
             'doc_model':'account.move',
             'data': data,
+            'inv_attention': inv_attention,
+            'inv_requestor': inv_requestor,
+            'inv_buyer': inv_buyer,
+            'vat_amount': vat_amount,
+            'bank_name': bank_name,
+            'iban': iban,
+            'swift': swift,
+            'line_man': line_man,
             'docs': record,
             'company': company,
         }

@@ -21,6 +21,7 @@
                 <field name="trading_as" placeholder="e.g Abbreviated as ..."/>
                 <field name="client_owner" domain="[('employee_type','=','edari_employee')]" options="{'no_create_edit':True}"/>
                 <field name="function_contact"/>
+                <field name="inv_attention"/>
 
             </xpath>
             <!-- <xpath expr="//sheet/div[2]/h1" position="after">
@@ -74,6 +75,20 @@
            
 
         </field> 
+    </record>
+
+
+    <record id="res_bank_form_view_ext" model="ir.ui.view"> 
+        <field name="name">res_bank_form_view_ext</field> 
+        <field name="model">res.bank</field>
+        <field name="inherit_id" ref="base.view_res_bank_form"/>
+        <field name="type">form</field> 
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='email']" position="after">
+                <field name="swift"/>
+            </xpath>
+        </field>
     </record>
 
 
