@@ -46,8 +46,20 @@ class customer_invoice_report(models.AbstractModel):
                 inv_buyer = x.name
 
 
-        sale_vat_percent = self.env['account.tax'].search([('type_tax_use','=','sale')])
-        vat_amount = sale_vat_percent.amount
+        # getting tax rate
+        vat_rate = []
+        vat_amount = 0
+        label = ""
+        for x in record.invoice_line_ids:
+            for y in x.tax_ids:
+                if str(y.amount) not in vat_rate:
+                    if len(vat_rate) == 0:
+                        vat_amount = int(y.amount)
+                    else:
+                        vat_amount = 0
+
+                    vat_rate.append(str(y.amount))
+
 
         bank_name = ""
         iban = ""

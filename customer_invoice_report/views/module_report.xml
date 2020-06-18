@@ -313,7 +313,9 @@
 
 										<tr>
 											<th>Vat@
-												<span t-esc="'{0:,.2f}'.format(float(vat_amount))"></span>
+												<t t-if="vat_amount > 0">
+													<span t-esc="'{0:,.2f}'.format(float(vat_amount))"></span>
+												</t>
 												<span>%:</span>
 											</th>
 											<th>
