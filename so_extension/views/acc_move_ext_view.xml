@@ -50,11 +50,11 @@
                 <attribute name="string">Client</attribute>
             </xpath>
             <xpath expr="//field[@name='journal_id']" position="after">
-                <field name='from_date'/>
-                <field name='to_date'/>
-                <field name='pro_rate_adjust'/>
-                <field name='leave_taken'/>
-                <field name='sick_days_taken'/>
+                <field name='from_date' readonly = "1"/>
+                <field name='to_date' readonly = "1"/>
+                <field name='pro_rate_adjust' readonly = "1"/>
+                <field name='leave_taken' readonly = "1"/>
+                <field name='sick_days_taken' readonly = "1"/>
             </xpath>
             
         </field> 
