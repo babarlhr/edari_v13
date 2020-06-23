@@ -321,7 +321,12 @@
 											<th>
 											</th>
 											<th>
-												<span t-esc="'{0:,.2f}'.format(float(o.amount_by_group[0][1]))"></span>
+												<t t-if="o.amount_by_group">
+													<span t-esc="'{0:,.2f}'.format(float(o.amount_by_group[0][1]))"></span>
+												</t>
+												<t t-else="">
+													<span>0.00</span>
+												</t>
 											</th>
 										</tr>
 

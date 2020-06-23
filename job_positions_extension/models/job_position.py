@@ -24,6 +24,8 @@ class JobsExtension(models.Model):
 	working_days_type = fields.Char(string="Working Days Type")
 	leave_type = fields.Char(string="Leave Type")
 
+	edari_job_owner = fields.Many2one('hr.employee', string="Edari Job Owner")
+
 	work_days_type = fields.Selection([
 		('twenty_two_days','22 Days'),
 		('calender_days','Calender Days'),

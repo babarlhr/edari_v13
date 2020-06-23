@@ -25,6 +25,9 @@
                 <field name="hiring_manager" string = "Hiring Manager Edari" invisible = "1"/>
             </xpath>
 
+            <xpath expr="//field[@name='no_of_recruitment']" position="after">
+                <field name="edari_job_owner" domain = "[('employee_type','=','edari_employee')]"/>
+            </xpath>
            
 
             <xpath expr="//header" position="inside">
@@ -46,12 +49,8 @@
         <field name="inherit_id" ref="hr_recruitment.hr_job_survey"/>
         <field name="type">form</field> 
         <field name="arch" type="xml">
-            
-            <!-- <xpath expr="//field[@name='no_of_recruitment']" position="before">
-                 <field name="job_position_status"/>
-            </xpath> -->
             <xpath expr="//field[@name='user_id']" position="attributes">
-                 <attribute name="string">Edari Job Owner</attribute>
+                 <attribute name="invisible">1</attribute>
             </xpath>
         </field> 
     </record>

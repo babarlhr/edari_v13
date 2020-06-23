@@ -39,6 +39,11 @@ class PartnerExtension(models.Model):
 
 	document_tree = fields.One2many('document.tree', 'partner_link')
 
+	@api.onchange('company_type')
+	def null_function_contact(self):
+		if self.company_type == 'company':
+			self.function_contact = False
+
 
 
 class BankExt(models.Model):

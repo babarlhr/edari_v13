@@ -64,13 +64,18 @@ class customer_invoice_report(models.AbstractModel):
         bank_name = ""
         iban = ""
         swift = ""
-        bank_name = company.partner_id.bank_ids[0].bank_id.name
-        swift = company.partner_id.bank_ids[0].bank_id.swift
-        iban = company.partner_id.bank_ids[0].acc_number
+        if company.partner_id.bank_ids:
+            if company.partner_id.bank_ids[0].bank_id:
+                bank_name = company.partner_id.bank_ids[0].bank_id.name
+                swift = company.partner_id.bank_ids[0].bank_id.swift
+            iban = company.partner_id.bank_ids[0].acc_number
 
         contract = self.env['hr.contract'].search([('employee_id','=',record.employee.id)])
 
-        line_man = contract.line_manager_client.name
+        line_man = ""
+        if contract:
+            if contract.line_manager_client:
+                line_man = contract.line_manager_client.name
 
 
 

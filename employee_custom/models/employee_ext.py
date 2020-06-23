@@ -203,7 +203,7 @@ class Employee(models.Model):
     swift_routing_no = fields.Char(string="Swift or Routing No")
     education_tree = fields.One2many('hr.education.tree', 'tree_link')
     address = fields.Char('Address')
-    year_of_graduation = fields.Char(string = "Year of Graduation")
+    
 
 
     uae_visa_held = fields.Selection([
@@ -289,6 +289,7 @@ class Employee(models.Model):
         employees = self.env['hr.employee'].search([
             ('name', '=', res.with_context(lang='eng_US').name),
             ('iqama_no', '=', res.iqama_no),
+            ('id', '!=', res.id),
         ])
         if len(employees) > 1:
             raise UserError('Employee with name {0} and Iqama No {1} already exist. You can not create duplicate records'.format(res.name, res.iqama_no))
@@ -299,6 +300,7 @@ class Employee(models.Model):
         employees = self.env['hr.employee'].search([
             ('name', '=', self.with_context(lang='eng_US').name),
             ('iqama_no', '=', self.iqama_no),
+            ('id', '!=', self.id),
         ])
         if len(employees) > 1:
             raise UserError(
@@ -315,6 +317,21 @@ class HrEducationTree(models.Model):
     field_of_study = fields.Char(string='Field of Study')
     institute_id = fields.Many2one('education.institute', string='Institute')
     country_id = fields.Many2one('res.country', string='Country')
+    year_of_graduation = fields.Char(string = "Year of Graduation")
+
+
+
+    uae_attested = fields.Selection([
+        ('yes', 'Yes'),
+        ('no', 'No'),
+    ], string="UAE Attested")
+
+    mofa_attestation = fields.Selection([
+        ('yes', 'Yes'),
+        ('no', 'No'),
+    ], string="MOFA Attestation")
+    upload_doc = fields.Many2many('ir.attachment', string='Upload Doc', attachment=True)
+    doc_count = fields.Integer(string = "DOC Count")
 
     tree_link = fields.Many2one('hr.employee')
 
