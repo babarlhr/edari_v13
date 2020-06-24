@@ -151,6 +151,11 @@
     <menuitem id="account.menu_account_customer" name="Clients" parent="account.menu_finance_receivables" action="account.res_partner_action_customer" sequence="110"/>
 
     <!--********************* [] *********************-->
+
+
+    <record id="cannot_create_company"   model="res.groups">
+        <field name="name">Can't Create Company</field>
+    </record>
     
 </data>
 </odoo>

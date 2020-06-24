@@ -46,6 +46,39 @@ class PartnerExtension(models.Model):
 
 
 
+	def CantCreateCompany(self):
+		current_user_id = self.env.uid
+		current_user = self.env['res.users'].search([('id','=',current_user_id)])
+
+		if current_user.has_group('res_partner_extension.cannot_create_company'):
+			if self.company_type == 'company':
+				raise ValidationError("You are not allowed to create a company, please contact your system adminstrator")
+
+
+
+	@api.model
+	def create(self, vals):
+		new_record = super(PartnerExtension, self).create(vals)
+		# updating wage in contract
+		new_record.CantCreateCompany()
+		
+		return new_record
+
+	def write(self,vals):
+
+		status_before = self.company_type
+		rec = super(PartnerExtension,self).write(vals)
+		status_after = self.company_type
+		if status_after != status_before:
+			current_user_id = self.env.uid
+			current_user = self.env['res.users'].search([('id','=',current_user_id)])
+
+			if current_user.has_group('res_partner_extension.cannot_create_company'):
+				raise ValidationError("You are not allowed to create a company, please contact your system adminstrator")
+		return rec
+
+
+
 class BankExt(models.Model):
 	_inherit='res.bank'
 
