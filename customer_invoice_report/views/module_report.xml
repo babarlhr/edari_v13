@@ -131,16 +131,26 @@
 									<span t-esc="o.invoice_sequence_number_next"></span>
 								</h1>
 								<!-- <span t-esc="company.image_1920"  t-field-options='{"widget": "image"}'></span> -->
-								<p class="h2_div">TAX INVOICE</p>
 								<br class="clear_float"/>
 								<div class="main_div">
 									<div class="left_div">
-										<img src="/customer_invoice_report/static/src/img/logo.jpeg"/>
+										<img src="/customer_invoice_report/static/src/img/logo.png"/>
 										<p class="h3_div">
 											<span t-esc="company.name"></span>
 										</p>
 										<p class="company_info">
-											<span t-esc="company.street"></span>,<span t-esc="company.street2"></span>,<span t-esc="company.city"></span>,<span t-esc="company.country_id.name"></span>
+											<t t-if="company.street">
+												<span t-esc="company.street"></span>,
+											</t>
+											<t t-if="company.street2">
+												<span t-esc="company.street2"></span>,
+											</t>
+											<t t-if="company.city">
+												<span t-esc="company.city"></span>,
+											</t>
+											<t t-if="company.country_id.name">
+												<span t-esc="company.country_id.name"></span>
+											</t>
 										</p>
 										<p class="company_info" style="color:black">
 											<span class="solid">TEL:</span>
@@ -154,6 +164,7 @@
 										<p class="company_info">
 											<span t-esc="company.street"></span>,<span t-esc="company.street2"></span>,<span t-esc="company.city"></span>,<span t-esc="company.country_id.name"></span>
 										</p> -->
+										<p class="h2_div">TAX INVOICE</p>
 										<p class="company_info" style="margin-top:100px;color:black">
 											<span class="solid">TRN:</span>
 											<span t-esc="company.partner_id.vat"></span>
@@ -203,12 +214,12 @@
 										</p>
 									</div>
 									<div class="right_div">
-										<p class="company_info">
-											<span class="solid" style="color:#736c6c">TRN:</span>
+										<p class="company_info" style="margin-top: 35px;">
+											<span class="solid" style="color:#736c6c;margin-top: 35px;">TRN:</span>
 											<span t-esc="o.partner_id.vat"></span>
 										</p>
 										<p class="company_info">
-											<span class="solid" style="color:#736c6c">Attention::</span>
+											<span class="solid" style="color:#736c6c">Attention:</span>
 											<span t-esc="o.partner_id.inv_attention"></span>
 										</p>
 										<p class="company_info">
@@ -225,17 +236,19 @@
 												<span t-esc="docs.sale_order_id.customer_po_no"></span>
 											</t>
 											<t t-else="">
-												<span t-esc="docs.partner_id.name"></span>
+												<span t-esc="docs.employee.name"></span>
 											</t>
 										</p>
 										<p class="company_info" style="color: white;">.
 											<!-- <span class="solid">NAME:</span> -->
 										</p>
-										<p class="company_info" style="color: white;margin-top: 20px;">.
-											<!-- <span class="solid">NAME:</span> -->
-										</p>
 										<p class="company_info">
-											<span t-esc="docs.partner_id.name"></span>
+											<t t-if="docs.employee">
+												<span t-esc="docs.employee.name"></span>
+											</t>
+											<t t-else="">
+												<span>--</span>
+											</t>
 											<!-- <span class="solid">PO No:</span> -->
 										</p>
 										<p class="company_info">
@@ -243,7 +256,7 @@
 												<span t-esc="docs.sale_order_id.customer_po_no"></span>
 											</t>
 											<t t-else="">
-												<span t-esc="docs.partner_id.name"></span>
+												<span t-esc="docs.employee.name"></span>
 											</t>
 											<!-- <span class="solid">NAME:</span> -->
 										</p>
