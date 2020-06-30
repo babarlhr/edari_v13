@@ -80,7 +80,7 @@
                 <!-- <field name="interval"/> -->
                 <field name="customer_po_no" attrs="{'readonly':[('state','in',['sale','done'])], 'invisible':[('so_type','=','sale_order')]}"/>
                 <field name="work_days_type" attrs="{'readonly':[('state','in',['sale','done'])], 'invisible':[('so_type','=','sale_order')]}"/>
-                <field name="leave_type" attrs="{'invisible':[('work_days_type','!=','actual_working_days'),('so_type','=','sale_order')]}"/>
+                <field name="leave_type" attrs="{'invisible':['|',('work_days_type','!=','actual_working_days'),('so_type','=','sale_order')]}"/>
                 <field name="contract_start_date" attrs="{'readonly':[('state','=','sale')]}" invisible = "1"/>
                 <field name="contract_end_date" attrs="{'readonly':[('state','=','sale')]}" invisible = "1"/>
                 <field name="estimated_start_date" attrs="{'readonly':[('state','in',['sale','done'])], 'invisible':[('so_type','=','sale_order')]}"/>

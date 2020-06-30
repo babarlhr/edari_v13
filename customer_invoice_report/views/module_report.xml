@@ -393,7 +393,7 @@
 								<br class="clear_float"/>
 								<br class="clear_float"/>
 								<p style="font-size: 15px;">
-									If you have any questions concerning this invoice please contact Tunji Abiola at <span t-esc="company.website"></span>
+									If you have any questions concerning this invoice please contact Tunji Abiola at tunji.abola@edarione.com
 								</p>
 							</div>
 						</div><!--end of page-->

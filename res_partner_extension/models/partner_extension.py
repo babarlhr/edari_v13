@@ -39,6 +39,26 @@ class PartnerExtension(models.Model):
 
 	document_tree = fields.One2many('document.tree', 'partner_link')
 
+
+	@api.onchange('document_tree')
+	def CountDocuments(self):
+		unique_docs = []
+		for doc in self.document_tree:
+			if doc.document_type not in unique_docs:
+				unique_docs.append(doc.document_type)
+
+		for ud in unique_docs:
+			count = 0
+			for docu in self.document_tree:
+				if docu.document_type.id == ud.id:
+					count += 1
+
+			for x in self.document_tree:
+				if x.document_type.id == ud.id:
+					x.doc_count = count 
+
+
+
 	@api.onchange('company_type')
 	def null_function_contact(self):
 		if self.company_type == 'company':

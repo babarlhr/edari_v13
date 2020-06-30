@@ -939,6 +939,7 @@ class SaleOrderExt(models.Model):
 		new_record = super(SaleOrderExt, self).create(vals)
 
 		if new_record.so_type == 'cost_card':
+			self.UpdateLeaveType()
 
 			if new_record.job_pos:
 				print (new_record.job_pos.name)
@@ -983,7 +984,16 @@ class SaleOrderExt(models.Model):
 			if self.so_type == 'cost_card':
 				self.UpdateSOName()
 
+		if 'work_days_type' in vals:
+			self.UpdateLeaveType()
+
 		return rec
+
+	def UpdateLeaveType(self):
+		if self.work_days_type == "twenty_two_days":
+			self.leave_type = "two_days"
+		if self.work_days_type == "twenty_six_days":
+			self.leave_type = "one_day"
 
 	def GetDivisorPayroll(self,date_from):
 		no_of_holidays = 0

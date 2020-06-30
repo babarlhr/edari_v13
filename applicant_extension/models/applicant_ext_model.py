@@ -3,6 +3,18 @@ from odoo import models, fields, api
 from datetime import timedelta,datetime,date
 from odoo.exceptions import Warning, ValidationError
 
+class EmpDependTreeExt(models.Model):
+	_inherit='employee.dependent.tree'
+
+	applicant_tree_link = fields.Many2one('hr.applicant')
+
+
+class HrEducationTreeExt(models.Model):
+	_inherit='hr.education.tree'
+
+	applicant_tree_link = fields.Many2one('hr.applicant')
+	
+
 
 class HrApplicantExt(models.Model):
 	_inherit = 'hr.applicant'
@@ -14,6 +26,75 @@ class HrApplicantExt(models.Model):
 	first_approval = fields.Many2one('res.users',string = "First Approval")
 	second_approval = fields.Many2one('res.users',string = "Second Approval")
 
+	# Personal Information Tab fields
+	name_in_passport = fields.Char(string='Name in Passport')
+	address = fields.Char(string='Address')
+	km_home_work = fields.Integer(string='Km Home-Work')
+	bank_account_id = fields.Many2one('res.partner.bank', string='Bank Account Number')
+	cv = fields.Binary(string="CV")
+
+	country_id = fields.Many2one('res.country',  string="Nationality (Country)")
+	uae_visa_held = fields.Selection([
+		('yes', 'Yes'),
+		('no', 'No'),
+	], string="UAE Visa Held")  
+
+	identification_id = fields.Char(string="Identification No")
+	passport_id = fields.Char(string="Passport No ")
+	gender = fields.Selection([
+		('male', 'Male'),
+		('female', 'Female'),
+		('other', 'Other'),
+	],string="Gender")
+	birthday = fields.Date(string="Date of Birth")
+	place_of_birth = fields.Char(string="Place of Birth")
+	country_of_birth = fields.Many2one('res.country', string="Country of Birth")
+	marital = fields.Selection([
+		('single', 'Single'),
+		('married', 'Married'),
+		('cohabitant', 'Legal Cohabitant'),
+		('widower', 'Widower'),
+		('divorced', 'Divorced'),
+	], string="Marital Status")
+	emergency_contact = fields.Char(string="Emergency Contact")
+	emergency_phone = fields.Char(string="Emergency Phone")
+
+	visa_no = fields.Char(string="Visa No")
+	permit_no = fields.Char(string="Work Permit No")
+	visa_expire = fields.Date(string="Visa Expire Date")
+	year_of_graduation = fields.Char(string="Year of Graduation")
+	education_tree = fields.One2many('hr.education.tree', 'applicant_tree_link')
+
+
+	# Work Information Tab fields
+	address_id = fields.Many2one('res.partner', string="Work Address")
+	work_location = fields.Char(string="Work Location")
+	work_email = fields.Char(string="Work Email")
+	mobile_phone = fields.Char(string="Work Mobile")
+	job_pos = fields.Many2one('hr.job', string="Job Position")
+	job_title = fields.Char(string="Work Mobile")
+	parent_id = fields.Many2one('hr.employee', string="Manager")
+	allow_multiple_loans = fields.Boolean(string="Allow Multiple Loans")
+	loan_defaulter = fields.Boolean(string="Loan Defaulter")
+	coach_id = fields.Many2one('hr.employee', string="Coach")
+	leave_manager_id = fields.Many2one('res.users', string="Time Off")
+	resource_calendar_id = fields.Many2one('resource.calendar', string="Working Hours")
+	resource_id = fields.Many2one('resource.resource')
+	tz = fields.Selection(
+		string='Timezone', related='resource_id.tz', readonly=False,
+		help="This field is used in order to define in which timezone the resources will work.")
+
+	# Dependent Information Tab fields
+	dependent_tree = fields.One2many('employee.dependent.tree', 'applicant_tree_link')
+
+	# Bank Details Tab fields
+	branch_name = fields.Char(string="Branch Name")
+	beneficiary_name = fields.Char(string="Beneficiary Name")
+	account_no = fields.Char(string="Account No")
+	iban = fields.Char(string="IBAN")
+	swift_routing_no = fields.Char(string="Swift or Routing No")
+
+
 
 
 	@api.onchange('partner_name')
@@ -22,14 +103,14 @@ class HrApplicantExt(models.Model):
 
 
 	# def FirstApproval(self):
-	# 	self.first_approval = self.env.uid
-	# 	if self.first_approval and self.second_approval:
-	# 		self.approve_btn()
+	#   self.first_approval = self.env.uid
+	#   if self.first_approval and self.second_approval:
+	#       self.approve_btn()
 
 	# def SecondApproval(self):
-	# 	self.second_approval = self.env.uid
-	# 	if self.first_approval and self.second_approval:
-	# 		self.approve_btn()
+	#   self.second_approval = self.env.uid
+	#   if self.first_approval and self.second_approval:
+	#       self.approve_btn()
 
 
 
@@ -55,7 +136,29 @@ class HrApplicantExt(models.Model):
 					'mobile': applicant.partner_mobile
 				})
 				address_id = new_partner_id.address_get(['contact'])['contact']
+
+			print ("1111111111111111111111111")
 			if applicant.partner_name or contact_name:
+				print ("22222222222222222222222")
+
+				# emp_dict = {
+				education_tree_list = []
+				for ed_list_tree_ind in applicant.education_tree:
+					education_tree_list.append(self.env['hr.education.tree'].create({
+						'certificate_level':ed_list_tree_ind.certificate_level.id,
+						'field_of_study':ed_list_tree_ind.field_of_study,
+						'institute_id':ed_list_tree_ind.institute_id.id,
+						'country_id':ed_list_tree_ind.country_id.id,
+						}))
+				dep_info_tree_list = []
+				for dep_inf_tree_ind in applicant.dependent_tree:
+					dep_info_tree_list.append(self.env['employee.dependent.tree'].create({
+						'display_name':dep_inf_tree_ind.display_name,
+						'name_in_passport':dep_inf_tree_ind.name_in_passport,
+						'country_id':dep_inf_tree_ind.country_id.id,
+						'birthday':dep_inf_tree_ind.birthday,
+						'relationship':dep_inf_tree_ind.relationship.id,
+						}))
 				employee = self.env['hr.employee'].create({
 					'name': applicant.partner_name or contact_name,
 					'job_id': applicant.job_id.id or False,
@@ -70,22 +173,93 @@ class HrApplicantExt(models.Model):
 					'work_email': applicant.department_id and applicant.department_id.company_id
 							and applicant.department_id.company_id.email or False,
 					'work_phone': applicant.department_id and applicant.department_id.company_id
-							and applicant.department_id.company_id.phone or False})
+							and applicant.department_id.company_id.phone or False,
+					'name_in_passport':applicant.name_in_passport,
+					'address':applicant.address,
+					'private_email':applicant.email_from,
+					'phone':applicant.partner_phone,
+					'bank_account_id':applicant.bank_account_id.id,
+					'km_home_work':applicant.km_home_work,
+					'country_id':applicant.country_id.id,
+					'uae_visa_held':applicant.uae_visa_held,
+					'identification_id':applicant.identification_id,
+					'passport_id':applicant.passport_id,
+					'gender':applicant.gender,
+					'birthday':applicant.birthday,
+					'place_of_birth':applicant.place_of_birth,
+					'country_of_birth':applicant.country_of_birth.id,
+					'marital':applicant.marital,
+					'emergency_contact':applicant.emergency_contact,
+					'emergency_phone':applicant.emergency_phone,
+					'visa_no':applicant.visa_no,
+					'permit_no':applicant.permit_no,
+					'visa_expire':applicant.visa_expire,
+					'year_of_graduation':applicant.year_of_graduation,
+					'work_location':applicant.work_location,
+					'work_email':applicant.work_email,
+					'mobile_phone':applicant.mobile_phone,
+					'parent_id':applicant.parent_id.id,
+					'allow_multiple_loans':applicant.allow_multiple_loans,
+					'loan_defaulter':applicant.loan_defaulter,
+					'coach_id':applicant.coach_id.id,
+					'leave_manager_id':applicant.leave_manager_id.id,
+					'resource_calendar_id':applicant.resource_calendar_id.id,
+					# dependent field of timezone
+					# 'resource_id':applicant.resource_id.id,
+					# 'tz':applicant.tz,
+					'branch_name':applicant.branch_name,
+					'beneficiary_name':applicant.beneficiary_name,
+					'account_no':applicant.account_no,
+					'iban':applicant.iban,
+					'swift_routing_no':applicant.swift_routing_no,
+
+					})
+				# employee = self.env['hr.employee'].create(emp_dict)
+
+				print ("333333333333333333333333")
+				# employee = self.env['hr.employee'].create({
+				# 	'name': applicant.partner_name or contact_name,
+				# 	'job_id': applicant.job_id.id or False,
+				# 	'job_title': applicant.job_id.name,
+				# 	'cost_card': applicant.cost_card.id,
+				# 	'wage': applicant.cost_card.per_month_gross_salary,
+				# 	'address_home_id': address_id,
+				# 	'customer': applicant.job_id.customer.id,
+				# 	'department_id': applicant.department_id.id or False,
+				# 	'address_id': applicant.company_id and applicant.company_id.partner_id
+				# 			and applicant.company_id.partner_id.id or False,
+				# 	'work_email': applicant.department_id and applicant.department_id.company_id
+				# 			and applicant.department_id.company_id.email or False,
+				# 	'work_phone': applicant.department_id and applicant.department_id.company_id
+				# 			and applicant.department_id.company_id.phone or False})
+
+				for x in education_tree_list:
+					x.tree_link = employee.id
+				
+				for x in dep_info_tree_list:
+					x.tree_link = employee.id
+				
+				print ("444444444444444444444444444")
 				applicant.write({'emp_id': employee.id})
+				print ("5555555555555555555555555555555")
 				if applicant.job_id:
+					print ("666666666666666666666")
 					applicant.job_id.write({'no_of_hired_employee': applicant.job_id.no_of_hired_employee + 1})
 					applicant.job_id.message_post(
 						body=('New Employee %s Hired') % applicant.partner_name if applicant.partner_name else applicant.name,
 						subtype="hr_recruitment.mt_job_applicant_hired")
+					print ("77777777777777777777777777777777777")
 				applicant.message_post_with_view(
 					'hr_recruitment.applicant_hired_template',
 					values={'applicant': applicant},
 					subtype_id=self.env.ref("hr_recruitment.mt_applicant_hired").id)
+				print ("888888888888888888888888888")
 
 		employee_action = self.env.ref('hr.open_view_employee_list')
 		dict_act_window = employee_action.read([])[0]
 		dict_act_window['context'] = {'form_view_initial_mode': 'edit'}
 		dict_act_window['res_id'] = employee.id
+		print ("99999999999999999999999999999")
 		return dict_act_window
 
 
@@ -168,7 +342,7 @@ class HrApplicantExt(models.Model):
 			   'view_mode': 'tree,form',
 			   # 'views': [(view_id_tree[0].id, 'tree'),(False,'form')],
 			   'context': {
-			      
+				  
 			   },
 			   'view_id ref=" sale.view_quotation_tree_with_onboarding"': '',
 			   'target': 'current',

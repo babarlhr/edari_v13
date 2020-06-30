@@ -9,8 +9,8 @@
     'category': 'Uncategorized',
     'version': '0.1',
 
-    # any modules necessary for this one to work correctly
-    'depends': ['base','hr_recruitment','sale'],
+    # any module necessary for this one to work correctly
+    'depends': ['base','hr_recruitment','sale','employee_custom'],
 
     # always loaded
     'data': [
