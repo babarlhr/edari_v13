@@ -81,6 +81,13 @@ class PartnerExtension(models.Model):
 		new_record = super(PartnerExtension, self).create(vals)
 		# updating wage in contract
 		new_record.CantCreateCompany()
+
+
+		current_user_id = self.env.uid
+		current_user = self.env['res.users'].search([('id','=',current_user_id)])
+
+		if current_user.has_group('res_partner_extension.cannot_create_contact'):
+			raise ValidationError("You are not allowed to create a contact, please contact your system adminstrator")
 		
 		return new_record
 

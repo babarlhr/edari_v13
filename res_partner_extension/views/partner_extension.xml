@@ -156,6 +156,10 @@
     <record id="cannot_create_company"   model="res.groups">
         <field name="name">Can't Create Company</field>
     </record>
+
+    <record id="cannot_create_contact"   model="res.groups">
+        <field name="name">Can't Create Contact</field>
+    </record>
     
 </data>
 </odoo>
