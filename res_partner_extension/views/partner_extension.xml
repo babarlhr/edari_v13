@@ -160,6 +160,10 @@
     <record id="cannot_create_contact"   model="res.groups">
         <field name="name">Can't Create Contact</field>
     </record>
+
+    <record id="cannot_create_edit_vendor"   model="res.groups">
+        <field name="name">Can't Create and Edit Vendor</field>
+    </record>
     
 </data>
 </odoo>
