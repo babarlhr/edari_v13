@@ -194,7 +194,7 @@ class HrApplicantExt(models.Model):
 					'visa_no':applicant.visa_no,
 					'permit_no':applicant.permit_no,
 					'visa_expire':applicant.visa_expire,
-					'year_of_graduation':applicant.year_of_graduation,
+					# 'year_of_graduation':applicant.year_of_graduation,
 					'work_location':applicant.work_location,
 					'work_email':applicant.work_email,
 					'mobile_phone':applicant.mobile_phone,
