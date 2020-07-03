@@ -587,13 +587,7 @@ class SaleOrderExt(models.Model):
 		for line in self.order_line:
 			if line.price_unit != 0:
 				amount = 0
-				if line.payment_type == 'interval':
-					amount = line.price_unit
-					total_invoice_amount += line.price_unit
-				else:
-					amount = line.price_subtotal
-					total_invoice_amount += line.price_subtotal
-
+				
 				if not line.payment_type in lines_not_to_add:
 					print (line.code)
 
@@ -604,6 +598,13 @@ class SaleOrderExt(models.Model):
 
 					if (date_invoice.replace(day=1) <= line_end_date.replace(day=1)) and (date_invoice.replace(day=1) >= line_start_date.replace(day=1)):
 					
+						if line.payment_type == 'interval':
+							amount = line.price_unit
+							total_invoice_amount += line.price_unit
+						else:
+							amount = line.price_subtotal
+							total_invoice_amount += line.price_subtotal
+
 
 						if line.based_on_wd:
 							per_day = amount/divisor
