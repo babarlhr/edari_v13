@@ -599,9 +599,10 @@ class SaleOrderExt(models.Model):
 
 
 					# qty in months check
-					start_plus_qty = self.contract_start_date+(relativedelta(months = (int(line.product_uom_qty) + int(line.offset))))
+					line_end_date = self.contract_start_date+(relativedelta(months = (int(line.product_uom_qty) + int(line.offset))))
+					line_start_date = self.contract_start_date+(relativedelta(months = (int(line.offset))))
 
-					if date_invoice.replace(day=1) <= start_plus_qty.replace(day=1):
+					if (date_invoice.replace(day=1) <= line_end_date.replace(day=1)) and (date_invoice.replace(day=1) >= line_start_date.replace(day=1)):
 					
 
 						if line.based_on_wd:
