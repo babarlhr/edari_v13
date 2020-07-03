@@ -99,15 +99,24 @@ class JobsExtension(models.Model):
 		new_record = super(JobsExtension, self).create(vals)
 		# updating wage in contract
 		new_record.UpdateHiringManager()
-		
+		new_record.CannotCreateEdit()
 		return new_record
 
 	def write(self,vals):
 		rec = super(JobsExtension,self).write(vals)
 		
 		self.UpdateHiringManager()
+		self.CannotCreateEdit()
 		
 		return rec
+
+
+	def CannotCreateEdit(self):
+		current_user_id = self.env.uid
+		current_user = self.env['res.users'].search([('id','=',current_user_id)])
+
+		if current_user.has_group('job_positions_extension.cant_create_edit_job_position'):
+			raise ValidationError("You are not allowed to create or edit a Job Position, please contact your system adminstrator")
 
 
 	def create_so(self):

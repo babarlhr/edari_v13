@@ -137,9 +137,7 @@ class HrApplicantExt(models.Model):
 				})
 				address_id = new_partner_id.address_get(['contact'])['contact']
 
-			print ("1111111111111111111111111")
 			if applicant.partner_name or contact_name:
-				print ("22222222222222222222222")
 
 				# emp_dict = {
 				education_tree_list = []
@@ -216,7 +214,7 @@ class HrApplicantExt(models.Model):
 					})
 				# employee = self.env['hr.employee'].create(emp_dict)
 
-				print ("333333333333333333333333")
+
 				# employee = self.env['hr.employee'].create({
 				# 	'name': applicant.partner_name or contact_name,
 				# 	'job_id': applicant.job_id.id or False,
@@ -239,27 +237,21 @@ class HrApplicantExt(models.Model):
 				for x in dep_info_tree_list:
 					x.tree_link = employee.id
 				
-				print ("444444444444444444444444444")
 				applicant.write({'emp_id': employee.id})
-				print ("5555555555555555555555555555555")
 				if applicant.job_id:
-					print ("666666666666666666666")
-					applicant.job_id.write({'no_of_hired_employee': applicant.job_id.no_of_hired_employee + 1})
+					# applicant.job_id.write({'no_of_hired_employee': applicant.job_id.no_of_hired_employee + 1})
 					applicant.job_id.message_post(
 						body=('New Employee %s Hired') % applicant.partner_name if applicant.partner_name else applicant.name,
 						subtype="hr_recruitment.mt_job_applicant_hired")
-					print ("77777777777777777777777777777777777")
 				applicant.message_post_with_view(
 					'hr_recruitment.applicant_hired_template',
 					values={'applicant': applicant},
 					subtype_id=self.env.ref("hr_recruitment.mt_applicant_hired").id)
-				print ("888888888888888888888888888")
 
 		employee_action = self.env.ref('hr.open_view_employee_list')
 		dict_act_window = employee_action.read([])[0]
 		dict_act_window['context'] = {'form_view_initial_mode': 'edit'}
 		dict_act_window['res_id'] = employee.id
-		print ("99999999999999999999999999999")
 		return dict_act_window
 
 

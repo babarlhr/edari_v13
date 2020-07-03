@@ -119,6 +119,11 @@
         </field>
     </record>
 
+
+    <record id="cant_create_edit_job_position"   model="res.groups">
+        <field name="name">Can't Create and Edit Job Position</field>
+    </record>
+
     
 </data>
 </odoo>
