@@ -853,6 +853,7 @@ class SaleOrderExt(models.Model):
 					if index.product_id.id == x.service_name.id:
 						manual_check = False
 						index.get_manual_price_unit()
+						code_dict[x.code] = index.price_unit
 				
 				if manual_check:
 					# if x.service_name.id in computed_dict:
@@ -877,11 +878,12 @@ class SaleOrderExt(models.Model):
 						'costcard_type':x.costcard_type,
 						'chargable':x.chargable,
 						})
+					code_dict[x.code] = compute_result
+
 
 					
 
 
-				code_dict[x.code] = compute_result
 				globals().update(code_dict)
 				del compute_result
 				del compute_qty
