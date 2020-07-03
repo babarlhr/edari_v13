@@ -599,7 +599,7 @@ class SaleOrderExt(models.Model):
 
 
 					# qty in months check
-					start_plus_qty = self.contract_start_date+(relativedelta(months = int(line.product_uom_qty)))
+					start_plus_qty = self.contract_start_date+(relativedelta(months = (int(line.product_uom_qty) + int(line.offset))))
 
 					if date_invoice.replace(day=1) <= start_plus_qty.replace(day=1):
 					
@@ -1036,6 +1036,7 @@ class SOLineExt(models.Model):
 	categ_id = fields.Many2one('product.category', string="Product Category")
 	based_on_wd = fields.Boolean(string="Based on WD")
 	recomputable = fields.Boolean(string="Recomputable")
+	offset = fields.Float(string="Offset")
 
 	def _check_line_unlink(self):
 		return False
