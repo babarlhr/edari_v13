@@ -187,16 +187,42 @@
 											<!-- <span class="bill" t-esc="o.partner_id.name"></span> -->
 										</p>
 										<p class="company_info">
-											<span t-esc="o.partner_id.street"></span>
+											<t t-if="o.partner_id.street">
+												<span t-esc="o.partner_id.street"></span>
+											</t>
+											<t t-else="">
+												<span style="color: white !important;">.</span>
+											</t>
 										</p>
 										<p class="company_info">
-											<span t-esc="o.partner_id.street2"></span>
+
+											<t t-if="o.partner_id.street2">
+												<span t-esc="o.partner_id.street2"></span>
+											</t>
+											<t t-else="">
+												<span style="color: white !important;">.</span>
+											</t>
 										</p>
 										<p class="company_info">
-											<span t-esc="o.partner_id.city"></span>
+
+											<t t-if="o.partner_id.city">
+												<span t-esc="o.partner_id.city"></span>
+											</t>
+											<t t-else="">
+												<span style="color: white !important;">.</span>
+											</t>
 										</p>
 										<p class="company_info">
-											<span t-esc="o.partner_id.country_id.name"></span>
+
+											<t t-if="o.partner_id.country_id.name">
+												<span t-esc="o.partner_id.country_id.name"></span>
+											</t>
+											<t t-else="">
+												<span style="color: white !important;">.</span>
+											</t>
+										</p>
+										<p>
+											<span style="color: white !important;">.</span>
 										</p>
 										<p>
 											<span class="solid">Contractor Details:</span>
@@ -214,8 +240,8 @@
 										</p>
 									</div>
 									<div class="right_div">
-										<p class="company_info" style="margin-top: 35px;">
-											<span class="solid" style="color:#736c6c;margin-top: 35px;">TRN:</span>
+										<p class="company_info" style="margin-top:57px;">
+											<span class="solid" style="color:#736c6c;">TRN:</span>
 											<span t-esc="o.partner_id.vat"></span>
 										</p>
 										<p class="company_info">
@@ -238,6 +264,9 @@
 											<t t-else="">
 												<span t-esc="docs.employee.name"></span>
 											</t>
+										</p>
+										<p class="company_info" style="color: white;">.
+											<!-- <span class="solid">NAME:</span> -->
 										</p>
 										<p class="company_info" style="color: white;">.
 											<!-- <span class="solid">NAME:</span> -->
