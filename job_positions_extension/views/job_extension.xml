@@ -2,7 +2,10 @@
 <odoo>
 <data>
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-
+    
+    <record id="master_cost_card_button"   model="res.groups">
+        <field name="name">Master Cost Card Button</field>
+    </record>
     <!--===================== [Job Position Extension Form View-START] ====================-->
 
     <record id="jobs_form_view_extension" model="ir.ui.view"> 
@@ -35,7 +38,7 @@
            
 
             <xpath expr="//header" position="inside">
-                <button name="create_so" string="Create Master Cost Card" type="object" class="oe_highlight"/>
+                <button name="create_so" string="Create Master Cost Card" type="object" class="oe_highlight" groups = "job_positions_extension.master_cost_card_button"/>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button class="oe_stat_button" name="so_smart_button"

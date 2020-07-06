@@ -13,6 +13,10 @@
             <field name="name">In Approvals</field>
     </record>
 
+    <record id="create_cost_card_button"   model="res.groups">
+        <field name="name">Create Cost Card Button</field>
+    </record>
+
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
     <!--===================== [] ====================-->
@@ -38,7 +42,7 @@
                 <xpath expr="//header" position="inside">
                     <!-- <button name="create_so" string="Create Cost Card" type="object" class='oe_highlight'/> -->
                     <!-- <button name="approve_btn" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':[('approve_stage','=', True)]}"/> -->
-                    <button class="oe_highlight" name="create_so" string="Create Cost Card" type="object" attrs="{'invisible':[('approve_stage','=',True)]}"/>
+                    <button class="oe_highlight" name="create_so" string="Create Cost Card" type="object" attrs="{'invisible':[('approve_stage','=',True)]}" groups = "applicant_extension.create_cost_card_button"/>
                     
 
                     <!-- <button name="FirstApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|',('first_approval','!=',False),('stage_id','!=',%(applicant_extension.in_approval_hr_recruitment_stage)d)]}"/>
