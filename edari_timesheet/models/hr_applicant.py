@@ -23,5 +23,11 @@ class Applicant(models.Model):
         for record in self:
             record.invite_url = False
             if record.invite_token:
-                record.invite_url = "https://portal.edarihub.com?type=applicant&invite_token={}".format(
-                    self.invite_token)
+                db_name=self._cr.dbname
+                if "master" in db_name:
+                    record.invite_url = "https://portal.edarihub.com?type=applicant&invite_token={}".format(
+                        self.invite_token)
+                else:
+                    record.invite_url = "https://portal-staging.edarihub.com?type=applicant&invite_token={}".format(
+                        self.invite_token)
+
