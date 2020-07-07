@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'hr_timesheet', 'hr_contract', 'hr_holidays', 'hr_extension'],
+    'depends': ['base', 'hr_timesheet', 'hr_contract', 'hr_holidays', 'hr_extension', 'mail'],
 
     # always loaded
     'data': [
