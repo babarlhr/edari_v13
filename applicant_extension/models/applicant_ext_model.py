@@ -237,7 +237,7 @@ class HrApplicantExt(models.Model):
 				for x in dep_info_tree_list:
 					x.tree_link = employee.id
 				
-				applicant.write({'emp_id': employee.id})
+				applicant.sudo().write({'emp_id': employee.id})
 				if applicant.job_id:
 					# applicant.job_id.write({'no_of_hired_employee': applicant.job_id.no_of_hired_employee + 1})
 					applicant.job_id.message_post(
