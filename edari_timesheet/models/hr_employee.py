@@ -15,11 +15,21 @@ class Employee(models.Model):
     def generate_invite_token(self):
         if self.portal_uid == False and self.invite_token == False:
             self.invite_token = secrets.token_urlsafe(32)
+            # fetch the template id for sending the mail
+            template_id = self.env.ref('edari_timesheet.portal_invite_email_template').id
+            template = self.env['mail.template'].browse(template_id)
+            template.send_mail(self.id, force_send=True)
 
     @api.depends('invite_token')
     def get_invite_url(self):
         for record in self:
             record.invite_url = False
             if record.invite_token:
-                record.invite_url = "https://portal.edarihub.com?type=employee&invite_token={}".format(
-                    self.invite_token)
+                db_name = self._cr.dbname
+                if "staging" in db_name:
+                    record.invite_url = "https://portal-staging.edarihub.com?type=employee&invite_token={}".format(
+                        self.invite_token)
+                else:
+                    record.invite_url = "https://portal.edarihub.com?type=employee&invite_token={}".format(
+                        self.invite_token)
+
