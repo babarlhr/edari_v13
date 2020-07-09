@@ -24,7 +24,7 @@
             <field name="model_id" ref="edari_timesheet.model_hr_employee"/>
             <field name="email_from">no-reply@edarione.com</field>
             <field name="subject">Edari portal invite url</field>
-            <field name="email_to">${object.private_email or ''|safe}</field>
+            <field name="email_to">${object.work_email or object.private_email|safe}</field>
             <field name="lang">${object.lang}</field>
 
             <field name="auto_delete" eval="True"/>
