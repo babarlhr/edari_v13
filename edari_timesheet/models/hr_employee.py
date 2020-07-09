@@ -26,10 +26,10 @@ class Employee(models.Model):
             record.invite_url = False
             if record.invite_token:
                 db_name = self._cr.dbname
-                if "master" in db_name:
-                    record.invite_url = "https://portal.edarihub.com?type=employee&invite_token={}".format(
+                if "staging" in db_name:
+                    record.invite_url = "https://portal-staging.edarihub.com?type=employee&invite_token={}".format(
                         self.invite_token)
                 else:
-                    record.invite_url = "https://portal-staging.edarihub.com?type=employee&invite_token={}".format(
+                    record.invite_url = "https://portal.edarihub.com?type=employee&invite_token={}".format(
                         self.invite_token)
 
