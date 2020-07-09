@@ -243,7 +243,7 @@ class HrApplicantExt(models.Model):
 					applicant.job_id.message_post(
 						body=('New Employee %s Hired') % applicant.partner_name if applicant.partner_name else applicant.name,
 						subtype="hr_recruitment.mt_job_applicant_hired")
-				applicant.message_post_with_view(
+				applicant.sudo().message_post_with_view(
 					'hr_recruitment.applicant_hired_template',
 					values={'applicant': applicant},
 					subtype_id=self.env.ref("hr_recruitment.mt_applicant_hired").id)
