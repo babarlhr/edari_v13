@@ -16,7 +16,7 @@ class Employee(models.Model):
         if self.portal_uid == False and self.invite_token == False:
             self.invite_token = secrets.token_urlsafe(32)
             # fetch the template id for sending the mail
-            template_id = self.env.ref('edari_timesheet.portal_invite_email_template').id
+            template_id = self.env.ref('edari_timesheet.edari_portal_invite_email_template').id
             template = self.env['mail.template'].browse(template_id)
             template.send_mail(self.id, force_send=True)
 
