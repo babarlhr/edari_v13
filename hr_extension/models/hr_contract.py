@@ -83,12 +83,3 @@ class HRPayslipExtension(models.Model):
 	_inherit = 'hr.payslip.input'
 
 	description = fields.Char(string = "Details")				
-
-	
-
-		
-
-
-
-
-		

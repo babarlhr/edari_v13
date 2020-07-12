@@ -237,13 +237,13 @@ class HrApplicantExt(models.Model):
 				for x in dep_info_tree_list:
 					x.tree_link = employee.id
 				
-				applicant.write({'emp_id': employee.id})
+				applicant.sudo().write({'emp_id': employee.id})
 				if applicant.job_id:
 					# applicant.job_id.write({'no_of_hired_employee': applicant.job_id.no_of_hired_employee + 1})
 					applicant.job_id.message_post(
 						body=('New Employee %s Hired') % applicant.partner_name if applicant.partner_name else applicant.name,
 						subtype="hr_recruitment.mt_job_applicant_hired")
-				applicant.message_post_with_view(
+				applicant.sudo().message_post_with_view(
 					'hr_recruitment.applicant_hired_template',
 					values={'applicant': applicant},
 					subtype_id=self.env.ref("hr_recruitment.mt_applicant_hired").id)
