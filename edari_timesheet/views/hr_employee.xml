@@ -9,13 +9,29 @@
 
             <field name="arch" type="xml">
                 <xpath expr="//header" position="inside">
-                    <button name="generate_invite_token" string="Invite To Portal" type="object" class='oe_highlight' attrs="{'invisible':['|', ('portal_uid','!=', False), ('invite_token','!=', False)]}" />
+                    <button name="generate_invite_token" string="Invite Employee To Portal " type="object" class='oe_highlight' attrs="{'invisible':['|', ('portal_uid','!=', False), ('invite_token','!=', False)]}" />
                 </xpath>
                 <xpath expr="//field[@name='employee_code']" position="after">
                     <field name="invite_url" attrs="{'invisible':['|', ('portal_uid','!=', False), ('invite_token','=', False)]}" />
                     <field name="invite_token" invisible="1" />
                     <field name="portal_uid" invisible="1" />
                 </xpath>
+            </field>
+        </record>
+        <!--        email template for sending the invite url for portals-->
+        <record id="portal_invite_email_template" model="mail.template">
+            <field name="name">Edari Portal Invite e-mail template</field>
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="subject">Edari portal invite url</field>
+
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html">
+                <![CDATA[
+	              <p>Dear Sir<br/><br/>
+	              Please use the below url for signing up for the edari portal!<br/></p>
+                  Regards,<br/>
+
+	            ]]>
             </field>
         </record>
     </data>
