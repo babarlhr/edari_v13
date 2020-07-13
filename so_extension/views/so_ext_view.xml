@@ -87,6 +87,7 @@
                 <field name="date_invoice" attrs="{'readonly':[('state','=','sale')], 'invisible':[('so_type','=','sale_order')]}" string = "Last Invoice Month"/>
                 <!-- <field name="invoice_amount" attrs="{'readonly':[('state','in',['sale','done'])]}"/> -->
                 <field name="percentage" attrs="{'readonly':[('state','in',['sale','done'])], 'invisible':[('so_type','=','sale_order')]}"/>
+                <field name="out_of_system_invoiced_amount" attrs="{'readonly':[('state','in',['sale','done'])], 'invisible':[('so_type','=','sale_order')]}"/>
                 <field name="first_approval" readonly="1" attrs="{'invisible':[('so_type','=','sale_order')]}"/>
                 <field name="second_approval" readonly="1" attrs="{'invisible':[('so_type','=','sale_order')]}"/>
                 <field name="sequence_number" invisible="1"/>

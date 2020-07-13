@@ -39,6 +39,7 @@ class SaleOrderExt(models.Model):
 	applicant_approve_check = fields.Boolean(string="Approved Applicant")
 	budget = fields.Float(string="Budget", related="job_pos.budget")
 	unlock_check = fields.Boolean(string="Un Lock Check")
+	out_of_system_invoiced_amount = fields.Float(string="Out Of System Invoiced Amount")
 
 	order_line_2 = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
 
