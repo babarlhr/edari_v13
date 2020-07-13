@@ -104,7 +104,7 @@ class HrContractExtension(models.Model):
 
 				if sick_leave_days:
 					leave_type = self.env['hr.leave.type'].search([('name','=',"Sick Leave Days")])
-					allocated_leaves = self.env['hr.leave.allocation'].search([('name','=',"Sick Leave Days"),('employee_id','=',self.employee_id)])
+					allocated_leaves = self.env['hr.leave.allocation'].search([('name','=',"Sick Leave Days"),('employee_id','=',self.employee_id),('state','=',"validate")])
 					if not allocated_leaves:
 						if sick_leave_accruing:
 							self.CreateLeaveAllocations("Sick Leave Days",leave_type.id,None,"accrual",sick_leave_days/self.cost_card.no_of_months)
@@ -113,7 +113,7 @@ class HrContractExtension(models.Model):
 
 				if annual_leave_days:
 					leave_type = self.env['hr.leave.type'].search([('name','=',"Annual Leave Days")])
-					allocated_leaves = self.env['hr.leave.allocation'].search([('name','=',"Annual Leave Days"),('employee_id','=',self.employee_id)])
+					allocated_leaves = self.env['hr.leave.allocation'].search([('name','=',"Annual Leave Days"),('employee_id','=',self.employee_id),('state','=',"validate")])
 
 					if not allocated_leaves:
 						if annual_leave_accruing:
