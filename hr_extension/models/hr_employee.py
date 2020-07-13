@@ -27,7 +27,6 @@ class HrEmployeeExtension(models.Model):
 		
 		new_record = super(HrEmployeeExtension, self).create(vals)
 		# updating wage in employee
-		new_record.AllocateLeaves()
 		for x in new_record.contract_ids:
 			if x.state == 'open':
 				x.wage = new_record.wage
@@ -46,7 +45,6 @@ class HrEmployeeExtension(models.Model):
 	def write(self, vals):
 		rec = super(HrEmployeeExtension, self).write(vals)
 		# updating wage in employee
-		self.AllocateLeaves()
 		if 'wage' in vals:
 			for x in self.contract_ids:
 				if x.state == 'open':
@@ -61,64 +59,6 @@ class HrEmployeeExtension(models.Model):
 		return rec
 
 
-	def AllocateLeaves(self):
-
-		if self.cost_card:
-			sick_leave_accruing = False
-			annual_leave_accruing = False		
-			for x in self.cost_card.order_line:
-				if x.product_id.name == "Sick Leave Cost":
-					sick_leave_accruing = True
-				if x.product_id.name == "Annual Leave Cost":
-					annual_leave_accruing = True
-
-
-			sick_leave_days = 0
-			annual_leave_days = 0
-			for x in self.cost_card.template.template_tree:
-				if x.service_name.name == "Sick Leave Days":
-					sick_leave_days = self.cost_card.CalculateLeaveDays(x)
-				if x.service_name.name == "Annual Leave Days":
-					annual_leave_days = self.cost_card.CalculateLeaveDays(x)
-
-
-			if sick_leave_days:
-				leave_type = self.env['hr.leave.type'].search([('name','=',"Sick Leave Days")])
-				allocated_leaves = self.env['hr.leave.allocation'].search([('name','=',"Sick Leave Days"),('employee_id','=',self.id)])
-				if not allocated_leaves:
-					if sick_leave_accruing:
-						self.CreateLeaveAllocations("Sick Leave Days",leave_type.id,None,"accrual",sick_leave_days/self.cost_card.no_of_months)
-					else:
-						self.CreateLeaveAllocations("Sick Leave Days",leave_type.id,sick_leave_days,"regular",1)
-
-			if annual_leave_days:
-				leave_type = self.env['hr.leave.type'].search([('name','=',"Annual Leave Days")])
-				allocated_leaves = self.env['hr.leave.allocation'].search([('name','=',"Annual Leave Days"),('employee_id','=',self.id)])
-
-				if not allocated_leaves:
-					if annual_leave_accruing:
-						self.CreateLeaveAllocations("Annual Leave Days",leave_type.id,None,"accrual",annual_leave_days/self.cost_card.no_of_months)
-					else:
-						self.CreateLeaveAllocations("Annual Leave Days",leave_type.id,annual_leave_days,"regular",1)
-
-
-
-
-	def CreateLeaveAllocations(self,leave_name,leave_type,days,allocation_type,number_per_interval):
-		create_allocation = self.env['hr.leave.allocation'].create({
-			'name': leave_name,
-			'employee_id':self.id,
-			'holiday_status_id':leave_type,
-			'number_of_days_display':days,
-			'number_of_days':days,
-			'allocation_type':allocation_type,
-			'number_per_interval':number_per_interval,
-			'unit_per_interval':"days",
-			'interval_number':1,
-			'interval_unit':"months",
-
-			})
-		create_allocation.action_approve()
 
 # class res_partner_customized(models.Model):
 
