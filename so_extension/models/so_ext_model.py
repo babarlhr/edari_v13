@@ -655,11 +655,13 @@ class SaleOrderExt(models.Model):
 		if ending_month == True:
 
 			all_invoices_amount = 0
+			if self.out_of_system_invoiced_amount:
+				all_invoices_amount += out_of_system_invoiced_amount
 			all_invoices = self.env['account.move'].search([('sale_order_id','=',self.id)])
 			for inv in all_invoices:
 				all_invoices_amount += inv.amount_untaxed
 			remaining_amount = self.amount_untaxed -(all_invoices_amount + credit_sum) 
-			if remaining_amount > 0:
+			if remaining_amount != 0:
 
 
 				invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(remaining_amount,"Final Invoice Adjustment",None))
