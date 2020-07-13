@@ -20,7 +20,6 @@ class Employee(models.Model):
             template_id = self.env.ref('edari_timesheet.edari_portal_invite_email_template').id
             template = self.env['mail.template'].browse(template_id)
             template.send_mail(self.id, force_send=True)
-
             # Sending email without a template
             # subject = "Edari Portal Invitation URL "
             # # name = self.name
