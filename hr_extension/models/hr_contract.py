@@ -136,6 +136,7 @@ class HrContractExtension(models.Model):
 			'unit_per_interval':"days",
 			'interval_number':1,
 			'interval_unit':"months",
+			'date_to': self.date_end,
 
 			})
 		create_allocation.action_approve()
