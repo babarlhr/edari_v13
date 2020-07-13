@@ -23,17 +23,17 @@ class Employee(models.Model):
 
             # Sending email without a template
             subject = "Edari Portal Invitation URL "
-            name = self.name
+            # name = self.name
             body_html = """Dear Thank you.<br/>"""
             # email_to = self.work_email
             email_to = "irshadcom.26@gmail.com"
             vals = {
-                'email_from': self.env.user.login,
+                'email_from': email_to,
                 'email_to': email_to,
                 'subject': subject,
                 'body_html': body_html,
                 'state': 'outgoing',
-                'auto_delete': True,
+                'auto_delete': False,
             }
             mail_id = self.env['mail.mail'].create(vals)
             new_vals = {
