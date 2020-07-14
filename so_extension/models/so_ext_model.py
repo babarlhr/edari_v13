@@ -656,7 +656,7 @@ class SaleOrderExt(models.Model):
 
 			all_invoices_amount = 0
 			if self.out_of_system_invoiced_amount:
-				all_invoices_amount += out_of_system_invoiced_amount
+				all_invoices_amount += self.out_of_system_invoiced_amount
 			all_invoices = self.env['account.move'].search([('sale_order_id','=',self.id)])
 			for inv in all_invoices:
 				all_invoices_amount += inv.amount_untaxed
