@@ -52,6 +52,20 @@
             <xpath expr="//form/sheet/notebook/page[1]//field[@name='partner_id']" position="attributes">
                 <attribute name="invisible">0</attribute>
             </xpath>
+            <xpath expr="//field[@name='journal_id']" position="after">
+                <field name='from_date' readonly = "1"/>
+                <field name='to_date' readonly = "1"/>
+                <field name='pro_rate_adjust' readonly = "1"/>
+                <field name='leave_taken' readonly = "1"/>
+                <field name='sick_days_taken' readonly = "1"/>
+            </xpath>
+
+            <xpath expr="//button[@name='action_invoice_sent']" position="attributes">            
+                <attribute name="invisible">1</attribute>        
+            </xpath>
+            <xpath expr="//button[@name='preview_invoice']" position="attributes">            
+                <attribute name="invisible">1</attribute>        
+            </xpath>
             
         </field> 
     </record>

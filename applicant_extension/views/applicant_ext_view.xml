@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 <data>
+    <record id="create_employee_button"   model="res.groups">
+        <field name="name">Create Employee Button</field>
+    </record>
     <record id="approved_hr_recruitment_stage" model="hr.recruitment.stage">
             <field name="name">Approved</field>
         </record>
@@ -9,6 +12,11 @@
         <record id="in_approval_hr_recruitment_stage" model="hr.recruitment.stage">
             <field name="name">In Approvals</field>
     </record>
+
+    <record id="create_cost_card_button"   model="res.groups">
+        <field name="name">Create Cost Card Button</field>
+    </record>
+
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
     <!--===================== [] ====================-->
@@ -34,7 +42,7 @@
                 <xpath expr="//header" position="inside">
                     <!-- <button name="create_so" string="Create Cost Card" type="object" class='oe_highlight'/> -->
                     <!-- <button name="approve_btn" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':[('approve_stage','=', True)]}"/> -->
-                    <button class="oe_highlight" name="create_so" string="Create Cost Card" type="object" attrs="{'invisible':[('approve_stage','=',True)]}"/>
+                    <button class="oe_highlight" name="create_so" string="Create Cost Card" type="object" attrs="{'invisible':[('approve_stage','=',True)]}" groups = "applicant_extension.create_cost_card_button"/>
                     
 
                     <!-- <button name="FirstApproval" string="Approve" type="object" class='oe_highlight' attrs="{'invisible':['|',('first_approval','!=',False),('stage_id','!=',%(applicant_extension.in_approval_hr_recruitment_stage)d)]}"/>
@@ -50,8 +58,9 @@
                 </xpath> -->
 
                 <!-- Adding attribute to a button -->
-                <xpath expr="//button[@name='create_employee_from_applicant']" position="attributes">
-                    <attribute name="attrs">{'invisible':[('approve_stage','=', False)]}</attribute>
+                <xpath expr="//button[@name='create_employee_from_applicant']" position="replace">
+                    <!-- <attribute name="attrs">{'invisible':[('approve_stage','=', False)]}</attribute> -->
+                    <button string="Create Employee" name="create_employee_from_applicant" type="object" class="oe_highlight" attrs="{'invisible': [('approve_stage','=', False)]}" groups = "applicant_extension.create_employee_button" confirm="Are you sure?"/>
                 </xpath>
 
                 <!-- <xpath expr="//button[@name='approve_btn']" position="attributes"> -->
@@ -72,6 +81,114 @@
                     <field name="second_approval" readonly="1"/>
 
                 </xpath> -->
+
+                <!-- Adding pages -->
+                <xpath expr="//field[@name='description']" position="after">
+                
+                    <notebook>
+                        <page string="Personal Information">
+                            <group>
+                                <group string="Private Contact">
+                                    <field name='partner_name' string='Display Name'/>
+                                    <field name='name_in_passport'/>
+                                    <field name='address'/>
+                                    <field name='email_from'/>
+                                    <field name='partner_phone'/>
+                                    <field name='bank_account_id'/>
+                                    <field name='km_home_work'/>
+                                    <field name='cv'/>
+                                </group>
+                                <group string="Citizenship">
+                                    <field name='country_id'/>
+                                    <field name='uae_visa_held'/>
+                                    <field name='identification_id'/>
+                                    <field name='passport_id'/>
+                                    <field name='gender'/>
+                                    <field name='birthday'/>
+                                    <field name='place_of_birth'/>
+                                    <field name='country_of_birth'/>
+                                    
+                                </group>
+                                <group string="Marital Status">
+                                    <field name='marital'/>
+                                    
+                                </group>
+                                <group string="Emergency">
+                                    <field name='emergency_contact'/>
+                                    <field name='emergency_phone'/>
+                                    
+                                </group>
+                                <group string="Work Permit">
+                                    <field name='visa_no'/>
+                                    <field name='permit_no'/>
+                                    <field name='visa_expire'/>
+                                    
+                                </group>
+                                <group string="Education">
+                                    <field name='year_of_graduation'/>
+                                    
+                                </group>
+                            </group>
+                            <field name = 'education_tree' nolabel = "1">
+                                <tree editable = 'bottom'>
+                                    <field name = 'certificate_level' required ="1"/>
+                                    <field name = 'field_of_study'/>
+                                    <field name = 'institute_id'/>
+                                    <field name = 'country_id'/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Work Information">
+                            <group>
+                                <group>
+                                    <field name="address_id" />
+                                    <field name="work_location" />
+                                    <field name="work_email" />
+                                    <field name="mobile_phone" />
+                                </group>
+                                <group>
+                                    <field name="department_id" />
+                                    <field name="job_pos" />
+                                    <field name="job_title" />
+                                    <field name="parent_id" />
+                                    <field name="allow_multiple_loans" />
+                                    <field name="loan_defaulter" />
+                                    <field name="coach_id" />
+                                    <field name="leave_manager_id" />
+                                    <field name="resource_calendar_id" />
+                                    <field name="tz" />
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Dependent Information Tab">
+                            <field name='dependent_tree'>
+                                <tree editable='bottom'>
+                                    <field name='display_name' required='1'/>
+                                    <field name='name_in_passport'/>
+                                    <field name='country_id'/>
+                                    <field name='birthday'/>
+                                    <field name='relationship'/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="Bank Details">
+                            <group>
+                                <group>
+                                    <field name="branch_name" />
+                                    <field name="beneficiary_name" />
+                                    <field name="account_no" />
+                                    <field name="iban" />
+                                    <field name="swift_routing_no" />
+                                </group>
+                                <group>
+                                </group>
+                               
+                            </group>
+                        </page>
+                    </notebook>
+                </xpath>
+
 
             </field> 
         </record>

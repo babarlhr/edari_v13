@@ -2,7 +2,10 @@
 <odoo>
 <data>
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Views Portion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-
+    
+    <record id="master_cost_card_button"   model="res.groups">
+        <field name="name">Master Cost Card Button</field>
+    </record>
     <!--===================== [Job Position Extension Form View-START] ====================-->
 
     <record id="jobs_form_view_extension" model="ir.ui.view"> 
@@ -14,6 +17,7 @@
             
             <xpath expr="//field[@name='address_id']" position="after">
                 <field name="customer" required="1" string = "Client" domain = "[('parent_id','=',False),('customer_rank','!=',0)]" options="{'no_create_edit':True}"/>
+                <field name="job_title" />
                 <field name="hiring_manager_client_dom" widget= "many2many_tags" invisible = "1"/>
                 <field name="hiring_manager_client"  domain = "[('id','in',hiring_manager_client_dom)]"/>
                 <field name="job_type"/>
@@ -25,10 +29,16 @@
                 <field name="hiring_manager" string = "Hiring Manager Edari" invisible = "1"/>
             </xpath>
 
+            <xpath expr="//field[@name='address_id']" position="replace">
+            </xpath>
+
+            <xpath expr="//field[@name='no_of_recruitment']" position="after">
+                <field name="edari_job_owner" domain = "[('employee_type','=','edari_employee')]" options="{'no_create_edit':True}"/>
+            </xpath>
            
 
             <xpath expr="//header" position="inside">
-                <button name="create_so" string="Create Master Cost Card" type="object" class="oe_highlight"/>
+                <button name="create_so" string="Create Master Cost Card" type="object" class="oe_highlight" groups = "job_positions_extension.master_cost_card_button"/>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button class="oe_stat_button" name="so_smart_button"
@@ -46,12 +56,8 @@
         <field name="inherit_id" ref="hr_recruitment.hr_job_survey"/>
         <field name="type">form</field> 
         <field name="arch" type="xml">
-            
-            <!-- <xpath expr="//field[@name='no_of_recruitment']" position="before">
-                 <field name="job_position_status"/>
-            </xpath> -->
             <xpath expr="//field[@name='user_id']" position="attributes">
-                 <attribute name="string">Edari Job Owner</attribute>
+                 <attribute name="invisible">1</attribute>
             </xpath>
         </field> 
     </record>
@@ -64,7 +70,7 @@
         <field name="arch" type="xml">
             
             <xpath expr="//field[@name='user_id']" position="after">
-                <field name="costcard_template" options="{'no_create_edit':True}" string = "Master Cost Card"/>
+                <field name="costcard_template" options="{'no_open':True}" string = "Master Cost Card" readonly = "1" />
                 <field name="visa_entity"/>
                 <!-- <field name="annual_leaves"/> -->
                 <!-- <field name="sick_leaves"/> -->
@@ -114,6 +120,11 @@
             Let's create a job position.
           </p>
         </field>
+    </record>
+
+
+    <record id="cant_create_edit_job_position"   model="res.groups">
+        <field name="name">Can't Create and Edit Job Position</field>
     </record>
 
     

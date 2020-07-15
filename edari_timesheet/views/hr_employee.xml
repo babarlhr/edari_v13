@@ -9,13 +9,34 @@
 
             <field name="arch" type="xml">
                 <xpath expr="//header" position="inside">
-                    <button name="generate_invite_token" string="Invite To Portal" type="object" class='oe_highlight' attrs="{'invisible':['|', ('portal_uid','!=', False), ('invite_token','!=', False)]}" />
+                    <button name="generate_invite_token" string="Invite Employee To Portal " type="object" class='oe_highlight' attrs="{'invisible':['|', ('portal_uid','!=', False), ('invite_token','!=', False)]}" />
                 </xpath>
                 <xpath expr="//field[@name='employee_code']" position="after">
                     <field name="invite_url" attrs="{'invisible':['|', ('portal_uid','!=', False), ('invite_token','=', False)]}" />
                     <field name="invite_token" invisible="1" />
                     <field name="portal_uid" invisible="1" />
                 </xpath>
+            </field>
+        </record>
+        <!--        email template for sending the invite url for portals-->
+        <record id="edari_portal_invite_email_template" model="mail.template">
+            <field name="name">Portal Invitation Email template Edari</field>
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="email_from">no-reply@edarione.com</field>
+            <field name="subject">Invitation URL for Edari portal</field>
+            <field name="email_to">${object.work_email or object.private_email|safe}</field>
+            <field name="lang">${object.lang}</field>
+
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html">
+                <![CDATA[
+	              <p>Dear ${object.name},<br/><br/>
+	              Please use the below url for signing up in the edari portal!<br/></p>
+                  <p>${object.invite_url}</p>
+                  Regards,<br/>
+
+                  ${object.company_id.name}
+	            ]]>
             </field>
         </record>
     </data>

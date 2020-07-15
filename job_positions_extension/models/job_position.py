@@ -22,7 +22,10 @@ class JobsExtension(models.Model):
 	visa_entity = fields.Many2one('visa.entity', string="Visa Entity")
 	costcard_template = fields.Many2one('sale.order', string="Cost Card")
 	working_days_type = fields.Char(string="Working Days Type")
-	leave_type = fields.Char(string="Leave Type")
+	# leave_type = fields.Char(string="Leave Type")
+	job_title = fields.Char(string="Job Title")
+
+	edari_job_owner = fields.Many2one('hr.employee', string="Edari Job Owner")
 
 	work_days_type = fields.Selection([
 		('twenty_two_days','22 Days'),
@@ -96,15 +99,24 @@ class JobsExtension(models.Model):
 		new_record = super(JobsExtension, self).create(vals)
 		# updating wage in contract
 		new_record.UpdateHiringManager()
-		
+		new_record.CannotCreateEdit()
 		return new_record
 
 	def write(self,vals):
 		rec = super(JobsExtension,self).write(vals)
 		
 		self.UpdateHiringManager()
+		self.CannotCreateEdit()
 		
 		return rec
+
+
+	def CannotCreateEdit(self):
+		current_user_id = self.env.uid
+		current_user = self.env['res.users'].search([('id','=',current_user_id)])
+
+		if current_user.has_group('job_positions_extension.cant_create_edit_job_position'):
+			raise ValidationError("You are not allowed to create or edit a Job Position, please contact your system adminstrator")
 
 
 	def create_so(self):

@@ -39,6 +39,7 @@ class SaleOrderExt(models.Model):
 	applicant_approve_check = fields.Boolean(string="Approved Applicant")
 	budget = fields.Float(string="Budget", related="job_pos.budget")
 	unlock_check = fields.Boolean(string="Un Lock Check")
+	out_of_system_invoiced_amount = fields.Float(string="Out Of System Invoiced Amount")
 
 	order_line_2 = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
 
@@ -161,7 +162,7 @@ class SaleOrderExt(models.Model):
 	#   print ("Create Journal Entry")
 
 	# new way of creating invoice START
-	def prepare_invoice(self,date_invoice,month_invoice):
+	def prepare_invoice(self,date_invoice,month_invoice,from_date,to_date):
 		journal = self.env['account.move'].with_context(force_company=self.company_id.id, default_type='out_invoice')._get_default_journal()
 		if not journal:
 			raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (self.company_id.name, self.company_id.id))
@@ -185,6 +186,8 @@ class SaleOrderExt(models.Model):
 			'invoice_origin': self.name,
 			'invoice_date':month_invoice,
 			'invoice_month':date_invoice,
+			'from_date':from_date,
+			'to_date':to_date,
 			'invoice_payment_term_id': self.payment_term_id.id,
 			'invoice_payment_ref': self.reference,
 			'sale_order_id': self.id,
@@ -258,20 +261,32 @@ class SaleOrderExt(models.Model):
 			if not holiday_index.day in unique_holidays:
 				unique_holidays.append(holiday_index.date)
 
-		leaves = self.env['hr.leave'].search([('employee_id','=',self.employee.id),('state','=','validate')])
+		employee_id = None
+		if self.employee:
+			employee_id = self.employee.id
+		elif self.contract:
+			employee_id = self.contract.employee_id.id
+		leaves = self.env['hr.leave'].search([('employee_id','=',employee_id),('state','=','validate')])
 		total_leaves = 0
 		leave_name_days = 0
+		leave_name_days = 0
+		leave_days_list_specific = []
+		leave_days_list = []
 		for x in leaves:
 			per_request_leaves = 0
-			leave_days_list = []
-			leave_name_days = 0
-			leave_days_list_specific = []
 
 			if date_invoice.replace(day=1) == x.request_date_from.replace(day=1) or date_invoice.replace(day=1) == x.request_date_to.replace(day=1):
+				
+
 
 				# getting list of days
 				delta = x.request_date_to - x.request_date_from
-				for i in range(delta.days + 1):
+
+				if delta.days == 0:
+					delta_days = 1
+				else:
+					delta_days = delta.days
+				for i in range(delta_days + 1):
 					day = x.request_date_from + timedelta(days=i)
 					if day.replace(day=1) == date_invoice.replace(day=1):
 						if self.leave_type == "two_days":
@@ -525,8 +540,6 @@ class SaleOrderExt(models.Model):
 			raise ValidationError("Please input Contract Start Date")
 		if not self.contract_end_date:
 			raise ValidationError("Please input Contract End Date")
-		invoice_vals_list = []
-		invoice_vals = self.prepare_invoice(date_invoice,month_invoice)
 		# for line in self.order_line:
 
 		#####################################################################################
@@ -542,14 +555,25 @@ class SaleOrderExt(models.Model):
 		if date_invoice.month == self.contract_start_date.month and date_invoice.year == self.contract_start_date.year:
 			lines_not_to_add = ['end']
 			starting_month = True
+			invoice_date_from = self.contract_start_date
+			invoice_date_to = monthrange(date_invoice.year,date_invoice.month)[1]
+			invoice_date_to_date = dt.date(date_invoice.year, date_invoice.month, invoice_date_to)
+
 
 		elif date_invoice.month == self.contract_end_date.month and date_invoice.year == self.contract_end_date.year:
 			lines_not_to_add = ['upfront']
 			ending_month = True
+			invoice_date_from = self.contract_end_date.replace(day=1)
+			invoice_date_to_date = self.contract_end_date
 
 		else:
 			lines_not_to_add = ['end','upfront']
+			invoice_date_from = dt.date(date_invoice.year, date_invoice.month, 1)
+			invoice_date_to = monthrange(date_invoice.year,date_invoice.month)[1]
+			invoice_date_to_date = dt.date(date_invoice.year, date_invoice.month, invoice_date_to)
 
+		invoice_vals_list = []
+		invoice_vals = self.prepare_invoice(date_invoice,month_invoice,invoice_date_from,invoice_date_to_date)
 
 		
 		values = self.FinalWorkingDays(date_invoice,starting_month,ending_month)
@@ -560,23 +584,28 @@ class SaleOrderExt(models.Model):
 
 
 		code_dict_new = {}
+		total_invoice_amount = 0
 		for line in self.order_line:
 			if line.price_unit != 0:
 				amount = 0
-				if line.payment_type == 'interval':
-					amount = line.price_unit
-				else:
-					amount = line.price_subtotal
-
+				
 				if not line.payment_type in lines_not_to_add:
 					print (line.code)
 
 
 					# qty in months check
-					start_plus_qty = self.contract_start_date+(relativedelta(months = int(line.product_uom_qty)))
+					line_end_date = self.contract_start_date.replace(day=1)+(relativedelta(months = (int(line.product_uom_qty) + int(line.offset)), days=-1))
+					line_start_date = self.contract_start_date+(relativedelta(months = (int(line.offset))))
 
-					if date_invoice.replace(day=1) <= start_plus_qty.replace(day=1):
+					if (date_invoice.replace(day=1) <= line_end_date.replace(day=1)) and (date_invoice.replace(day=1) >= line_start_date.replace(day=1)):
 					
+						if line.payment_type == 'interval':
+							amount = line.price_unit
+							total_invoice_amount += line.price_unit
+						else:
+							amount = line.price_subtotal
+							total_invoice_amount += line.price_subtotal
+
 
 						if line.based_on_wd:
 							per_day = amount/divisor
@@ -622,23 +651,32 @@ class SaleOrderExt(models.Model):
 		if not invoice_vals['invoice_line_ids']:
 			raise UserError('There is no invoiceable line. If a product has a Delivered quantities invoicing policy, please make sure that a quantity has been delivered.')
 
+		remaining_amount = 0
 		if ending_month == True:
 
 			all_invoices_amount = 0
+			if self.out_of_system_invoiced_amount:
+				all_invoices_amount += self.out_of_system_invoiced_amount
 			all_invoices = self.env['account.move'].search([('sale_order_id','=',self.id)])
 			for inv in all_invoices:
 				all_invoices_amount += inv.amount_untaxed
 			remaining_amount = self.amount_untaxed -(all_invoices_amount + credit_sum) 
-			if remaining_amount > 0:
+			if remaining_amount != 0:
 
 
 				invoice_vals['invoice_line_ids'].append(line.prepare_invoice_line(remaining_amount,"Final Invoice Adjustment",None))
 
 		invoice_vals_list.append(invoice_vals)
 
+		total_invoice_amount += remaining_amount 
+
 
 		# 3) Create invoices.
 		moves = self.env['account.move'].with_context(default_type='out_invoice').create(invoice_vals_list)
+
+		moves.pro_rate_adjust = total_invoice_amount - moves.amount_untaxed
+		moves.leave_taken = self.CalculateLeavesPayroll(date_invoice,"Annual Leave Days")
+		moves.sick_days_taken = self.CalculateLeavesPayroll(date_invoice,"Sick Leave Days")
 
 
 
@@ -656,9 +694,7 @@ class SaleOrderExt(models.Model):
 						break
 
 				if line_amount > 0:
-					print ("----------------------")
-					print (self.employee.partner_id.id)
-					print ("----------------------")
+
 
 					moves.write({
 						'line_ids': [
@@ -667,7 +703,7 @@ class SaleOrderExt(models.Model):
 									'name':"Accrued Adjustment",
 									'debit':line_amount,
 									'credit':0,
-									'partner_id':self.contract.employee_id.partner_id.id,
+									'partner_id':self.partner_id.id,
 								}),
 					
 								(0, 0, {
@@ -821,6 +857,7 @@ class SaleOrderExt(models.Model):
 					if index.product_id.id == x.service_name.id:
 						manual_check = False
 						index.get_manual_price_unit()
+						code_dict[x.code] = index.price_unit
 				
 				if manual_check:
 					# if x.service_name.id in computed_dict:
@@ -845,11 +882,12 @@ class SaleOrderExt(models.Model):
 						'costcard_type':x.costcard_type,
 						'chargable':x.chargable,
 						})
+					code_dict[x.code] = compute_result
+
 
 					
 
 
-				code_dict[x.code] = compute_result
 				globals().update(code_dict)
 				del compute_result
 				del compute_qty
@@ -908,6 +946,7 @@ class SaleOrderExt(models.Model):
 		new_record = super(SaleOrderExt, self).create(vals)
 
 		if new_record.so_type == 'cost_card':
+			self.UpdateLeaveType()
 
 			if new_record.job_pos:
 				print (new_record.job_pos.name)
@@ -952,7 +991,16 @@ class SaleOrderExt(models.Model):
 			if self.so_type == 'cost_card':
 				self.UpdateSOName()
 
+		if 'work_days_type' in vals:
+			self.UpdateLeaveType()
+
 		return rec
+
+	def UpdateLeaveType(self):
+		if self.work_days_type == "twenty_two_days":
+			self.leave_type = "two_days"
+		if self.work_days_type == "twenty_six_days":
+			self.leave_type = "one_day"
 
 	def GetDivisorPayroll(self,date_from):
 		no_of_holidays = 0
@@ -995,6 +1043,7 @@ class SOLineExt(models.Model):
 	categ_id = fields.Many2one('product.category', string="Product Category")
 	based_on_wd = fields.Boolean(string="Based on WD")
 	recomputable = fields.Boolean(string="Recomputable")
+	offset = fields.Float(string="Offset")
 
 	def _check_line_unlink(self):
 		return False

@@ -28,6 +28,14 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='private_email']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='phone']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='km_home_work']" position="after">
                 <field name="cv" />
             </xpath>
@@ -99,6 +107,24 @@
                         </group>
                     </group>
                 </page> -->
+                <page string="Education">
+                    <group string='Education'>
+                        <field name = 'education_tree' nolabel = "1">
+                            <tree editable = 'bottom'>
+                                <field name = 'certificate_level' required ="1"/>
+                                <field name = 'field_of_study'/>
+                                <field name = 'institute_id'/>
+                               <field name = 'year_of_graduation' />
+                               <field name = 'uae_attested' />
+                               <field name = 'mofa_attestation' />
+                               <field name = 'upload_doc' widget="many2many_binary"/>
+                               <field name = 'doc_count' />
+                               <field name = 'write_date' string='Last Uploaded'/>
+                                <field name = 'country_id'/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
                 <page string="Dependent Information Tab">
                     <!-- <group>
                         <group>
@@ -138,6 +164,7 @@
                        
                     </group>
                 </page>
+
             </xpath>
 
 
@@ -158,25 +185,6 @@
             <!-- <xpath expr="//field[@name='children']" position="after">
                 <field name="child_depend"/>
             </xpath> -->
-            <xpath expr="//form/sheet/notebook/page[@name='personal_information']/group[1]" position="after">
-                <group string='Education'>
-                    <group>
-                        <group>
-                           <field name = 'year_of_graduation' /> 
-                        </group>
-                        <group>
-                        </group>
-                    </group>
-                    <field name = 'education_tree' nolabel = "1">
-                        <tree editable = 'bottom'>
-                            <field name = 'certificate_level' required ="1"/>
-                            <field name = 'field_of_study'/>
-                            <field name = 'institute_id'/>
-                            <field name = 'country_id'/>
-                        </tree>
-                    </field>
-                </group>
-            </xpath>
 
 
             <xpath expr="//field[@name='address_home_id']" position="before">

@@ -14,6 +14,13 @@ class AccMoveExt(models.Model):
 	employee = fields.Many2one('hr.employee', string="Employee")
 	automated_invoice = fields.Boolean(string = "Automated Invoice")
 	invoice_month = fields.Date(string= "Invoice Month")
+	from_date = fields.Date(string= "From Date")
+	to_date = fields.Date(string= "To Date")
+
+	pro_rate_adjust = fields.Float(string= "Pro Rate Adjustment")
+	leave_taken = fields.Float(string= "Leave Taken")
+	sick_days_taken = fields.Float(string= "Sick Days Taken")
+
 
 
 class ProductExtension(models.Model):
