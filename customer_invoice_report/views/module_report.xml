@@ -35,7 +35,7 @@
 								}
 								.header,
 								.footer {
-									display: none;
+									display: none !important;
 								}
 								.main_wraper {
 									width: 1000px;
@@ -131,8 +131,9 @@
 							<div class="main_wraper">
 								<h1 class="h1_div">
 									<span> INVOICE#</span>
+									<span t-esc="o.name"></span><!-- 
 									<span t-esc="o.invoice_sequence_number_next_prefix"></span>
-									<span t-esc="o.invoice_sequence_number_next"></span>
+									<span t-esc="o.invoice_sequence_number_next"></span> -->
 								</h1>
 								<!-- <span t-esc="company.image_1920"  t-field-options='{"widget": "image"}'></span> -->
 								<br class="clear_float"/>
