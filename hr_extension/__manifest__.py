@@ -10,7 +10,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','sale','hr','hr_contract'],
+    'depends': ['base','sale','hr','hr_contract','hr_expense'],
 
     # always loaded
     'data': [
