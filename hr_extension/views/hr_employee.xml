@@ -5,14 +5,6 @@
 
     <!--===================== [] ====================-->
 
-        <record id="hr_expense.hr_employee_view_form_inherit_expense" model="ir.ui.view">
-            <field name="arch" type="xml">
-                <!-- <xpath expr="//group[@name='managers']" position="inside">
-                    <field name="expense_manager_id" context="{'default_company_id': company_id}"/>
-                </xpath> -->
-            </field>
-        </record>
-
 
         <record id="hr_extension_form_view" model="ir.ui.view"> 
             <field name="name">hr_extension_form_view</field> 
