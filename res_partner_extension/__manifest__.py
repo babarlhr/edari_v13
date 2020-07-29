@@ -6,7 +6,7 @@
         Erpify""",
     'author': "Erpify",
     'website': "https://odoo.ie",
-    'category': 'Un categorized',
+    'category': 'Uncategorized',
     'version': '0.1',
 
     # any module necessary for this one to work correctly

@@ -16,8 +16,8 @@ class PartnerExtension(models.Model):
 	function_contact = fields.Selection([
 		('primary','Primary'),
 		('billing','Billing'),
-		('inv_requestor','Invoice Requestor'),
-		('inv_buyer','Invoice Buyer'),
+		# ('inv_requestor','Invoice Requestor'),
+		# ('inv_buyer','Invoice Buyer'),
 		], string='Function', default="primary")
 	branch_name = fields.Char("Branch Name")
 	beneficiary_name = fields.Char("Beneficiary Name")

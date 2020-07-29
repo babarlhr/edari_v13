@@ -106,6 +106,8 @@ class Employee(models.Model):
     name = fields.Char(related='resource_id.name', string="Name (EN)", store=True, oldname='name_related')
 #     Genaral information group
     join_date = fields.Date('Joining Date')
+    private_email = fields.Char(string="Private Email", store=True)
+    # related='address_home_id.email', 
     line_manager = fields.Many2one('hr.employee' , 'Line Manager')
     senior_manager = fields.Many2one('hr.employee' , 'Senior Manager')
     contract_signing_date = fields.Date('Contract Signing Date')
@@ -238,8 +240,6 @@ class Employee(models.Model):
         ('9', '9'),
         ('10', '10'),
     ], string="Children (Dependent)")
-
-
 
 
     # education tabs fields
