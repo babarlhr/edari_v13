@@ -176,11 +176,13 @@
                         <page string="Bank Details">
                             <group>
                                 <group>
-                                    <field name="branch_name" />
+                                    <field name="bank_name" />
+                                    <field name="branch_name" string = "Branch Address"/>
                                     <field name="beneficiary_name" />
                                     <field name="account_no" />
                                     <field name="iban" />
                                     <field name="swift_routing_no" />
+                                    <field name="other_key_number" />
                                 </group>
                                 <group>
                                 </group>

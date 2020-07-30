@@ -90,11 +90,13 @@ class HrApplicantExt(models.Model):
 	dependent_tree = fields.One2many('employee.dependent.tree', 'applicant_tree_link')
 
 	# Bank Details Tab fields
+	bank_name = fields.Char(string="Bank Name")
 	branch_name = fields.Char(string="Branch Name")
 	beneficiary_name = fields.Char(string="Beneficiary Name")
 	account_no = fields.Char(string="Account No")
 	iban = fields.Char(string="IBAN")
 	swift_routing_no = fields.Char(string="Swift or Routing No")
+	other_key_number = fields.Char(string="Other Key Number")
 
 
 
@@ -207,11 +209,13 @@ class HrApplicantExt(models.Model):
 					# dependent field of timezone
 					# 'resource_id':applicant.resource_id.id,
 					# 'tz':applicant.tz,
+					'bank_name':applicant.bank_name,
 					'branch_name':applicant.branch_name,
 					'beneficiary_name':applicant.beneficiary_name,
 					'account_no':applicant.account_no,
 					'iban':applicant.iban,
 					'swift_routing_no':applicant.swift_routing_no,
+					'other_key_number':applicant.other_key_number,
 
 					})
 				# employee = self.env['hr.employee'].create(emp_dict)
