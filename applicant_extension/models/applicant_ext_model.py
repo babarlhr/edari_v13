@@ -304,7 +304,7 @@ class HrApplicantExt(models.Model):
 				# 'contract_start_date':self.availability,
 				'per_month_gross_salary':salary_amount,
 				'inv_attention':self.job_id.costcard_template.inv_attention,
-				'invoice_requestor':self.job_id.costcard_template.invoice_requestor.id,
+				'invoice_requester':self.job_id.costcard_template.invoice_requester.id,
 				'invoice_buyer':self.job_id.costcard_template.invoice_buyer.id,
 				'job_pos':self.job_id.id,
 				'template':self.job_id.template.id,
@@ -329,7 +329,7 @@ class HrApplicantExt(models.Model):
 				self.cost_card.partner_id = self.job_id.customer.id
 				self.cost_card.no_of_months = int(self.job_id.contract_length)
 				self.cost_card.inv_attention = self.job_id.costcard_template.inv_attention
-				self.cost_card.invoice_requestor = self.job_id.costcard_template.invoice_requestor.id
+				self.cost_card.invoice_requester = self.job_id.costcard_template.invoice_requester.id
 				self.cost_card.invoice_buyer = self.job_id.costcard_template.invoice_buyer.id
 				# self.cost_card.get_order_lines()
 				self.get_manual_order_lines()
