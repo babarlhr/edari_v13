@@ -1060,7 +1060,7 @@ class SOLineExt(models.Model):
 	based_on_wd = fields.Boolean(string="Based on WD")
 	recomputable = fields.Boolean(string="Recomputable")
 	offset = fields.Float(string="Offset")
-	as_of_date = fields.Float(string="As Of Month")
+	as_of_date = fields.Date(string="As Of Month")
 
 	def _check_line_unlink(self):
 		return False
