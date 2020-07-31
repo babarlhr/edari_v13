@@ -40,10 +40,10 @@ class SaleOrderExt(models.Model):
 	budget = fields.Float(string="Budget", related="job_pos.budget")
 	unlock_check = fields.Boolean(string="Un Lock Check")
 	out_of_system_invoiced_amount = fields.Float(string="Out Of System Invoiced Amount")
-   inv_attention = fields.Char("Invoice Attention")
-   invoice_requester = fields.Many2one('res.partner',string="Invoice Requester")
-   invoice_buyer = fields.Many2one('res.partner',string="Invoice Buyer")
-   hiring_contact_client_dom = fields.Many2many('res.partner',compute = "GetContactDOM")
+	inv_attention = fields.Char("Invoice Attention")
+	invoice_requester = fields.Many2one('res.partner',string="Invoice Requester")
+	invoice_buyer = fields.Many2one('res.partner',string="Invoice Buyer")
+	hiring_contact_client_dom = fields.Many2many('res.partner',compute = "GetContactDOM")
 
 	order_line_2 = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
 
