@@ -294,7 +294,8 @@
                 <field name="manual_amount" attrs="{'readonly':[('costcard_type','!=','manual')]}"/>
                 <field name="categ_id" invisible="0"/>
                 <field name="recomputable" invisible="0"/>
-                <field name="offset" invisible="0"/>
+                <field name="offset" invisible="1"/>
+                <field name="as_of_date" invisible="0"/>
             </xpath>
 
 

@@ -606,8 +606,12 @@ class SaleOrderExt(models.Model):
 
 
 					# qty in months check
-					line_end_date = self.contract_start_date.replace(day=1)+(relativedelta(months = (int(line.product_uom_qty) + int(line.offset)), days=-1))
-					line_start_date = self.contract_start_date+(relativedelta(months = (int(line.offset))))
+					if line.as_of_date:
+						line_start_date = line.as_of_date.replace(days=1)
+						line_end_date = line_start_date+(relativedelta(months = (int(line.product_uom_qty)), days=-1))
+					else:
+						line_end_date = self.contract_start_date.replace(day=1)+(relativedelta(months = (int(line.product_uom_qty) + int(line.offset)), days=-1))
+						line_start_date = self.contract_start_date+(relativedelta(months = (int(line.offset))))
 
 					if (date_invoice.replace(day=1) <= line_end_date.replace(day=1)) and (date_invoice.replace(day=1) >= line_start_date.replace(day=1)):
 					
@@ -1056,6 +1060,7 @@ class SOLineExt(models.Model):
 	based_on_wd = fields.Boolean(string="Based on WD")
 	recomputable = fields.Boolean(string="Recomputable")
 	offset = fields.Float(string="Offset")
+	as_of_date = fields.Float(string="As Of Month")
 
 	def _check_line_unlink(self):
 		return False
