@@ -91,12 +91,12 @@ class SaleOrderExt(models.Model):
 	def ActionCancel(self):
 		self.state = "draft"
 		self.unlock_check = True
-   
-   def GetContactDOM(self):
-      for x in self:
-         id_list = []
-         for index in x.partner_id.child_ids:
-            id_list.append(index.id)
+	
+	def GetContactDOM(self):
+		for x in self:
+			id_list = []
+			for index in x.partner_id.child_ids:
+				id_list.append(index.id)
 
 		self.hiring_contact_client_dom = [(6, 0, id_list)]
 
