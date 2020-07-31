@@ -607,7 +607,7 @@ class SaleOrderExt(models.Model):
 
 					# qty in months check
 					if line.as_of_date:
-						line_start_date = line.as_of_date.replace(days=1)
+						line_start_date = line.as_of_date.replace(day=1)
 						line_end_date = line_start_date+(relativedelta(months = (int(line.product_uom_qty)), days=-1))
 					else:
 						line_end_date = self.contract_start_date.replace(day=1)+(relativedelta(months = (int(line.product_uom_qty) + int(line.offset)), days=-1))
