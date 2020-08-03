@@ -21,6 +21,21 @@ class AccMoveExt(models.Model):
 	leave_taken = fields.Float(string= "Leave Taken")
 	sick_days_taken = fields.Float(string= "Sick Days Taken")
 
+	report_name = fields.Char(string= "Report Name", compute = "UpdateReportName")
+
+	def UpdateReportName(self):
+		for rec in self:
+			if rec.invoice_date:
+				if rec.partner_id.trading_as:
+					customer_name = rec.partner_id.trading_as
+				else:
+					customer_name = rec.partner_id.name[:3]
+				oldformat = str(rec.invoice_date)
+				dateobject = datetime.strptime(oldformat,'%Y-%m-%d')
+				month = dateobject.strftime('%m')
+				year = dateobject.strftime('%Y')
+				rec.report_name = str(customer_name) + '-' + str(rec.name) + '-' + str(month) + '-' + str(year) 
+
 
 
 class ProductExtension(models.Model):
