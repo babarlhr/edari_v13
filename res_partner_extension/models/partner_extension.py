@@ -75,14 +75,13 @@ class PartnerExtension(models.Model):
 				raise ValidationError("You are not allowed to create a company, please contact your system adminstrator")
 
 	def CantCreateEditVendor(self):
-		current_user_id = self.env.uid
-		current_user = self.env['res.users'].search([('id','=',current_user_id)])
+		for rec in self:
+			current_user_id = self.env.uid
+			current_user = self.env['res.users'].search([('id','=',current_user_id)])
 
-		if current_user.has_group('res_partner_extension.cannot_create_edit_vendor'):
-			if self.supplier_rank > 0:
-				raise ValidationError("You are not allowed to create or edit a vendor, please contact your system adminstrator")
-
-
+			if current_user.has_group('res_partner_extension.cannot_create_edit_vendor'):
+				if rec.supplier_rank > 0:
+					raise ValidationError("You are not allowed to create or edit a vendor, please contact your system adminstrator")
 
 	@api.model
 	def create(self, vals):
@@ -102,10 +101,11 @@ class PartnerExtension(models.Model):
 
 	def write(self,vals):
 
-		status_before = self.company_type
+		# status_before = self.company_type
 		rec = super(PartnerExtension,self).write(vals)
-		status_after = self.company_type
-		if status_after != status_before:
+		# status_after = self.company_type
+		# if status_after != status_before:
+		if "company_type" in vals:
 			current_user_id = self.env.uid
 			current_user = self.env['res.users'].search([('id','=',current_user_id)])
 
