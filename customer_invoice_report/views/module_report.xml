@@ -35,7 +35,7 @@
 								}
 								.header,
 								.footer {
-									display: none;
+									display: none !important;
 								}
 								.main_wraper {
 									width: 1000px;
@@ -129,10 +129,19 @@
 									float: right;
 								} -->
 							<div class="main_wraper">
+								<h1 style="text-align:center">
+									<t t-if="o.state == 'draft'">
+										<span>Draft Invoice</span>
+									</t>
+									<t t-if="o.state == 'cancel'">
+										<span>Cancelled Invoice</span>
+									</t>
+								</h1>
 								<h1 class="h1_div">
 									<span> INVOICE#</span>
+									<span t-esc="o.name"></span><!-- 
 									<span t-esc="o.invoice_sequence_number_next_prefix"></span>
-									<span t-esc="o.invoice_sequence_number_next"></span>
+									<span t-esc="o.invoice_sequence_number_next"></span> -->
 								</h1>
 								<!-- <span t-esc="company.image_1920"  t-field-options='{"widget": "image"}'></span> -->
 								<br class="clear_float"/>
@@ -250,23 +259,23 @@
 										</p>
 										<p class="company_info">
 											<span class="solid" style="color:#736c6c">Attention:</span>
-											<span class="liquid3" t-esc="o.partner_id.inv_attention"></span>
+											<span class="liquid3" t-esc="o.sale_order_id.inv_attention"></span>
 										</p>
 										<p class="company_info">
 											<span class="solid" style="color:#736c6c">Requestor:</span>
-											<span class="liquid3" t-esc="inv_requestor"></span>
+											<span class="liquid3" t-esc="o.sale_order_id.invoice_requester.name"></span>
 										</p>
 										<p class="company_info">
 											<span class="solid" style="color:#736c6c">Buyer:</span>
-											<span class="liquid3" t-esc="inv_buyer"></span>
+											<span class="liquid3" t-esc="o.sale_order_id.invoice_buyer.name"></span>
 										</p>
 										<p class="company_info">
 											<span class="solid" style="color:#736c6c">Contract #:</span>
-											<t t-if="docs.sale_order_id.customer_po_no">
-												<span class="liquid3" t-esc="docs.sale_order_id.customer_po_no"></span>
+											<t t-if="o.sale_order_id.customer_po_no">
+												<span class="liquid3" t-esc="o.sale_order_id.customer_po_no"></span>
 											</t>
 											<t t-else="">
-												<span class="liquid3" t-esc="docs.employee.name"></span>
+												<span class="liquid3" t-esc="o.employee.name"></span>
 											</t>
 										</p>
 										<p class="company_info" style="color: white;">.
@@ -276,8 +285,8 @@
 											<!-- <span class="solid">NAME:</span> -->
 										</p>
 										<p class="company_info">
-											<t t-if="docs.employee">
-												<span t-esc="docs.employee.name"></span>
+											<t t-if="o.employee">
+												<span t-esc="o.employee.name"></span>
 											</t>
 											<t t-else="">
 												<span>--</span>
@@ -285,11 +294,11 @@
 											<!-- <span class="solid">PO No:</span> -->
 										</p>
 										<p class="company_info">
-											<t t-if="docs.sale_order_id.customer_po_no">
-												<span t-esc="docs.sale_order_id.customer_po_no"></span>
+											<t t-if="o.sale_order_id.customer_po_no">
+												<span t-esc="o.sale_order_id.customer_po_no"></span>
 											</t>
 											<t t-else="">
-												<span t-esc="docs.employee.name"></span>
+												<span t-esc="o.employee.name"></span>
 											</t>
 											<!-- <span class="solid">NAME:</span> -->
 										</p>
@@ -310,7 +319,7 @@
 									</tr>
 									<tr>
 										<th>
-											<span t-esc="docs.employee.name"></span>
+											<span t-esc="o.employee.name"></span>
 										</th>
 										<th> From 
 											<span t-esc="o.from_date"></span>
@@ -319,7 +328,7 @@
 											<!-- <span t-esc="'{0:,.2f}'.format(float(data.price_subtotal))"></span> -->
 										</th>
 										<th> AED 
-											<span t-esc="'{0:,.2f}'.format(float(docs.amount_untaxed))"></span>
+											<span t-esc="'{0:,.2f}'.format(float(o.amount_untaxed))"></span>
 										</th>
 									</tr>
 									<tr>

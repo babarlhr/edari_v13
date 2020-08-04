@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+		<template id="custome_internal_layout" inherit_id="web.internal_layout">
+		        <xpath expr="//div[@class='header']" position="replace">
+		        	<div class="header"></div>
+		        </xpath>
+		</template>
+	</data>
+</odoo>

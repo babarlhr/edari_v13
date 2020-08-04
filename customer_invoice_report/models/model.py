@@ -34,48 +34,36 @@ class customer_invoice_report(models.AbstractModel):
 
         company = self.env['res.company'].search([('id','=',1)])
         contacts = {}
-        
-        inv_attention = ""
-        inv_requestor = ""
-        inv_buyer = ""
-        inv_attention = record.partner_id.inv_attention
-        for x in record.partner_id.child_ids:
-            if x.function_contact == 'inv_requestor':
-                inv_requestor = x.name
-            if x.function_contact == 'inv_buyer':
-                inv_buyer = x.name
+        for rec in record:
+            # getting tax rate
+            vat_rate = []
+            vat_amount = 0
+            label = ""
+            for x in rec.invoice_line_ids:
+                for y in x.tax_ids:
+                    if str(y.amount) not in vat_rate:
+                        if len(vat_rate) == 0:
+                            vat_amount = int(y.amount)
+                        else:
+                            vat_amount = 0
 
+                        vat_rate.append(str(y.amount))
 
-        # getting tax rate
-        vat_rate = []
-        vat_amount = 0
-        label = ""
-        for x in record.invoice_line_ids:
-            for y in x.tax_ids:
-                if str(y.amount) not in vat_rate:
-                    if len(vat_rate) == 0:
-                        vat_amount = int(y.amount)
-                    else:
-                        vat_amount = 0
+            bank_name = ""
+            iban = ""
+            swift = ""
+            if company.partner_id.bank_ids:
+                if company.partner_id.bank_ids[0].bank_id:
+                    bank_name = company.partner_id.bank_ids[0].bank_id.name
+                    swift = company.partner_id.bank_ids[0].bank_id.swift
+                iban = company.partner_id.bank_ids[0].acc_number
 
-                    vat_rate.append(str(y.amount))
+            contract = self.env['hr.contract'].search([('employee_id','=',rec.employee.id)])
 
-
-        bank_name = ""
-        iban = ""
-        swift = ""
-        if company.partner_id.bank_ids:
-            if company.partner_id.bank_ids[0].bank_id:
-                bank_name = company.partner_id.bank_ids[0].bank_id.name
-                swift = company.partner_id.bank_ids[0].bank_id.swift
-            iban = company.partner_id.bank_ids[0].acc_number
-
-        contract = self.env['hr.contract'].search([('employee_id','=',record.employee.id)])
-
-        line_man = ""
-        if contract:
-            if contract.line_manager_client:
-                line_man = contract.line_manager_client.name
+            line_man = ""
+            if contract:
+                if contract.line_manager_client:
+                    line_man = contract.line_manager_client.name
 
 
 
@@ -84,9 +72,6 @@ class customer_invoice_report(models.AbstractModel):
             'doc_ids': docids,
             'doc_model':'account.move',
             'data': data,
-            'inv_attention': inv_attention,
-            'inv_requestor': inv_requestor,
-            'inv_buyer': inv_buyer,
             'vat_amount': vat_amount,
             'bank_name': bank_name,
             'iban': iban,

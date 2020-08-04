@@ -31,6 +31,7 @@
                 
                 <xpath expr="//field[@name='type_id']" position="after">
                     <field name="cost_card" options="{'no_edit_create':True}" readonly="1"/>
+                    <field name="master_costcard" domain="[('costcard_type','=','estimate')]"/>
                     <field name="approve_stage" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='availability']" position="after">
@@ -175,11 +176,13 @@
                         <page string="Bank Details">
                             <group>
                                 <group>
-                                    <field name="branch_name" />
+                                    <field name="bank_name" />
+                                    <field name="branch_name" string = "Branch Address"/>
                                     <field name="beneficiary_name" />
                                     <field name="account_no" />
                                     <field name="iban" />
                                     <field name="swift_routing_no" />
+                                    <field name="other_key_number" />
                                 </group>
                                 <group>
                                 </group>

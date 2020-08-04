@@ -20,8 +20,8 @@
             <xpath expr="//field[@name='type']" position="before">
                 <field name="trading_as" placeholder="e.g Abbreviated as ..."/>
                 <field name="client_owner" domain="[('employee_type','=','edari_employee')]" options="{'no_create_edit':True}"/>
-                <field name="function_contact" attrs="{'invisible':[('company_type','=','company')]}"/>
-                <field name="inv_attention"/>
+                <field name="function_contact" attrs="{'invisible':[('company_type','=','company')]}" invisible="0"/>
+                <field name="inv_attention" invisible="1"/>
 
             </xpath>
             <!-- <xpath expr="//sheet/div[2]/h1" position="after">

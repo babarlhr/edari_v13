@@ -20,6 +20,8 @@ class HrApplicantExt(models.Model):
 	_inherit = 'hr.applicant'
 
 	cost_card = fields.Many2one('sale.order', string="Cost Card")
+	master_costcard = fields.Many2one('sale.order', string="Master Cost Card")
+
 	contract = fields.Many2one('hr.contract', string="Contract")
 	payroll_structure = fields.Many2one('hr.payroll.structure.type', string="Salary Structure")
 	approve_stage = fields.Boolean(string="Approve Boolean")
@@ -88,11 +90,13 @@ class HrApplicantExt(models.Model):
 	dependent_tree = fields.One2many('employee.dependent.tree', 'applicant_tree_link')
 
 	# Bank Details Tab fields
+	bank_name = fields.Char(string="Bank Name")
 	branch_name = fields.Char(string="Branch Name")
 	beneficiary_name = fields.Char(string="Beneficiary Name")
 	account_no = fields.Char(string="Account No")
 	iban = fields.Char(string="IBAN")
 	swift_routing_no = fields.Char(string="Swift or Routing No")
+	other_key_number = fields.Char(string="Other Key Number")
 
 
 
@@ -205,11 +209,13 @@ class HrApplicantExt(models.Model):
 					# dependent field of timezone
 					# 'resource_id':applicant.resource_id.id,
 					# 'tz':applicant.tz,
+					'bank_name':applicant.bank_name,
 					'branch_name':applicant.branch_name,
 					'beneficiary_name':applicant.beneficiary_name,
 					'account_no':applicant.account_no,
 					'iban':applicant.iban,
 					'swift_routing_no':applicant.swift_routing_no,
+					'other_key_number':applicant.other_key_number,
 
 					})
 				# employee = self.env['hr.employee'].create(emp_dict)
@@ -297,6 +303,9 @@ class HrApplicantExt(models.Model):
 				'contract':self.contract.id,
 				# 'contract_start_date':self.availability,
 				'per_month_gross_salary':salary_amount,
+				'inv_attention':self.job_id.costcard_template.inv_attention,
+				'invoice_requester':self.job_id.costcard_template.invoice_requester.id,
+				'invoice_buyer':self.job_id.costcard_template.invoice_buyer.id,
 				'job_pos':self.job_id.id,
 				'template':self.job_id.template.id,
 				'costcard_type':'cost_card',
@@ -319,6 +328,9 @@ class HrApplicantExt(models.Model):
 				self.cost_card.template = self.job_id.template.id
 				self.cost_card.partner_id = self.job_id.customer.id
 				self.cost_card.no_of_months = int(self.job_id.contract_length)
+				self.cost_card.inv_attention = self.job_id.costcard_template.inv_attention
+				self.cost_card.invoice_requester = self.job_id.costcard_template.invoice_requester.id
+				self.cost_card.invoice_buyer = self.job_id.costcard_template.invoice_buyer.id
 				# self.cost_card.get_order_lines()
 				self.get_manual_order_lines()
 				self.cost_card.create_edari_fee()

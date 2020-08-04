@@ -40,6 +40,10 @@ class SaleOrderExt(models.Model):
 	budget = fields.Float(string="Budget", related="job_pos.budget")
 	unlock_check = fields.Boolean(string="Un Lock Check")
 	out_of_system_invoiced_amount = fields.Float(string="Out Of System Invoiced Amount")
+	inv_attention = fields.Char("Invoice Attention")
+	invoice_requester = fields.Many2one('res.partner',string="Invoice Requester")
+	invoice_buyer = fields.Many2one('res.partner',string="Invoice Buyer")
+	hiring_contact_client_dom = fields.Many2many('res.partner',compute = "GetContactDOM")
 
 	order_line_2 = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
 
@@ -87,6 +91,14 @@ class SaleOrderExt(models.Model):
 	def ActionCancel(self):
 		self.state = "draft"
 		self.unlock_check = True
+	
+	def GetContactDOM(self):
+		for x in self:
+			id_list = []
+			for index in x.partner_id.child_ids:
+				id_list.append(index.id)
+
+		self.hiring_contact_client_dom = [(6, 0, id_list)]
 
 
 	@api.depends('order_line.invoice_lines')
@@ -594,8 +606,12 @@ class SaleOrderExt(models.Model):
 
 
 					# qty in months check
-					line_end_date = self.contract_start_date.replace(day=1)+(relativedelta(months = (int(line.product_uom_qty) + int(line.offset)), days=-1))
-					line_start_date = self.contract_start_date+(relativedelta(months = (int(line.offset))))
+					if line.as_of_date:
+						line_start_date = line.as_of_date.replace(day=1)
+						line_end_date = line_start_date+(relativedelta(months = (int(line.product_uom_qty)), days=-1))
+					else:
+						line_end_date = self.contract_start_date.replace(day=1)+(relativedelta(months = (int(line.product_uom_qty) + int(line.offset)), days=-1))
+						line_start_date = self.contract_start_date+(relativedelta(months = (int(line.offset))))
 
 					if (date_invoice.replace(day=1) <= line_end_date.replace(day=1)) and (date_invoice.replace(day=1) >= line_start_date.replace(day=1)):
 					
@@ -1044,6 +1060,7 @@ class SOLineExt(models.Model):
 	based_on_wd = fields.Boolean(string="Based on WD")
 	recomputable = fields.Boolean(string="Recomputable")
 	offset = fields.Float(string="Offset")
+	as_of_date = fields.Date(string="As Of Month")
 
 	def _check_line_unlink(self):
 		return False

@@ -20,6 +20,7 @@
     'depends': ['base','sale'],
     'data': [
             'views/template.xml',
+            'views/internal_layout.xml',
             'views/module_report.xml'
             ],
     

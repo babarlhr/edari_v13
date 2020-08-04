@@ -106,6 +106,8 @@ class Employee(models.Model):
     name = fields.Char(related='resource_id.name', string="Name (EN)", store=True, oldname='name_related')
 #     Genaral information group
     join_date = fields.Date('Joining Date')
+    private_email = fields.Char(string="Private Email", store=True)
+    # related='address_home_id.email', 
     line_manager = fields.Many2one('hr.employee' , 'Line Manager')
     senior_manager = fields.Many2one('hr.employee' , 'Senior Manager')
     contract_signing_date = fields.Date('Contract Signing Date')
@@ -196,11 +198,13 @@ class Employee(models.Model):
     contact_no = fields.Char(string="Contact No")
     client_email = fields.Char(string="Client Email")
     sick_leaves = fields.Char(string="Sick Leaves")
+    bank_name = fields.Char(string="Bank Name")
     branch_name = fields.Char(string="Branch Name")
     beneficiary_name = fields.Char(string="Beneficiary Name")
     account_no = fields.Char(string="Account No")
     iban = fields.Char(string="IBAN")
     swift_routing_no = fields.Char(string="Swift or Routing No")
+    other_key_number = fields.Char(string="Other Key Number")
     education_tree = fields.One2many('hr.education.tree', 'tree_link')
     address = fields.Char('Address')
     
@@ -238,8 +242,6 @@ class Employee(models.Model):
         ('9', '9'),
         ('10', '10'),
     ], string="Children (Dependent)")
-
-
 
 
     # education tabs fields

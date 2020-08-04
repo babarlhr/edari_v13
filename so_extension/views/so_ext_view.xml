@@ -58,7 +58,7 @@
                 <button name="ActionCancel" string="Unlock" type="object" class='oe_highlight' groups = "so_extension.cancel_after_approved" attrs="{'invisible':['|',('state','!=','done'),('so_type','=','sale_order')]}"/>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="so_type" required = "0"/>
+                <field name="so_type" required = "0"  attrs="{'readonly':[('state', 'in', ('done','cancel','sale'))]}"/>
                 <field name="unlock_check" invisible = "1"/>
 
                 <field name="applicant" options="{'no_create_edit':True}" readonly="1" attrs="{'invisible':[('so_type','=','sale_order')]}"/>
@@ -78,7 +78,7 @@
             </xpath>
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <!-- <field name="interval"/> -->
-                <field name="customer_po_no" attrs="{'readonly':[('state','in',['sale','done'])], 'invisible':[('so_type','=','sale_order')]}"/>
+                <field name="customer_po_no" attrs="{'readonly':[('state','in',['sale','cancel'])], 'invisible':[('so_type','=','sale_order')]}"/>
                 <field name="work_days_type" attrs="{'readonly':[('state','in',['sale','done'])], 'invisible':[('so_type','=','sale_order')]}"/>
                 <field name="leave_type" attrs="{'invisible':['|',('work_days_type','!=','actual_working_days'),('so_type','=','sale_order')]}"/>
                 <field name="contract_start_date" attrs="{'readonly':[('state','=','sale')]}" invisible = "1"/>
@@ -90,6 +90,10 @@
                 <field name="out_of_system_invoiced_amount" attrs="{'readonly':[('state','in',['sale','done'])], 'invisible':[('so_type','=','sale_order')]}"/>
                 <field name="first_approval" readonly="1" attrs="{'invisible':[('so_type','=','sale_order')]}"/>
                 <field name="second_approval" readonly="1" attrs="{'invisible':[('so_type','=','sale_order')]}"/>
+                <field name="hiring_contact_client_dom" widget= "many2many_tags" invisible = "1"/>
+                <field name="inv_attention"  attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                <field name="invoice_requester"  options="{'no_create': True}" attrs="{'readonly':[('state','in',['sale','done'])]}" domain = "[('id','in',hiring_contact_client_dom)]"/>
+                <field name="invoice_buyer"  options="{'no_create': True}" attrs="{'readonly':[('state','in',['sale','done'])]}" domain = "[('id','in',hiring_contact_client_dom)]"/>
                 <field name="sequence_number" invisible="1"/>
             </xpath>
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']" position="attributes">
@@ -99,6 +103,10 @@
             <xpath expr="/form/sheet/notebook/page[2]" position="replace">
                 
             </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', 'in', ('done','cancel','sale'))]}</attribute>
+            </xpath>
+
             <xpath expr="/form/sheet/notebook/page[3]" position="replace">
                 
             </xpath>
@@ -286,7 +294,8 @@
                 <field name="manual_amount" attrs="{'readonly':[('costcard_type','!=','manual')]}"/>
                 <field name="categ_id" invisible="0"/>
                 <field name="recomputable" invisible="0"/>
-                <field name="offset" invisible="0"/>
+                <field name="offset" invisible="1"/>
+                <field name="as_of_date" invisible="0"/>
             </xpath>
 
 
