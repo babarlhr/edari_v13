@@ -44,7 +44,9 @@ class SaleOrderExt(models.Model):
 	invoice_requester = fields.Many2one('res.partner',string="Invoice Requester")
 	invoice_buyer = fields.Many2one('res.partner',string="Invoice Buyer")
 	hiring_contact_client_dom = fields.Many2many('res.partner',compute = "GetContactDOM")
-
+	extensions = fields.Char(
+	    string='Extension No.',
+	)
 	order_line_2 = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
 
 
@@ -57,7 +59,7 @@ class SaleOrderExt(models.Model):
 	costcard_type = fields.Selection([
 		('estimate','Estimate'),
 		('cost_card','Cost Card'),
-		], string='Cost Card Type')
+		], string='Cost Card Type',default="cost_card",required = True)
 	work_days_type = fields.Selection([
 		('twenty_two_days','22 Days'),
 		('calender_days','Calender Days'),
@@ -141,12 +143,21 @@ class SaleOrderExt(models.Model):
 				lines.handle = costcard_line_rec.handle
 
 	def UpdateSOName(self):
-		cost_card_name = ""
-		if self.costcard_type == "estimate":
-			cost_card_name = "Estimate"
-		if self.costcard_type == "cost_card":
-			cost_card_name = "Cost Card"
+		# cost_card_name = ""
+		# if self.costcard_type == "estimate":
+		# 	cost_card_name = "Estimate"
+		# if self.costcard_type == "cost_card":
+		# 	cost_card_name = "Cost Card"
 
+		date=" "
+		if self.contract.date_start:
+			date=datetime.strftime(self.contract.date_start,'%d/%m/%Y')
+
+		if self.partner_id.trading_as==False:
+			client_name=self.partner_id.name[:3]
+		else:
+			client_name =self.partner_id.trading_as 
+		
 		applicant_name = ""
 		if self.contract:
 			applicant_name = self.contract.employee_id.name
@@ -154,10 +165,14 @@ class SaleOrderExt(models.Model):
 			applicant_name = self.job_pos.name
 		else:
 			applicant_name = self.partner_id.name
+		if self.extensions == False:
+			extensions = ""
+		else:
+			extensions = self.extensions
 		if not self.sequence_number:
 			self.sequence_number = self.name
-		self.name = self.sequence_number + "-" + cost_card_name + "-" + applicant_name
 
+		self.name = self.sequence_number + "-" +dict(self._fields['costcard_type'].selection).get(self.costcard_type)+"-"+client_name+"-"+applicant_name+"-"+date+"-"+extensions
 
 
 
