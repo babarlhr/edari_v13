@@ -15,12 +15,15 @@
     'sale',
     'account',
     'cost_card_template',
+    'snailmail_account',
+    'mail',
     ],
 
     # always loaded
     'data': [
         'views/so_ext_view.xml',
         'views/acc_move_ext_view.xml',
+        'views/invoice_send_and_print.xml',
     ],
 
 }
