@@ -1015,8 +1015,10 @@ class SaleOrderExt(models.Model):
 		after = self.write_date
 		if before != after:
 			if self.so_type == 'cost_card':
-				self.get_order_lines()
-				self.get_handle_sequence()
+				if 'no_of_months' in vals or 'template' in vals:
+					self.get_order_lines()
+					if 'template' in vals:
+						self.get_handle_sequence()
 
 		if 'name' not in vals:
 			if self.so_type == 'cost_card':
