@@ -60,6 +60,7 @@ class HrContractExtension(models.Model):
 			# 	if not self.wage:
 
 
+
 	def UpdateLineManager(self):
 		if not self.line_manager_client.parent_id:
 			self.line_manager_client.parent_id = self.customer.id
@@ -72,6 +73,13 @@ class HrContractExtension(models.Model):
 			self.cost_card.contract = self.id
 			self.cost_card.costcard_type = "cost_card"
 			self.cost_card.state = "done"
+			self.cost_card.employee = self.employee_id.id
+			so = self.env['sale.order'].search([('state','=','done'),('employee','=',self.employee_id.id),('job_pos','=',self.cost_card.job_pos.id),('id','!=',self.cost_card.id)])
+			if so:
+				self.cost_card.extensions = 'X'+str(len(so))
+			else:
+				self.cost_card.extensions = None
+
 	@api.onchange('date_start')
 	def GetDate(self):
 		if self.date_start:
