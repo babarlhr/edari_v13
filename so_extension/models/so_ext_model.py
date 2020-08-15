@@ -31,7 +31,7 @@ class SaleOrderExt(models.Model):
 	invoice_id = fields.Many2one('account.move', string="Invoice")
 	applicant = fields.Many2one('hr.applicant', string="Applicant")
 	employee = fields.Many2one('hr.employee', string="Employee")
-	contract = fields.Many2one('hr.contract', string="Contract")
+	contract = fields.Many2one('hr.contract', string="Contract" , copy=False)
 	candidate_name = fields.Char(string="Candidate Name")
 	customer_po_no = fields.Char(string="Customer PO Number")
 	month_days_deduction = fields.Boolean(string="Month Days Deduction")
@@ -1015,7 +1015,8 @@ class SaleOrderExt(models.Model):
 		after = self.write_date
 		if before != after:
 			if self.so_type == 'cost_card':
-				if 'no_of_months' in vals or 'template' in vals:
+
+				if 'no_of_months' in vals or 'template' in vals or 'per_month_gross_salary' in vals or 'percentage' in vals:
 					self.get_order_lines()
 					if 'template' in vals:
 						self.get_handle_sequence()
