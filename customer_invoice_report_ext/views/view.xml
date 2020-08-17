@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- #############################################(Set Customer Invoice Report)################ -->
+        <template id="set_customer_invoice_report_ext" inherit_id="account.report_invoice_document">
+            <xpath expr="//div[@class='row mt32 mb32']" position="replace">
+                <div id="informations" class="row mt32 mb32">
+                    <div class="col-auto mw-100 mb-2" t-if="o.invoice_date" name="invoice_date">
+                        <strong>Invoice Date:</strong>
+                        <p class="m-0" t-field="o.invoice_date"/>
+                    </div>
+                    <div class="col-auto mw-100 mb-2" t-if="o.invoice_date_due and o.type == 'out_invoice' and o.state == 'posted'" name="due_date">
+                        <strong>Due Date:</strong>
+                        <p class="m-0" t-field="o.invoice_date_due"/>
+                    </div>
+                    <div class="col-auto mw-100 mb-2" t-if="o.invoice_origin" name="origin">
+                        <strong>Source:</strong>
+                        <p class="m-0" t-field="o.invoice_origin"/>
+                    </div>
+                    <div class="col-auto mw-100 mb-2" t-if="o.partner_id.ref" name="customer_code">
+                        <strong>Customer Code:</strong>
+                        <p class="m-0" t-field="o.partner_id.ref"/>
+                    </div>
+                    <div class="col-auto mw-100 mb-2" t-if="o.ref" name="reference">
+                        <strong>Reference:</strong>
+                        <p class="m-0" t-field="o.ref"/>
+                    </div>
+                    <div class="col-auto mw-100 mb-2" name="rrg">
+                        <strong>Requestor:</strong>
+                        <p class="m-0" t-field="o.sale_order_id.invoice_requester.name"/>
+                    </div>
+                </div>
+            </xpath>
+
+            <xpath expr="//p[4]" position="after">
+                <div>
+                    <h2>Payment Instructions:</h2>
+                </div>
+                <t t-set="sr" t-value="0"/>
+                <t t-foreach="o.partner_id.bank_ids" t-as="b">
+                    <t t-set="sr" t-value="sr+1"/>
+                    <t t-if="sr == 1">
+                        <p>
+                            <span class="solid" style="font-weight:bold">Bank Name:</span>
+                            <span class="liquid" style="float: right;width: 80%;" t-esc="b.bank_id.name"></span>
+                        </p>
+                        <p>
+                            <span class="solid" style="font-weight:bold">IBAN:</span>
+                            <span class="liquid" style="float: right;width: 80%;" t-esc="b.iban"></span>
+                        </p>
+                        <p>
+                            <span class="solid" style="font-weight:bold">SWIFT:</span>
+                            <span class="liquid" style="float: right;width: 80%;" t-esc="b.swift"></span>
+                        </p>
+                        <p>
+                            <span class="solid" style="font-weight:bold">Payment Terms:</span>
+                            <span class="liquid" style="float: right;width: 80%;" t-esc="o.invoice_payment_term_id.name"></span>
+                        </p>
+                    </t>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>
