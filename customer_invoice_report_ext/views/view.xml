@@ -37,27 +37,33 @@
                     <h2>Payment Instructions:</h2>
                 </div>
                 <t t-set="sr" t-value="0"/>
-                <t t-foreach="o.partner_id.bank_ids" t-as="b">
+                <t t-set="bank_name" t-value=""/>
+                <t t-set="iban" t-value=""/>
+                <t t-set="swift" t-value=""/>
+                <t t-foreach="o.company_id.partner_id.bank_ids" t-as="b">
                     <t t-set="sr" t-value="sr+1"/>
                     <t t-if="sr == 1">
-                        <p>
-                            <span class="solid" style="font-weight:bold">Bank Name:</span>
-                            <span class="liquid" style="float: right;width: 80%;" t-esc="b.bank_id.name"></span>
-                        </p>
-                        <p>
-                            <span class="solid" style="font-weight:bold">IBAN:</span>
-                            <span class="liquid" style="float: right;width: 80%;" t-esc="b.iban"></span>
-                        </p>
-                        <p>
-                            <span class="solid" style="font-weight:bold">SWIFT:</span>
-                            <span class="liquid" style="float: right;width: 80%;" t-esc="b.swift"></span>
-                        </p>
-                        <p>
-                            <span class="solid" style="font-weight:bold">Payment Terms:</span>
-                            <span class="liquid" style="float: right;width: 80%;" t-esc="o.invoice_payment_term_id.name"></span>
-                        </p>
+                        <t t-set="bank_name" t-value="b.bank_id.name"/>
+                        <t t-set="iban" t-value="b.bank_id.swift"/>
+                        <t t-set="swift" t-value="b.acc_number"/>
                     </t>
                 </t>
+                <p>
+                    <span class="solid" style="font-weight:bold">Bank Name:</span>
+                    <span class="liquid" style="float: right;width: 80%;" t-esc="bank_name"></span>
+                </p>
+                <p>
+                    <span class="solid" style="font-weight:bold">IBAN:</span>
+                    <span class="liquid" style="float: right;width: 80%;" t-esc="iban"></span>
+                </p>
+                <p>
+                    <span class="solid" style="font-weight:bold">SWIFT:</span>
+                    <span class="liquid" style="float: right;width: 80%;" t-esc="swift"></span>
+                </p>
+                <p>
+                    <span class="solid" style="font-weight:bold">Payment Terms:</span>
+                    <span class="liquid" style="float: right;width: 80%;" t-esc="o.invoice_payment_term_id.name"></span>
+                </p>
             </xpath>
         </template>
     </data>
