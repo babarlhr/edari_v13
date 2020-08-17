@@ -47,7 +47,7 @@ class SaleOrderExt(models.Model):
 	extensions = fields.Char(
 	    string='Extension No.',
 	)
-	order_line_2 = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
+	order_line_2 = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=False, auto_join=True)
 
 
 
