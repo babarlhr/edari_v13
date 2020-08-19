@@ -44,8 +44,8 @@
                     <t t-set="sr" t-value="sr+1"/>
                     <t t-if="sr == 1">
                         <t t-set="bank_name" t-value="b.bank_id.name"/>
-                        <t t-set="iban" t-value="b.bank_id.swift"/>
-                        <t t-set="swift" t-value="b.acc_number"/>
+                        <t t-set="swift" t-value="b.bank_id.swift"/>
+                        <t t-set="iban" t-value="b.acc_number"/>
                     </t>
                 </t>
                 <p>
