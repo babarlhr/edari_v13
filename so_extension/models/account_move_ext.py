@@ -22,7 +22,7 @@ class AccMoveExt(models.Model):
 	sick_days_taken = fields.Float(string= "Sick Days Taken")
 
 	report_name = fields.Char(string= "Report Name", compute = "UpdateReportName")
-	invoice_requester = fields.Many2one('res.partner',string="Invoice Requester")
+	invoice_requester = fields.Many2one('res.partner',string="Invoice Requester" ,related='sale_order_id.invoice_requester' )
 
 	def UpdateReportName(self):
 		for rec in self:
@@ -45,13 +45,6 @@ class AccMoveExt(models.Model):
 		else:
 			self.invoice_payment_term_id = False
 
-
-	@api.onchange('sale_order_id')
-	def get_invoice_requester(self):
-		if self.sale_order_id:
-			self.invoice_requester = self.sale_order_id.invoice_requester.id
-		else:
-			self.invoice_requester = False
 
 class ProductExtension(models.Model):
 	_inherit='product.product'
