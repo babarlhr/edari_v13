@@ -27,7 +27,7 @@
                     </div>
                     <div class="col-auto mw-100 mb-2" name="rrg">
                         <strong>Requestor:</strong>
-                        <p class="m-0" t-field="o.sale_order_id.invoice_requester.name"/>
+                        <p class="m-0" t-field="o.invoice_requester.name"/>
                     </div>
                 </div>
             </xpath>

@@ -217,6 +217,7 @@ class SaleOrderExt(models.Model):
 			'to_date':to_date,
 			'invoice_payment_term_id': self.payment_term_id.id,
 			'invoice_payment_ref': self.reference,
+			'invoice_requester': self.invoice_requester.id,
 			'sale_order_id': self.id,
 			'transaction_ids': [(6, 0, self.transaction_ids.ids)],
 			'invoice_line_ids': [],

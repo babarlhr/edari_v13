@@ -311,6 +311,7 @@ class HrApplicantExt(models.Model):
 				'costcard_type':'cost_card',
 				'partner_id':self.job_id.customer.id,
 				'no_of_months':int(self.job_id.contract_length),
+				'payment_term_id':self.job_id.customer.property_payment_term_id.id,
 				})
 
 			self.cost_card = so_rec.id
