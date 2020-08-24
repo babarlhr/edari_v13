@@ -261,10 +261,12 @@
 											<span class="solid" style="color:#736c6c">Attention:</span>
 											<span class="liquid3" t-esc="o.sale_order_id.inv_attention"></span>
 										</p>
-										<p class="company_info">
-											<span class="solid" style="color:#736c6c">Requestor:</span>
-											<span class="liquid3" t-esc="o.sale_order_id.invoice_requester.name"></span>
-										</p>
+										<t t-if="o.sale_order_id.invoice_requester">
+											<p class="company_info">
+												<span class="solid" style="color:#736c6c">Requestor:</span>
+												<span class="liquid3" t-esc="o.sale_order_id.invoice_requester.name"></span>
+											</p>
+										</t>
 										<p class="company_info">
 											<span class="solid" style="color:#736c6c">Buyer:</span>
 											<span class="liquid3" t-esc="o.sale_order_id.invoice_buyer.name"></span>

@@ -25,10 +25,12 @@
                         <strong>Reference:</strong>
                         <p class="m-0" t-field="o.ref"/>
                     </div>
-                    <div class="col-auto mw-100 mb-2" name="rrg">
-                        <strong>Requestor:</strong>
-                        <p class="m-0" t-field="o.sale_order_id.invoice_requester.name"/>
-                    </div>
+                    <t t-if="o.sale_order_id.invoice_requester">
+                        <div class="col-auto mw-100 mb-2" name="rrg">
+                            <strong>Requestor:</strong>
+                            <p class="m-0" t-field="o.sale_order_id.invoice_requester.name"/>
+                        </div>
+                    </t>
                 </div>
             </xpath>
 
