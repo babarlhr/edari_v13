@@ -34,8 +34,7 @@
                 </div>
             </xpath>
 
-            <xpath expr="//p[3]" position="replace">
-            </xpath>
+
 
             <xpath expr="//p[4]" position="after">
                 <div>
@@ -70,6 +69,9 @@
                     <span class="liquid" style="float: right;width: 80%;" t-esc="o.invoice_payment_term_id.name"></span>
                 </p>
             </xpath>
+
+<!--             <xpath expr="//p[3]" position="replace">
+            </xpath> -->
         </template>
     </data>
 </odoo>
