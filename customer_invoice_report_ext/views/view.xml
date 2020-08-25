@@ -34,6 +34,9 @@
                 </div>
             </xpath>
 
+            <xpath expr="//p[3]" position="replace">
+            </xpath>
+
             <xpath expr="//p[4]" position="after">
                 <div>
                     <h2>Payment Instructions:</h2>
