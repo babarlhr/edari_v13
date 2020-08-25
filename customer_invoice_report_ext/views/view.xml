@@ -70,8 +70,8 @@
                 </p>
             </xpath>
 
-<!--             <xpath expr="//p[3]" position="replace">
-            </xpath> -->
+            <xpath expr="//p[3]" position="replace">
+            </xpath>
         </template>
     </data>
 </odoo>
