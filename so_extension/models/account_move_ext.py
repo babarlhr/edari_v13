@@ -22,6 +22,7 @@ class AccMoveExt(models.Model):
 	sick_days_taken = fields.Float(string= "Sick Days Taken")
 
 	report_name = fields.Char(string= "Report Name", compute = "UpdateReportName")
+	invoice_requester = fields.Many2one('res.partner',string="Invoice Requester" ,related='sale_order_id.invoice_requester' )
 
 	def UpdateReportName(self):
 		for rec in self:
@@ -36,6 +37,13 @@ class AccMoveExt(models.Model):
 				year = dateobject.strftime('%Y')
 				rec.report_name = str(customer_name) + '-' + str(rec.name) + '-' + str(month) + '-' + str(year) 
 
+
+	@api.onchange('partner_id')
+	def get_payment_term(self):
+		if self.partner_id:
+			self.invoice_payment_term_id = self.partner_id.property_payment_term_id.id
+		else:
+			self.invoice_payment_term_id = False
 
 
 class ProductExtension(models.Model):

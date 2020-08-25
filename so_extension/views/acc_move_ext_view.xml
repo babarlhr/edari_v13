@@ -15,6 +15,8 @@
 
             <xpath expr="//field[@name='ref']" position="after">
                 <field name="sale_order_id"  options="{'no_create_edit':True}" attrs="{'readonly':[('automated_invoice','=',True)]}"/>
+                
+                <field name="invoice_requester"  options="{'no_create_edit':True}" readonly="1"/>
                 <field name="employee" readonly = "1" />
                 <field name="automated_invoice" readonly = "1"/>
             </xpath>
@@ -34,9 +36,9 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name ='invoice_date']" position="after">
                 <field name="employee" readonly = "1"/>
-                <field name="pro_rate_adjust"/>
-                <field name="leave_taken"/>
-                <field name="sick_days_taken"/>
+                <field name="pro_rate_adjust" invisible="1"/>
+                <field name="leave_taken" invisible="1"/>
+                <field name="sick_days_taken" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name ='invoice_partner_display_name']" position="replace">
                 <field name="invoice_partner_display_name" string  = "Client"/>
@@ -56,9 +58,9 @@
             <xpath expr="//field[@name='journal_id']" position="after">
                 <field name='from_date' readonly = "1"/>
                 <field name='to_date' readonly = "1"/>
-                <field name='pro_rate_adjust' readonly = "1"/>
-                <field name='leave_taken' readonly = "1"/>
-                <field name='sick_days_taken' readonly = "1"/>
+                <field name='pro_rate_adjust' invisible="1"/>
+                <field name='leave_taken' invisible="1"/>
+                <field name='sick_days_taken' invisible="1"/>
             </xpath>
 
             <xpath expr="//button[@name='action_invoice_sent']" position="attributes">            

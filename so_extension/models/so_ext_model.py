@@ -31,7 +31,7 @@ class SaleOrderExt(models.Model):
 	invoice_id = fields.Many2one('account.move', string="Invoice")
 	applicant = fields.Many2one('hr.applicant', string="Applicant")
 	employee = fields.Many2one('hr.employee', string="Employee")
-	contract = fields.Many2one('hr.contract', string="Contract")
+	contract = fields.Many2one('hr.contract', string="Contract" , copy=False)
 	candidate_name = fields.Char(string="Candidate Name")
 	customer_po_no = fields.Char(string="Customer PO Number")
 	month_days_deduction = fields.Boolean(string="Month Days Deduction")
@@ -44,8 +44,10 @@ class SaleOrderExt(models.Model):
 	invoice_requester = fields.Many2one('res.partner',string="Invoice Requester")
 	invoice_buyer = fields.Many2one('res.partner',string="Invoice Buyer")
 	hiring_contact_client_dom = fields.Many2many('res.partner',compute = "GetContactDOM")
-
-	order_line_2 = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
+	extensions = fields.Char(
+	    string='Extension No.',
+	)
+	order_line_2 = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=False, auto_join=True)
 
 
 
@@ -57,7 +59,7 @@ class SaleOrderExt(models.Model):
 	costcard_type = fields.Selection([
 		('estimate','Estimate'),
 		('cost_card','Cost Card'),
-		], string='Cost Card Type')
+		], string='Cost Card Type',default="cost_card",required = True)
 	work_days_type = fields.Selection([
 		('twenty_two_days','22 Days'),
 		('calender_days','Calender Days'),
@@ -141,12 +143,21 @@ class SaleOrderExt(models.Model):
 				lines.handle = costcard_line_rec.handle
 
 	def UpdateSOName(self):
-		cost_card_name = ""
-		if self.costcard_type == "estimate":
-			cost_card_name = "Estimate"
-		if self.costcard_type == "cost_card":
-			cost_card_name = "Cost Card"
+		# cost_card_name = ""
+		# if self.costcard_type == "estimate":
+		# 	cost_card_name = "Estimate"
+		# if self.costcard_type == "cost_card":
+		# 	cost_card_name = "Cost Card"
 
+		date=" "
+		if self.contract.date_start:
+			date=datetime.strftime(self.contract.date_start,'%d/%m/%Y')
+
+		if self.partner_id.trading_as==False:
+			client_name=self.partner_id.name[:3]
+		else:
+			client_name =self.partner_id.trading_as 
+		
 		applicant_name = ""
 		if self.contract:
 			applicant_name = self.contract.employee_id.name
@@ -154,10 +165,14 @@ class SaleOrderExt(models.Model):
 			applicant_name = self.job_pos.name
 		else:
 			applicant_name = self.partner_id.name
+		if self.extensions == False:
+			extensions = ""
+		else:
+			extensions = self.extensions
 		if not self.sequence_number:
 			self.sequence_number = self.name
-		self.name = self.sequence_number + "-" + cost_card_name + "-" + applicant_name
 
+		self.name = self.sequence_number + "-" +dict(self._fields['costcard_type'].selection).get(self.costcard_type)+"-"+client_name+"-"+applicant_name+"-"+date+"-"+extensions
 
 
 
@@ -202,6 +217,7 @@ class SaleOrderExt(models.Model):
 			'to_date':to_date,
 			'invoice_payment_term_id': self.payment_term_id.id,
 			'invoice_payment_ref': self.reference,
+			'invoice_requester': self.invoice_requester.id,
 			'sale_order_id': self.id,
 			'transaction_ids': [(6, 0, self.transaction_ids.ids)],
 			'invoice_line_ids': [],
@@ -1000,8 +1016,10 @@ class SaleOrderExt(models.Model):
 		after = self.write_date
 		if before != after:
 			if self.so_type == 'cost_card':
-				self.get_order_lines()
-				self.get_handle_sequence()
+				if 'no_of_months' in vals or 'template' in vals or 'per_month_gross_salary' in vals or 'percentage' in vals or 'order_line' in vals or 'work_days_type' in vals:
+					self.get_order_lines()
+					if 'template' in vals or 'order_line' in vals:
+						self.get_handle_sequence()
 
 		if 'name' not in vals:
 			if self.so_type == 'cost_card':

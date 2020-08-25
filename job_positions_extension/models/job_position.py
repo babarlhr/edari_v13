@@ -133,6 +133,7 @@ class JobsExtension(models.Model):
 				'per_month_gross_salary':self.estimated_gross_salary,
 				'percentage':self.customer.default_edari_percentage,
 				'costcard_type':'estimate',
+				'payment_term_id':self.customer.property_payment_term_id.id,
 				})
 			self.costcard_template = so_rec.id
 		else:
