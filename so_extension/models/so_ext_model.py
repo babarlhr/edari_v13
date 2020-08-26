@@ -516,6 +516,8 @@ class SaleOrderExt(models.Model):
 		salary = self.per_month_gross_salary
 		no_months = self.no_of_months
 		edari_service_percent = self.percentage
+		salary_2 = self.per_month_gross_salary_2
+		edari_service_percent_2 = self.percentage_2
 		# cumulative_total = 0
 		edari_fee = 0
 
@@ -762,6 +764,8 @@ class SaleOrderExt(models.Model):
 		salary = self.per_month_gross_salary
 		no_months = self.no_of_months
 		edari_service_percent = self.percentage
+		salary_2 = self.per_month_gross_salary_2
+		edari_service_percent_2 = self.percentage_2
 		cumulative_total = 0
 		edari_fee = 0
 
@@ -798,6 +802,8 @@ class SaleOrderExt(models.Model):
 			salary = self.per_month_gross_salary
 			no_months = self.no_of_months
 			edari_service_percent = self.percentage
+			salary_2 = self.per_month_gross_salary_2
+			edari_service_percent_2 = self.percentage_2
 			cumulative_total = 0
 			edari_fee = 0
 
