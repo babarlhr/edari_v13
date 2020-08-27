@@ -869,13 +869,6 @@ class SaleOrderExt(models.Model):
 
 				# print (compute_result)
 				
-				try:
-					if edits[x.code]:
-						# This is a regenerate over existing rows
-						compute_qty = edits[x.code]['product_uom_qty']
-				except:
-					# ignore missing key
-					compute_qty = compute_qty
 
 				qty = 0
 				# if x.costcard_type in ['fixed','calculation']:
@@ -889,13 +882,25 @@ class SaleOrderExt(models.Model):
 				# else:
 				#   # Changed to get date from compute date field
 				qty = self.no_of_months
+
+				saved_qty = 0
+				try:
+					if edits[x.code]:
+						# This is a regenerate over existing rows
+						saved_qty = edits[x.code]['product_uom_qty']
+						qty = saved_qty
+				except:
+					# ignore missing key
+					saved_qty = 0
 					
 					# compute_result = 0
 				if x.payment_type in ['upfront','end'] and x.costcard_type != 'manual':
 					qty = 1
 
 				if x.computation_qty:
-					qty = compute_qty
+					if saved_qty == 0:
+						# if user edited quantities, keep what they got
+						qty = compute_qty
 					if compute_result and self.no_of_months and qty > 0:
 						compute_result = compute_result * (self.no_of_months / qty)
 
