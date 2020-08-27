@@ -788,9 +788,15 @@ class SaleOrderExt(models.Model):
 	# @api.onchange('template')
 	def get_order_lines(self):
 
+		edits = {}
+
 		# computed_dict = {}
 		for x in self.order_line:
 			if not x.costcard_type == 'manual':
+				edits[x.code] = {
+					'as_of_date': x.as_of_date,
+					'product_uom_qty': x.product_uom_qty
+				}
 			#   if x.product_uom_qty > 1:
 			#       computed_dict[x.product_id.id] = x.product_uom_qty
 				x.unlink()
@@ -863,6 +869,14 @@ class SaleOrderExt(models.Model):
 
 				# print (compute_result)
 				
+				try:
+					if edits[x.code]:
+						# This is a regenerate over existing rows
+						compute_qty = edits[x.code]['product_uom_qty']
+				except:
+					# ignore missing key
+					compute_qty = compute_qty
+
 				qty = 0
 				# if x.costcard_type in ['fixed','calculation']:
 				# if x.costcard_type in ['manual']:
@@ -903,6 +917,12 @@ class SaleOrderExt(models.Model):
 					# if x.service_name.id in computed_dict:
 					#   qty = computed_dict[x.service_name.id]
 
+					as_of = False
+					try:
+						as_of = edits[x.code]['as_of_date']
+					except:
+						# Key not defined
+						as_of = False
 
 					self.order_line.create({
 						'product_id':x.service_name.id,
@@ -921,6 +941,7 @@ class SaleOrderExt(models.Model):
 						'name':x.code or "",
 						'costcard_type':x.costcard_type,
 						'chargable':x.chargable,
+						'as_of_date': as_of,
 						})
 					code_dict[x.code] = compute_result
 
