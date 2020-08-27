@@ -96,6 +96,8 @@
                 <field name="invoice_requester"  options="{'no_create': True}" attrs="{'readonly':[('state','in',['sale','done'])]}" domain = "[('id','in',hiring_contact_client_dom)]"/>
                 <field name="invoice_buyer"  options="{'no_create': True}" attrs="{'readonly':[('state','in',['sale','done'])]}" domain = "[('id','in',hiring_contact_client_dom)]"/>
                 <field name="sequence_number" invisible="1"/>
+                <field name="percentage_2" attrs="{'readonly':[('state','in',['sale','done'])], 'invisible':[('so_type','=','sale_order')]}" />
+                <field name="per_month_gross_salary_2" attrs="{'readonly':[('state','in',['sale','done'])], 'invisible':[('so_type','=','sale_order')]}" />
             </xpath>
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']" position="attributes">
                 <attribute name="attrs">{'readonly': [('state', 'in', ('done','cancel','sale'))]}</attribute>

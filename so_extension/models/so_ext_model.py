@@ -48,6 +48,8 @@ class SaleOrderExt(models.Model):
 	    string='Extension No.',
 	)
 	order_line_2 = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=False, auto_join=True)
+	percentage_2 = fields.Float(string="Percentage % (Mod)" ,digits=(4,4))
+	per_month_gross_salary_2 = fields.Float(string="Per Month Gross Salary (Mod)")
 
 
 
@@ -514,6 +516,8 @@ class SaleOrderExt(models.Model):
 		salary = self.per_month_gross_salary
 		no_months = self.no_of_months
 		edari_service_percent = self.percentage
+		salary_2 = self.per_month_gross_salary_2
+		edari_service_percent_2 = self.percentage_2
 		# cumulative_total = 0
 		edari_fee = 0
 
@@ -760,6 +764,8 @@ class SaleOrderExt(models.Model):
 		salary = self.per_month_gross_salary
 		no_months = self.no_of_months
 		edari_service_percent = self.percentage
+		salary_2 = self.per_month_gross_salary_2
+		edari_service_percent_2 = self.percentage_2
 		cumulative_total = 0
 		edari_fee = 0
 
@@ -782,9 +788,15 @@ class SaleOrderExt(models.Model):
 	# @api.onchange('template')
 	def get_order_lines(self):
 
+		edits = {}
+
 		# computed_dict = {}
 		for x in self.order_line:
 			if not x.costcard_type == 'manual':
+				edits[x.code] = {
+					'as_of_date': x.as_of_date,
+					'product_uom_qty': x.product_uom_qty
+				}
 			#   if x.product_uom_qty > 1:
 			#       computed_dict[x.product_id.id] = x.product_uom_qty
 				x.unlink()
@@ -796,6 +808,8 @@ class SaleOrderExt(models.Model):
 			salary = self.per_month_gross_salary
 			no_months = self.no_of_months
 			edari_service_percent = self.percentage
+			salary_2 = self.per_month_gross_salary_2
+			edari_service_percent_2 = self.percentage_2
 			cumulative_total = 0
 			edari_fee = 0
 
@@ -855,6 +869,7 @@ class SaleOrderExt(models.Model):
 
 				# print (compute_result)
 				
+
 				qty = 0
 				# if x.costcard_type in ['fixed','calculation']:
 				# if x.costcard_type in ['manual']:
@@ -867,13 +882,25 @@ class SaleOrderExt(models.Model):
 				# else:
 				#   # Changed to get date from compute date field
 				qty = self.no_of_months
+
+				saved_qty = 0
+				try:
+					if edits[x.code]:
+						# This is a regenerate over existing rows
+						saved_qty = edits[x.code]['product_uom_qty']
+						qty = saved_qty
+				except:
+					# ignore missing key
+					saved_qty = 0
 					
 					# compute_result = 0
 				if x.payment_type in ['upfront','end'] and x.costcard_type != 'manual':
 					qty = 1
 
 				if x.computation_qty:
-					qty = compute_qty
+					if saved_qty == 0:
+						# if user edited quantities, keep what they got
+						qty = compute_qty
 					if compute_result and self.no_of_months and qty > 0:
 						compute_result = compute_result * (self.no_of_months / qty)
 
@@ -895,6 +922,12 @@ class SaleOrderExt(models.Model):
 					# if x.service_name.id in computed_dict:
 					#   qty = computed_dict[x.service_name.id]
 
+					as_of = False
+					try:
+						as_of = edits[x.code]['as_of_date']
+					except:
+						# Key not defined
+						as_of = False
 
 					self.order_line.create({
 						'product_id':x.service_name.id,
@@ -913,6 +946,7 @@ class SaleOrderExt(models.Model):
 						'name':x.code or "",
 						'costcard_type':x.costcard_type,
 						'chargable':x.chargable,
+						'as_of_date': as_of,
 						})
 					code_dict[x.code] = compute_result
 
@@ -1016,7 +1050,7 @@ class SaleOrderExt(models.Model):
 		after = self.write_date
 		if before != after:
 			if self.so_type == 'cost_card':
-				if 'no_of_months' in vals or 'template' in vals or 'per_month_gross_salary' in vals or 'percentage' in vals or 'order_line' in vals or 'work_days_type' in vals:
+				if 'no_of_months' in vals or 'template' in vals or 'per_month_gross_salary' in vals or 'percentage' in vals or 'order_line' in vals or 'work_days_type' in vals  or 'per_month_gross_salary_2' in vals or 'percentage_2' in vals:
 					self.get_order_lines()
 					if 'template' in vals or 'order_line' in vals:
 						self.get_handle_sequence()
