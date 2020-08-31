@@ -28,13 +28,14 @@ class AccountInvoiceSend_ext(models.TransientModel):
 
             count = count + 1
 
-
-        find_template = self.env['mail.template'].sudo().search([('model','=','account.move')])
-        if find_template:
-            for temp in find_template:
-                if temp.so_type == so_type:
-                    self.template_id = temp.id
-                    return temp.id
+        if (so_type) == 'cost_card':
+            find_template = self.env['mail.template'].sudo().search([('model','=','account.move'),('so_type','=','cost_card')])
+            if find_template:
+                for temp in find_template:
+                    if temp.so_type == so_type:
+                        self.template_id = temp.id
+                        return temp.id
+        return False
 
     @api.model
     def create(self, vals):
@@ -46,6 +47,8 @@ class AccountInvoiceSend_ext(models.TransientModel):
     @api.onchange('is_email')
     def onchange_is_email(self):
         invoice_template = self.UpdateTemplate()
+        if invoice_template == False:
+            invoice_template = self.template_id.id
         if self.is_email:
             if not self.composer_id:
                 res_ids = self._context.get('active_ids')
