@@ -29,7 +29,7 @@ class AccountInvoiceSend_ext(models.TransientModel):
 			count = count + 1
 
 
-		find_template = self.env['mail.template'].search([('model','=','account.move')])
+		find_template = self.env['mail.template'].sudo().search([('model','=','account.move')])
 		if find_template:
 			for temp in find_template:
 				if temp.so_type == so_type:
