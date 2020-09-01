@@ -195,6 +195,7 @@ class Employee(models.Model):
     loan_defaulter = fields.Boolean(string="Loan Defaulter")
     education = fields.Many2one('hr.education', string="Education")
     cv = fields.Binary(string="CV")
+    cv_name = fields.Char(string="CV")
     contact_no = fields.Char(string="Contact No")
     client_email = fields.Char(string="Client Email")
     sick_leaves = fields.Char(string="Sick Leaves")
