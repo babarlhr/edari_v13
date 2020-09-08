@@ -885,7 +885,7 @@ class SaleOrderExt(models.Model):
 
 				saved_qty = 0
 				try:
-					if edits[x.code]:
+					if edits[x.code] and edits[x.code]['product_uom_qty']>0:
 						# This is a regenerate over existing rows
 						saved_qty = edits[x.code]['product_uom_qty']
 						qty = saved_qty
