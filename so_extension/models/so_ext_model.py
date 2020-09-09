@@ -685,7 +685,7 @@ class SaleOrderExt(models.Model):
 
 		
 		if not invoice_vals['invoice_line_ids']:
-			raise UserError('There is no invoiceable line. If a product has a Delivered quantities invoicing policy, please make sure that a quantity has been delivered.')
+			raise UserError('There is no invoiceable line. Please check the contract length compared to the number of months specified in the cost card.')
 
 		remaining_amount = 0
 		if ending_month == True:
