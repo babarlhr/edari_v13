@@ -6,7 +6,12 @@
             <xpath expr="//div[@class='row mt32 mb32']" position="replace">
                 <div id="informations" class="row mt32 mb32">
                     <div class="col-auto mw-100 mb-2" t-if="o.invoice_date" name="invoice_date">
-                        <strong>Invoice Date:</strong>
+                        <t t-if="o.type == 'out_refund'">
+                            <strong>Credit Note Date:</strong>
+                        </t>
+                        <t t-else="">
+                            <strong>Invoice Date:</strong>
+                        </t>
                         <p class="m-0" t-field="o.invoice_date"/>
                     </div>
                     <div class="col-auto mw-100 mb-2" t-if="o.invoice_date_due and o.type == 'out_invoice' and o.state == 'posted'" name="due_date">
@@ -37,37 +42,72 @@
 
 
             <xpath expr="//p[4]" position="after">
-                <div>
-                    <h2>Payment Instructions:</h2>
-                </div>
-                <t t-set="sr" t-value="0"/>
-                <t t-set="bank_name" t-value=""/>
-                <t t-set="iban" t-value=""/>
-                <t t-set="swift" t-value=""/>
-                <t t-foreach="o.company_id.partner_id.bank_ids" t-as="b">
-                    <t t-set="sr" t-value="sr+1"/>
-                    <t t-if="sr == 1">
-                        <t t-set="bank_name" t-value="b.bank_id.name"/>
-                        <t t-set="swift" t-value="b.bank_id.swift"/>
-                        <t t-set="iban" t-value="b.acc_number"/>
+                <t t-if="o.type != 'out_refund'">
+                    <div>
+                        <h2>Payment Instructions:</h2>
+                    </div>
+                    <t t-set="sr" t-value="0"/>
+                    <t t-set="bank_name" t-value=""/>
+                    <t t-set="iban" t-value=""/>
+                    <t t-set="swift" t-value=""/>
+                    <t t-foreach="o.company_id.partner_id.bank_ids" t-as="b">
+                        <t t-set="sr" t-value="sr+1"/>
+                        <t t-if="sr == 1">
+                            <t t-set="bank_name" t-value="b.bank_id.name"/>
+                            <t t-set="swift" t-value="b.bank_id.swift"/>
+                            <t t-set="iban" t-value="b.acc_number"/>
+                        </t>
                     </t>
+                    <p>
+                        <span class="solid" style="font-weight:bold">Bank Name:</span>
+                        <span class="liquid" style="float: right;width: 80%;" t-esc="bank_name"></span>
+                    </p>
+                    <p>
+                        <span class="solid" style="font-weight:bold">IBAN:</span>
+                        <span class="liquid" style="float: right;width: 80%;" t-esc="iban"></span>
+                    </p>
+                    <p>
+                        <span class="solid" style="font-weight:bold">SWIFT:</span>
+                        <span class="liquid" style="float: right;width: 80%;" t-esc="swift"></span>
+                    </p>
+                    <p>
+                        <span class="solid" style="font-weight:bold">Payment Terms:</span>
+                        <span class="liquid" style="float: right;width: 80%;" t-esc="o.invoice_payment_term_id.name"></span>
+                    </p>
                 </t>
-                <p>
-                    <span class="solid" style="font-weight:bold">Bank Name:</span>
-                    <span class="liquid" style="float: right;width: 80%;" t-esc="bank_name"></span>
-                </p>
-                <p>
-                    <span class="solid" style="font-weight:bold">IBAN:</span>
-                    <span class="liquid" style="float: right;width: 80%;" t-esc="iban"></span>
-                </p>
-                <p>
-                    <span class="solid" style="font-weight:bold">SWIFT:</span>
-                    <span class="liquid" style="float: right;width: 80%;" t-esc="swift"></span>
-                </p>
-                <p>
-                    <span class="solid" style="font-weight:bold">Payment Terms:</span>
-                    <span class="liquid" style="float: right;width: 80%;" t-esc="o.invoice_payment_term_id.name"></span>
-                </p>
+                <t t-if="o.show_payment_instructions">
+                    <div>
+                        <h2>Payment Instructions:</h2>
+                    </div>
+                    <t t-set="sr" t-value="0"/>
+                    <t t-set="bank_name" t-value=""/>
+                    <t t-set="iban" t-value=""/>
+                    <t t-set="swift" t-value=""/>
+                    <t t-foreach="o.company_id.partner_id.bank_ids" t-as="b">
+                        <t t-set="sr" t-value="sr+1"/>
+                        <t t-if="sr == 1">
+                            <t t-set="bank_name" t-value="b.bank_id.name"/>
+                            <t t-set="swift" t-value="b.bank_id.swift"/>
+                            <t t-set="iban" t-value="b.acc_number"/>
+                        </t>
+                    </t>
+                    <p>
+                        <span class="solid" style="font-weight:bold">Bank Name:</span>
+                        <span class="liquid" style="float: right;width: 80%;" t-esc="bank_name"></span>
+                    </p>
+                    <p>
+                        <span class="solid" style="font-weight:bold">IBAN:</span>
+                        <span class="liquid" style="float: right;width: 80%;" t-esc="iban"></span>
+                    </p>
+                    <p>
+                        <span class="solid" style="font-weight:bold">SWIFT:</span>
+                        <span class="liquid" style="float: right;width: 80%;" t-esc="swift"></span>
+                    </p>
+                    <p>
+                        <span class="solid" style="font-weight:bold">Payment Terms:</span>
+                        <span class="liquid" style="float: right;width: 80%;" t-esc="o.invoice_payment_term_id.name"></span>
+                    </p>
+                </t>
             </xpath>
 
             <xpath expr="//p[3]" position="replace">

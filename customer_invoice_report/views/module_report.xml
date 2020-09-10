@@ -200,6 +200,9 @@
 											<!-- <span class="bill" t-esc="o.partner_id.name"></span> -->
 										</p>
 										<p class="company_info">
+											<span t-esc="o.partner_id.name"></span>
+										</p>
+										<p class="company_info">
 											<t t-if="o.partner_id.street">
 												<span t-esc="o.partner_id.street"></span>
 											</t>
