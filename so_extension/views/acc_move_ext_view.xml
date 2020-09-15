@@ -19,6 +19,7 @@
                 <field name="invoice_requester"  options="{'no_create_edit':True}" readonly="1"/>
                 <field name="employee" readonly = "1" />
                 <field name="automated_invoice" readonly = "1"/>
+                <field name="show_payment_instructions" attrs="{'invisible': [('type','!=','out_refund')]}"/>
             </xpath>
 
             <xpath expr="//field[@name='invoice_date']" position="after">

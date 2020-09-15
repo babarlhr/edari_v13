@@ -24,6 +24,7 @@ class AccMoveExt(models.Model):
     report_name = fields.Char(string= "Report Name", compute = "UpdateReportName")
     invoice_requester = fields.Many2one('res.partner',string="Invoice Requester" ,related='sale_order_id.invoice_requester' )
 
+    show_payment_instructions = fields.Boolean(string = "Show Payment Instructions")
 
 
 
