@@ -19,7 +19,7 @@
                     <field name="cost_card" options="{'no_create_edit': True}"/>
                     <field name="wage"/>
                     <field name="employee_code"/>
-                    <field name="partner_id" options="{'no_create_edit': True}"/>
+                    <field name="partner_id" options="{'no_create_edit': True}" readonly="1"/>
                 </xpath>
 
                 <!-- <xpath expr="//header" position="inside">
