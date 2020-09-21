@@ -288,7 +288,11 @@ class Employee(models.Model):
 
     @api.model
     def create(self, vals):
+        private_email = None
+        if vals['private_email']:
+            private_email = vals['private_email']
         res = super(Employee, self).create(vals)
+        res.private_email = private_email
         employees = self.env['hr.employee'].search([
             ('name', '=', res.with_context(lang='eng_US').name),
             ('iqama_no', '=', res.iqama_no),
