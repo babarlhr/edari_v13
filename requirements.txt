@@ -1,0 +1,5 @@
+boto
+boto3
+urllib3==1.22
+botocore
+jsonrpclib
