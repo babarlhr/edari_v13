@@ -3,3 +3,6 @@ boto3
 urllib3==1.22
 botocore
 jsonrpc
+pysftp==0.2.8
+cryptography==2.3
+paramiko==2.4.2
