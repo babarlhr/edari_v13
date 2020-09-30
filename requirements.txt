@@ -1,0 +1,2 @@
+boto3
+pretty-bad-protocol
