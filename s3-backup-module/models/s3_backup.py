@@ -1,5 +1,5 @@
 
-from odoo import models, fields, api, _
+from odoo import models, fields,service, api, _
 from odoo.exceptions import Warning
 import os.path
 import sys,glob, os, boto
@@ -86,17 +86,42 @@ class Configuration(models.Model):
 		s3_client = session.client('s3')
 		bucket = s3.Bucket(self.bucket_name)
 	 
-		list_of_files = glob.glob(path+'/*') # * means all if need specific format then *.csv
-		latest_file = max(list_of_files, key=os.path.getctime)
+		# list_of_files = glob.glob(path+'/*') # * means all if need specific format then *.csv
+		# latest_file = max(list_of_files, key=os.path.getctime)
 
-		with open(latest_file, 'rb') as data:
-			try:
-				result = bucket.put_object(Key=latest_file[len(path):], Body=data)
-			except Exception as e:
-				logging.error(e)
-				return False
-			return True
-				
+		# with open(latest_file, 'rb') as data:
+		filename, content = self.get_backup()
+		path = os.path.join(filename)
+		try:
+			# result = bucket.put_object(Key=latest_file[len(path):], Body=data)
+			result = bucket.put_object(Key=path, Body=content)
+		except Exception as e:
+			logging.error(e)
+			return False
+		return True
+			
 	
 
-# sudo pip2.7 install boto  boto3 urllib3==1.22 botocore jsonrpclib
+	# def get_path_and_content(self):
+	# 	"""
+	# 	Get the Path with Filename and the DB-backup-content
+	# 	:return: tuple(path: string, content: binary)
+	# 	"""
+	# 	filename, content = self.get_backup()
+	# 	path = os.path.join(self.upload_path, filename)
+	# 	return path, content
+
+	def get_backup(self, dbname=None, backup_format='zip'):
+		"""
+		Get backup with content
+		:param dbname: string
+		:param backup_format: string
+		:return: tuple(filename: string, dump_data: binary)
+		"""
+		if dbname is None:
+			dbname = self._cr.dbname
+		ts = datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
+		filename = "%s_%s.%s" % (dbname, ts, backup_format)
+		dump_stream = service.db.dump_db(dbname, None, backup_format)
+		return filename, dump_stream
+# sudo pip install boto  boto3 urllib3==1.22 botocore jsonrpclib

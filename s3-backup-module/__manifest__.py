@@ -17,7 +17,7 @@
     'external_dependencies': {'python': ['boto']},
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'auto_backup'],
+    'depends': ['base'],
 
     # always loaded
     'data': [
