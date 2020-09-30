@@ -122,6 +122,6 @@ class Configuration(models.Model):
 			dbname = self._cr.dbname
 		ts = datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
 		filename = "%s_%s.%s" % (dbname, ts, backup_format)
-		dump_stream = sudo().service.db.dump_db(dbname, None, backup_format)
+		dump_stream = service.db.dump_db(dbname, None, backup_format).sudo()
 		return filename, dump_stream
 # sudo pip install boto  boto3 urllib3==1.22 botocore jsonrpclib
