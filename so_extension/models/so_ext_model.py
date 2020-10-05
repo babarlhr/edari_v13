@@ -630,7 +630,7 @@ class SaleOrderExt(models.Model):
 						line_start_date = line.as_of_date.replace(day=1)
 						line_end_date = line_start_date+(relativedelta(months = (int(line.product_uom_qty)), days=-1))
 					else:
-						line_end_date = self.contract_start_date.replace(day=1)+(relativedelta(months = (int(line.product_uom_qty)), days=-1))
+						line_end_date = self.contract_start_date+(relativedelta(months = (int(line.product_uom_qty)), days=-1))
 						line_start_date = self.contract_start_date
 
 					if (date_invoice.replace(day=1) <= line_end_date.replace(day=1)) and (date_invoice.replace(day=1) >= line_start_date.replace(day=1)):
