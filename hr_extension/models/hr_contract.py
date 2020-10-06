@@ -13,7 +13,7 @@ class HrContractExtension(models.Model):
 	cost_card = fields.Many2one('sale.order',"Cost Card")
 	line_manager_client = fields.Many2one('res.partner')
 	line_manager_domain = fields.Many2many('res.partner',compute = "_filtered_managers")
-	employee_type = fields.Char("Employee Type", related="employee_id.employee_type", readonly=True)
+	employee_type = fields.Char(string="Employee Type", related="employee_id.employee_type", readonly=True)
 
 
 
