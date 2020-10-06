@@ -614,6 +614,8 @@ class SaleOrderExt(models.Model):
 
 		print (values)
 
+		# Fetch template lines to keep calculation lines in dictionary in case needed for recomputation
+		template_lines = self.env['costcard.template.tree'].search([('tree_link','=',self.template.id)], order='handle')
 
 		code_dict_new = {}
 		total_invoice_amount = 0
@@ -655,7 +657,16 @@ class SaleOrderExt(models.Model):
 						globals().update(code_dict_new)
 						if line.recomputable:
 							cumulative_total = 0
-							for rec in self.order_line:
+							for rec in template_lines:
+								if rec.costcard_type == "calculation":
+									try:
+										x = code_dict_new[rec.code]
+									except KeyError:
+										# This line hasn't been recomputed
+										calculation_result = self.recompute_func(line, code_dict_new,cumulative_total)
+										code_dict_new[rec.code] = calculation_result
+									# Shouldn't add to cumulative total
+									continue
 								if rec.code == line.code:
 									break
 								cumulative_total += code_dict_new[rec.code]
