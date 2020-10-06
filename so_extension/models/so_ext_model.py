@@ -663,7 +663,7 @@ class SaleOrderExt(models.Model):
 										x = code_dict_new[rec.code]
 									except KeyError:
 										# This line hasn't been recomputed
-										calculation_result = self.recompute_func(line, code_dict_new,cumulative_total)
+										calculation_result = self.recompute_func(rec, code_dict_new,cumulative_total)
 										code_dict_new[rec.code] = calculation_result
 										globals().update(code_dict_new)
 									# Shouldn't add to cumulative total
