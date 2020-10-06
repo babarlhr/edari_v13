@@ -504,7 +504,12 @@ class SaleOrderExt(models.Model):
 
 
 	def recompute_func(self, line, code_dict,cumulative_total):
-		costcard_template_rec = self.env['costcard.template.tree'].search([('service_name','=',line.product_id.id),('tree_link','=',self.template.id),('code','=',line.code)])
+		try:
+			costcard_template_rec = self.env['costcard.template.tree'].search([('service_name','=',line.product_id.id),('tree_link','=',self.template.id),('code','=',line.code)])
+			computation_formula = costcard_template_rec.computation_formula
+		except AttributeError:
+			# Line is actually a template line, not an order line
+			computation_formula = line.computation_formula
 
 
 		global compute_result
@@ -521,8 +526,8 @@ class SaleOrderExt(models.Model):
 		# cumulative_total = 0
 		edari_fee = 0
 
-		if costcard_template_rec.computation_formula:
-			expression = 'global compute_result;\n'+costcard_template_rec.computation_formula
+		if computation_formula:
+			expression = 'global compute_result;\n'+computation_formula
 		else:
 			expression = 'global compute_result;\n'
 
