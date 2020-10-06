@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
 from datetime import timedelta,datetime,date
-from odoo.exceptions import Warning, ValidationError
+from odoo.exceptions import Warning, ValidationError, UserError
 
 
 class CreateInvWizard(models.Model):
@@ -35,11 +35,14 @@ class CreateInvWizard(models.Model):
 								create_invoice = False
 					
 					if create_invoice == True:
-						invoice_id = index.create_invoice(self.month,self.invoice_date)
-						index.state = "sale"
-						index.date_invoice = self.month
-						index.state = "done"
-						invoice_ids.append(invoice_id.id)
+						try:
+							invoice_id = index.create_invoice(self.month,self.invoice_date)
+							index.state = "sale"
+							index.date_invoice = self.month
+							index.state = "done"
+							invoice_ids.append(invoice_id.id)
+						except UserError as e:
+							skip_reasons = str(e)
 					else:
 						skip_reasons = "Invoice Already Created for this month"
 

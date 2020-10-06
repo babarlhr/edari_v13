@@ -30,6 +30,7 @@
                         <strong>Reference:</strong>
                         <p class="m-0" t-field="o.ref"/>
                     </div>
+
                     <t t-if="o.sale_order_id.invoice_requester">
                         <div class="col-auto mw-100 mb-2" name="rrg">
                             <strong>Requestor:</strong>
@@ -38,8 +39,6 @@
                     </t>
                 </div>
             </xpath>
-
-
 
             <xpath expr="//p[4]" position="after">
                 <t t-if="o.type != 'out_refund'">
@@ -109,7 +108,6 @@
                     </p>
                 </t>
             </xpath>
-
             <xpath expr="//p[3]" position="replace">
             </xpath>
         </template>
