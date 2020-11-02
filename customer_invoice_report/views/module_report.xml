@@ -62,7 +62,7 @@
 								}
 								.company_info {
 									font-size: 14px;
-									color: darkgray;
+									color: #666;
 								}
 								.main_div {
 									width: 100%
@@ -96,7 +96,7 @@
 									font-weight: bold;
 									font-size: 13px;
 									padding: 5px;
-									color: darkgray;
+									color: #666;
 								}
 								img {
 									width: 50%;
