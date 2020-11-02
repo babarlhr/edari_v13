@@ -96,7 +96,7 @@
 									font-weight: bold;
 									font-size: 13px;
 									padding: 5px;
-									color: darkgray;
+									color: #666;
 								}
 								img {
 									width: 50%;
