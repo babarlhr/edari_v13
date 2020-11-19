@@ -30,8 +30,8 @@ class ContactExtension(models.Model):
             if record.invite_token:
                 db_name = self._cr.dbname
                 if "staging" in db_name:
-                    record.invite_url = "https://clients.edarihub.com?type=customer&invite_token={}".format(
+                    record.invite_url = "https://clients-staging.edarihub.com?type=customer&invite_token={}".format(
                         self.invite_token)
                 else:
-                    record.invite_url = "https://clients-staging.edarihub.com?type=customer&invite_token={}".format(
+                    record.invite_url = "https://clients.edarihub.com?type=customer&invite_token={}".format(
                         self.invite_token)
