@@ -772,8 +772,6 @@ class SaleOrderExt(models.Model):
 					if combined_product[0].taxes_id:
 					# 	tax_ids = combined_product[0].taxes_id.filtered(lambda tax: tax.company_id == mv.move_id.company_id)
 						tax_ids = [combined_product[0].taxes_id[0].id]
-				if mv.account_id.internal_group == 'receivable':
-					continue
 				merged[mv.account_id.id] = {
 					'account_id':mv.account_id.id,
 					'name': name,
@@ -790,9 +788,12 @@ class SaleOrderExt(models.Model):
 			merged[mv.account_id.id]['credit'] += mv.credit
 
 		## Fix debit / credit to keep 1 of the values and insert
-		new_line_ids = [
-			(5, False, False) # Remove all existing lines
-		]
+		moves.write({
+			'line_ids':[
+				(5, False, False) # Remove all existing lines
+			]
+		})
+		new_line_ids = []
 		for mrg in merged:
 			if merged[mrg]['debit'] > merged[mrg]['credit']:
 				merged[mrg]['debit'] = merged[mrg]['debit'] - merged[mrg]['credit']
@@ -801,12 +802,11 @@ class SaleOrderExt(models.Model):
 				merged[mrg]['credit'] = merged[mrg]['credit'] - merged[mrg]['debit']
 				merged[mrg]['debit'] = 0
 			new_line_ids.append((0,0, merged[mrg]))
-		
-		moves.write({
-			'line_ids': new_line_ids
-		})
 
 		invoice = self.env['account.move'].with_context(default_type='out_invoice').search([('id','=',moves.id)],limit=1)
+		invoice[0].write({
+			'line_ids': new_line_ids
+		})
 		invoice[0]._recompute_dynamic_lines(recompute_all_taxes=True)
 		for line in invoice[0].line_ids:
 			line._onchange_account_id()
