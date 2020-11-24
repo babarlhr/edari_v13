@@ -760,7 +760,7 @@ class SaleOrderExt(models.Model):
 		for mv in moves.line_ids:
 			if mv.account_id.id not in merged:
 				name = mv.name
-				if mv.account_id.user_type_id[1] == 'Income':
+				if mv.account_id.internal_group == 'income':
 					name = "{} - {}".format(self.ref, self.invoice_month)
 				merged[mv.account_id.id] = {
 					'account_id':mv.account_id.id,
