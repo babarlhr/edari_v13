@@ -772,8 +772,6 @@ class SaleOrderExt(models.Model):
 					if combined_product[0].taxes_id:
 					# 	tax_ids = combined_product[0].taxes_id.filtered(lambda tax: tax.company_id == mv.move_id.company_id)
 						tax_ids = [combined_product[0].taxes_id[0].id]
-				if mv.account_id.internal_group == 'receivable':
-					continue
 				merged[mv.account_id.id] = {
 					'account_id':mv.account_id.id,
 					'name': name,
@@ -803,13 +801,16 @@ class SaleOrderExt(models.Model):
 			new_line_ids.append((0,0, merged[mrg]))
 		
 		moves.write({
-			'invoice_line_ids': new_line_ids
+			'line_ids': new_line_ids
 		})
 
-		# invoice = self.env['account.move'].with_context(default_type='out_invoice').search([('id','=',moves.id)],limit=1)
+		invoice = self.env['account.move'].with_context(default_type='out_invoice').search([('id','=',moves.id)],limit=1)
 		# invoice[0]._recompute_dynamic_lines(recompute_all_taxes=True)
-		# for line in invoice[0].line_ids:
-		# 	line._onchange_account_id()
+		for line in invoice[0].invoice_line_ids:
+			if line.product_id:
+				product_id = line.product_id.id
+				line.product_id = False
+				line.product_id = product_id
 
 		return moves
 
