@@ -775,12 +775,12 @@ class SaleOrderExt(models.Model):
 
 		## Fix debit / credit to keep 1 of the values and insert
 		for mrg in merged:
-			if merged[mrg].debit > merged[mrg].credit:
-				merged[mrg].debit = merged[mrg].debit - merged[mrg].credit
-				merged[mrg].credit = 0
+			if merged[mrg]['debit'] > merged[mrg]['credit']:
+				merged[mrg]['debit'] = merged[mrg]['debit'] - merged[mrg]['credit']
+				merged[mrg]['credit'] = 0
 			else:
-				merged[mrg].credit = merged[mrg].credit - merged[mrg].debit
-				merged[mrg].debit = 0
+				merged[mrg]['credit'] = merged[mrg]['credit'] - merged[mrg]['debit']
+				merged[mrg]['debit'] = 0
 			
 			moves.write({
 				'line_ids': [
