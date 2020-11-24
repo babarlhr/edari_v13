@@ -807,9 +807,9 @@ class SaleOrderExt(models.Model):
 		invoice[0].write({
 			'line_ids': new_line_ids
 		})
-		invoice[0]._recompute_dynamic_lines(recompute_all_taxes=True)
-		for line in invoice[0].line_ids:
-			line._onchange_account_id()
+		# invoice[0]._recompute_dynamic_lines(recompute_all_taxes=True)
+		# for line in invoice[0].line_ids:
+		# 	line._onchange_account_id()
 
 		return moves
 
