@@ -770,7 +770,7 @@ class SaleOrderExt(models.Model):
 					product_id = combined_product[0].id
 					# if combined_product[0].taxes_id:
 					# 	tax_ids = combined_product[0].taxes_id.filtered(lambda tax: tax.company_id == mv.move_id.company_id)
-					tax_ids = combined_product[0].taxes_id
+					tax_ids = [combined_product[0].taxes_id[0].id]
 				merged[mv.account_id.id] = {
 					'account_id':mv.account_id.id,
 					'name': name,
