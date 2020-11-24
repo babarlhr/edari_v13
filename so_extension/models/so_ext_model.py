@@ -809,11 +809,19 @@ class SaleOrderExt(models.Model):
 		for line in invoice[0].invoice_line_ids:
 			if line.product_id:
 				product_id = line.product_id.id
-				line.write({
-					'product_id': False
+				invoice[0].write({
+					'line_ids': [
+						(1, line.id, {
+							'product_id': False
+						})
+					]
 				})
-				line.write({
-					'product_id': product_id
+				invoice[0].write({
+					'line_ids': [
+						(1, line.id, {
+							'product_id': product_id
+						})
+					]
 				})
 
 		return moves
