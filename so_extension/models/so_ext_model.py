@@ -805,6 +805,8 @@ class SaleOrderExt(models.Model):
 		})
 
 		moves._recompute_dynamic_lines()
+		moves._onchange_mark_recompute_taxes()
+		moves.write()
 
 		return moves
 
