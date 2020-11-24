@@ -780,7 +780,8 @@ class SaleOrderExt(models.Model):
 					'partner_id':self.partner_id.id,
 					'exclude_from_invoice_tab':mv.exclude_from_invoice_tab,
 					'product_id':product_id,
-					'tax_ids': tax_ids
+					'quantity': 1,
+					'tax_ids': [(6, 0, tax_ids)],
 				}
 			
 			merged[mv.account_id.id]['debit'] += mv.debit
