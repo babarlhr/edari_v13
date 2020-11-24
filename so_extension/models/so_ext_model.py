@@ -755,6 +755,40 @@ class SaleOrderExt(models.Model):
 						}) 
 
 
+		# Update journal items to merge individual lines
+		merged = {}
+		for mv in moves.line_ids:
+			if mv.account_id.id not in merged:
+				name = mv.name
+				if mv.account_id.user_type_id[1] == 'Income':
+					name = "{} - {}".format(self.ref, self.invoice_month)
+				merged[mv.account_id.id] = {
+					'account_id':mv.account_id.id,
+					'name': name,
+					'debit':0,
+					'credit':0,
+					'partner_id':self.partner_id.id,
+				}
+			
+			merged[mv.account_id.id]['debit'] += mv.debit
+			merged[mv.account_id.id]['credit'] += mv.credit
+
+		## Fix debit / credit to keep 1 of the values and insert
+		for mrg in merged:
+			if mrg.debit > mrg.credit:
+				mrg.debit = mrg.debit - mrg.credit
+				mrg.credit = 0
+			else:
+				mrg.credit = mrg.credit - mrg.debit
+				mrg.debit = 0
+			
+			moves.write({
+				'line_ids': [
+					(0,0, mrg)
+				]
+			})
+		
+
 		return moves
 
 
