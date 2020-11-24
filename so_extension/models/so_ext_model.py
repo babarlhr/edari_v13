@@ -756,40 +756,40 @@ class SaleOrderExt(models.Model):
 
 
 		# Change reverted becaused changing journal entries would change invoice lines
-		# Update journal items to merge individual lines
-		merged = {}
-		for mv in moves.line_ids:
-			if mv.account_id.id not in merged:
-				name = mv.name
-				if mv.account_id.internal_group == 'income':
-					name = "{} - {}".format(self.name, date_invoice)
-				merged[mv.account_id.id] = {
-					'account_id':mv.account_id.id,
-					'name': name,
-					'debit':0,
-					'credit':0,
-					'partner_id':self.partner_id.id,
-				}
+		# # Update journal items to merge individual lines
+		# merged = {}
+		# for mv in moves.line_ids:
+		# 	if mv.account_id.id not in merged:
+		# 		name = mv.name
+		# 		if mv.account_id.internal_group == 'income':
+		# 			name = "{} - {}".format(self.name, date_invoice)
+		# 		merged[mv.account_id.id] = {
+		# 			'account_id':mv.account_id.id,
+		# 			'name': name,
+		# 			'debit':0,
+		# 			'credit':0,
+		# 			'partner_id':self.partner_id.id,
+		# 		}
 			
-			merged[mv.account_id.id]['debit'] += mv.debit
-			merged[mv.account_id.id]['credit'] += mv.credit
+		# 	merged[mv.account_id.id]['debit'] += mv.debit
+		# 	merged[mv.account_id.id]['credit'] += mv.credit
 
-		## Fix debit / credit to keep 1 of the values and insert
-		new_line_ids = [
-			(5, False, False) # Remove all existing lines
-		]
-		for mrg in merged:
-			if merged[mrg]['debit'] > merged[mrg]['credit']:
-				merged[mrg]['debit'] = merged[mrg]['debit'] - merged[mrg]['credit']
-				merged[mrg]['credit'] = 0
-			else:
-				merged[mrg]['credit'] = merged[mrg]['credit'] - merged[mrg]['debit']
-				merged[mrg]['debit'] = 0
-			new_line_ids.append((0,0, merged[mrg]))
+		# ## Fix debit / credit to keep 1 of the values and insert
+		# new_line_ids = [
+		# 	(5, False, False) # Remove all existing lines
+		# ]
+		# for mrg in merged:
+		# 	if merged[mrg]['debit'] > merged[mrg]['credit']:
+		# 		merged[mrg]['debit'] = merged[mrg]['debit'] - merged[mrg]['credit']
+		# 		merged[mrg]['credit'] = 0
+		# 	else:
+		# 		merged[mrg]['credit'] = merged[mrg]['credit'] - merged[mrg]['debit']
+		# 		merged[mrg]['debit'] = 0
+		# 	new_line_ids.append((0,0, merged[mrg]))
 		
-		moves.write({
-			'line_ids': new_line_ids
-		})
+		# moves.write({
+		# 	'line_ids': new_line_ids
+		# })
 
 		return moves
 
