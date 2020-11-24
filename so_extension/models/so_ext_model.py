@@ -774,6 +774,7 @@ class SaleOrderExt(models.Model):
 			merged[mv.account_id.id]['credit'] += mv.credit
 
 		## Fix debit / credit to keep 1 of the values and insert
+		new_line_ids = []
 		for mrg in merged:
 			if merged[mrg]['debit'] > merged[mrg]['credit']:
 				merged[mrg]['debit'] = merged[mrg]['debit'] - merged[mrg]['credit']
@@ -781,13 +782,11 @@ class SaleOrderExt(models.Model):
 			else:
 				merged[mrg]['credit'] = merged[mrg]['credit'] - merged[mrg]['debit']
 				merged[mrg]['debit'] = 0
-			
-			moves.write({
-				'line_ids': [
-					(0,0, merged[mrg])
-				]
-			})
+			new_line_ids.append((0,0, merged[mrg]))
 		
+		moves.write({
+			'line_ids': new_line_ids
+		})
 
 		return moves
 
