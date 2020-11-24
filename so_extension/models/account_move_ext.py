@@ -76,6 +76,7 @@ class ProductExtension(models.Model):
     _inherit='product.product'
 
     accruing_account_id = fields.Many2one('account.account',string = "Accrued Account")
+    accruing_expense_account_id = fields.Many2one('account.account',string = "Accrued Expense Account")
 
 
 # class PartnerExtensionSo(models.Model):

@@ -370,6 +370,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name ='property_account_income_id']" position="after">
                 <field name="accruing_account_id"/>
+                <field name="accruing_expense_account_id"/>
             </xpath>
         </field> 
     </record>

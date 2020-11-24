@@ -720,7 +720,9 @@ class SaleOrderExt(models.Model):
 
 		for acc in self.order_line:
 			if acc.product_id.accruing_account_id:
-				if acc.product_id.property_account_expense_id:
+				if acc.product_id.accruing_expense_account_id:
+					debit_account = acc.product_id.accruing_expense_account_id.id
+				elif acc.product_id.property_account_expense_id:
 					debit_account = acc.product_id.property_account_income_id.id
 				else:
 					debit_account = acc.product_id.categ_id.property_account_income_categ_id.id
@@ -755,41 +757,45 @@ class SaleOrderExt(models.Model):
 						}) 
 
 
-		# Change reverted becaused changing journal entries would change invoice lines
-		# # Update journal items to merge individual lines
-		# merged = {}
-		# for mv in moves.line_ids:
-		# 	if mv.account_id.id not in merged:
-		# 		name = mv.name
-		# 		if mv.account_id.internal_group == 'income':
-		# 			name = "{} - {}".format(self.name, date_invoice)
-		# 		merged[mv.account_id.id] = {
-		# 			'account_id':mv.account_id.id,
-		# 			'name': name,
-		# 			'debit':0,
-		# 			'credit':0,
-		# 			'partner_id':self.partner_id.id,
-		# 		}
+		# Update journal items to merge individual lines
+		combined_product = self.env['product.product'].search([('name','=','Invoice Excluding VAT')],limit=1)
+		merged = {}
+		for mv in moves.line_ids:
+			if mv.account_id.id not in merged:
+				name = mv.name
+				product_id = mv.product_id.id
+				if mv.account_id.internal_group == 'income':
+					name = "{} - {}".format(self.name, date_invoice)
+					product_id = combined_product[0].id
+				merged[mv.account_id.id] = {
+					'account_id':mv.account_id.id,
+					'name': name,
+					'debit':0,
+					'credit':0,
+					'partner_id':self.partner_id.id,
+					'exclude_from_invoice_tab':mv.exclude_from_invoice_tab,
+					'product_id':product_id
+				}
 			
-		# 	merged[mv.account_id.id]['debit'] += mv.debit
-		# 	merged[mv.account_id.id]['credit'] += mv.credit
+			merged[mv.account_id.id]['debit'] += mv.debit
+			merged[mv.account_id.id]['credit'] += mv.credit
 
-		# ## Fix debit / credit to keep 1 of the values and insert
-		# new_line_ids = [
-		# 	(5, False, False) # Remove all existing lines
-		# ]
-		# for mrg in merged:
-		# 	if merged[mrg]['debit'] > merged[mrg]['credit']:
-		# 		merged[mrg]['debit'] = merged[mrg]['debit'] - merged[mrg]['credit']
-		# 		merged[mrg]['credit'] = 0
-		# 	else:
-		# 		merged[mrg]['credit'] = merged[mrg]['credit'] - merged[mrg]['debit']
-		# 		merged[mrg]['debit'] = 0
-		# 	new_line_ids.append((0,0, merged[mrg]))
+		## Fix debit / credit to keep 1 of the values and insert
+		new_line_ids = [
+			(5, False, False) # Remove all existing lines
+		]
+		for mrg in merged:
+			if merged[mrg]['debit'] > merged[mrg]['credit']:
+				merged[mrg]['debit'] = merged[mrg]['debit'] - merged[mrg]['credit']
+				merged[mrg]['credit'] = 0
+			else:
+				merged[mrg]['credit'] = merged[mrg]['credit'] - merged[mrg]['debit']
+				merged[mrg]['debit'] = 0
+			new_line_ids.append((0,0, merged[mrg]))
 		
-		# moves.write({
-		# 	'line_ids': new_line_ids
-		# })
+		moves.write({
+			'line_ids': new_line_ids
+		})
 
 		return moves
 
