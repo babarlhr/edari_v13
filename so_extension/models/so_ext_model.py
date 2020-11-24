@@ -809,6 +809,7 @@ class SaleOrderExt(models.Model):
 		for line in invoice[0].line_ids:
 			line._onchange_mark_recompute_taxes()
 			line._onchange_account_id()
+			line.write({})
 
 		return moves
 
