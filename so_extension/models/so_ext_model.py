@@ -808,7 +808,7 @@ class SaleOrderExt(models.Model):
 		for mv in moves.line_ids:
 			mv._onchange_mark_recompute_taxes()
 			mv._onchange_account_id()
-			mv.write()
+			mv.write({})
 
 		return moves
 
