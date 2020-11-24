@@ -807,7 +807,6 @@ class SaleOrderExt(models.Model):
 		invoice = self.env['account.move'].with_context(default_type='out_invoice').search([('id','=',moves.id)],limit=1)
 		invoice[0]._recompute_dynamic_lines(recompute_all_taxes=True)
 		for line in invoice[0].line_ids:
-			line._onchange_mark_recompute_taxes()
 			line._onchange_account_id()
 
 		return moves
