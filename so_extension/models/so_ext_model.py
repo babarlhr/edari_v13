@@ -742,6 +742,7 @@ class SaleOrderExt(models.Model):
 									'debit':line_amount,
 									'credit':0,
 									'partner_id':self.partner_id.id,
+									'exclude_from_invoice_tab': True
 								}),
 					
 								(0, 0, {
@@ -750,7 +751,7 @@ class SaleOrderExt(models.Model):
 									'debit':0,
 									'credit':line_amount,
 									'partner_id':self.contract.employee_id.partner_id.id,
-
+									'exclude_from_invoice_tab': True
 									
 								}),
 							],
@@ -768,9 +769,9 @@ class SaleOrderExt(models.Model):
 				if mv.account_id.internal_group == 'income':
 					name = "{} - {}".format(self.name, date_invoice)
 					product_id = combined_product[0].id
-					# if combined_product[0].taxes_id:
+					if combined_product[0].taxes_id:
 					# 	tax_ids = combined_product[0].taxes_id.filtered(lambda tax: tax.company_id == mv.move_id.company_id)
-					tax_ids = [combined_product[0].taxes_id[0].id]
+						tax_ids = [combined_product[0].taxes_id[0].id]
 				merged[mv.account_id.id] = {
 					'account_id':mv.account_id.id,
 					'name': name,
@@ -801,6 +802,8 @@ class SaleOrderExt(models.Model):
 		moves.write({
 			'line_ids': new_line_ids
 		})
+
+		moves._recompute_dynamic_lines()
 
 		return moves
 
