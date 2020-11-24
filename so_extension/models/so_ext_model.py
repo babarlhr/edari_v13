@@ -764,9 +764,11 @@ class SaleOrderExt(models.Model):
 			if mv.account_id.id not in merged:
 				name = mv.name
 				product_id = mv.product_id.id
+				tax_ids = mv.tax_ids
 				if mv.account_id.internal_group == 'income':
 					name = "{} - {}".format(self.name, date_invoice)
 					product_id = combined_product[0].id
+					tax_ids = combined_product[0].taxes_id.filtered(lambda tax: tax.company_id == mv.move_id.company_id)
 				merged[mv.account_id.id] = {
 					'account_id':mv.account_id.id,
 					'name': name,
@@ -774,7 +776,8 @@ class SaleOrderExt(models.Model):
 					'credit':0,
 					'partner_id':self.partner_id.id,
 					'exclude_from_invoice_tab':mv.exclude_from_invoice_tab,
-					'product_id':product_id
+					'product_id':product_id,
+					'tax_ids': tax_ids
 				}
 			
 			merged[mv.account_id.id]['debit'] += mv.debit
