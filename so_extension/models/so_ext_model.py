@@ -814,7 +814,7 @@ class SaleOrderExt(models.Model):
 				new_invoice_line_ids.append((0,0,merged[mrg]))
 			else:
 				new_line_ids.append((0,0, merged[mrg]))
-		
+		raise UserError(new_line_ids)
 		moves.write({
 			'invoice_line_ids': new_invoice_line_ids
 		})
