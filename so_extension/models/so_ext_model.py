@@ -788,9 +788,16 @@ class SaleOrderExt(models.Model):
 			merged[mv.account_id.id]['credit'] += mv.credit
 
 		## Fix debit / credit to keep 1 of the values and insert
-		new_line_ids = [
-			(5, False, False) # Remove all existing lines
-		]
+		moves.write({
+			'line_ids': [
+				(5, False, False) # Remove all existing lines
+			],
+			'invoice_line_ids': [
+				(5, False, False) # Remove all existing lines
+			],
+		})
+		new_line_ids = []
+		new_invoice_line_ids = []
 		for mrg in merged:
 			if merged[mrg]['debit'] > merged[mrg]['credit']:
 				merged[mrg]['debit'] = merged[mrg]['debit'] - merged[mrg]['credit']
@@ -798,31 +805,39 @@ class SaleOrderExt(models.Model):
 			else:
 				merged[mrg]['credit'] = merged[mrg]['credit'] - merged[mrg]['debit']
 				merged[mrg]['debit'] = 0
-			new_line_ids.append((0,0, merged[mrg]))
+			
+			if merged[mrg]['product_id'] and merged[mrg]['credit']>0:
+				merged[mrg]['price_unit'] = merged[mrg]['credit']
+				new_invoice_line_ids.append((0,0,))
+			else:
+				new_line_ids.append((0,0, merged[mrg]))
 		
+		moves.write({
+			'invoice_line_ids': new_invoice_line_ids
+		})
 		moves.write({
 			'line_ids': new_line_ids
 		})
 
-		invoice = self.env['account.move'].with_context(default_type='out_invoice').search([('id','=',moves.id)],limit=1)
-		# invoice[0]._recompute_dynamic_lines(recompute_all_taxes=True)
-		for line in invoice[0].invoice_line_ids:
-			if line.product_id:
-				product_id = line.product_id.id
-				invoice[0].write({
-					'line_ids': [
-						(1, line.id, {
-							'product_id': False
-						})
-					]
-				})
-				invoice[0].write({
-					'line_ids': [
-						(1, line.id, {
-							'product_id': product_id
-						})
-					]
-				})
+		# invoice = self.env['account.move'].with_context(default_type='out_invoice').search([('id','=',moves.id)],limit=1)
+		# # invoice[0]._recompute_dynamic_lines(recompute_all_taxes=True)
+		# for line in invoice[0].invoice_line_ids:
+		# 	if line.product_id:
+		# 		product_id = line.product_id.id
+		# 		invoice[0].write({
+		# 			'line_ids': [
+		# 				(1, line.id, {
+		# 					'product_id': False
+		# 				})
+		# 			]
+		# 		})
+		# 		invoice[0].write({
+		# 			'line_ids': [
+		# 				(1, line.id, {
+		# 					'product_id': product_id
+		# 				})
+		# 			]
+		# 		})
 
 		return moves
 
