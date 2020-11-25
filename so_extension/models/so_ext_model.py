@@ -304,20 +304,21 @@ class SaleOrderExt(models.Model):
 		leave_days_list = []
 		for x in leaves:
 			per_request_leaves = 0
-
-			if date_invoice.replace(day=1) == x.request_date_from.replace(day=1) or date_invoice.replace(day=1) == x.request_date_to.replace(day=1):
+			leave_date_from = x.request_date_from if x.request_date_from else x.date_from
+			leave_date_to = x.request_date_to if x.request_date_to else x.date_to
+			if date_invoice.replace(day=1) == leave_date_from.replace(day=1) or date_invoice.replace(day=1) == leave_date_to.replace(day=1):
 				
 
 
 				# getting list of days
-				delta = x.request_date_to - x.request_date_from
+				delta = leave_date_to - leave_date_from
 
 				if delta.days == 0:
 					delta_days = 1
 				else:
 					delta_days = delta.days
 				for i in range(delta_days + 1):
-					day = x.request_date_from + timedelta(days=i)
+					day = leave_date_from + timedelta(days=i)
 					if day.replace(day=1) == date_invoice.replace(day=1):
 						if self.leave_type == "two_days":
 							if day.weekday() != 4 and day.weekday() != 5:
