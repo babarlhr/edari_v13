@@ -810,7 +810,7 @@ class SaleOrderExt(models.Model):
 			
 			if merged[mrg]['product_id'] and merged[mrg]['credit']>0:
 				merged[mrg]['price_unit'] = merged[mrg]['credit']
-				new_invoice_line_ids.append((0,0,))
+				new_invoice_line_ids.append((0,0,merged[mrg]))
 			else:
 				new_line_ids.append((0,0, merged[mrg]))
 		
