@@ -737,7 +737,9 @@ class SaleOrderExt(models.Model):
 
 		for acc in self.order_line:
 			if acc.product_id.accruing_account_id:
-				if acc.product_id.property_account_expense_id:
+				if acc.product_id.accruing_expense_account_id:
+					debit_account = acc.product_id.accruing_expense_account_id.id
+				elif acc.product_id.property_account_expense_id:
 					debit_account = acc.product_id.property_account_income_id.id
 				else:
 					debit_account = acc.product_id.categ_id.property_account_income_categ_id.id
@@ -757,6 +759,7 @@ class SaleOrderExt(models.Model):
 									'debit':line_amount,
 									'credit':0,
 									'partner_id':self.partner_id.id,
+									'exclude_from_invoice_tab': True
 								}),
 					
 								(0, 0, {
@@ -765,12 +768,95 @@ class SaleOrderExt(models.Model):
 									'debit':0,
 									'credit':line_amount,
 									'partner_id':self.contract.employee_id.partner_id.id,
-
+									'exclude_from_invoice_tab': True
 									
 								}),
 							],
 						}) 
 
+
+		# Update journal items to merge individual lines
+		combined_product = self.env['product.product'].search([('name','=','Invoice Excluding VAT')],limit=1)
+		merged = {}
+		for mv in moves.line_ids:
+			if mv.account_id.id not in merged:
+				name = mv.name
+				product_id = mv.product_id.id
+				tax_ids = mv.tax_ids
+				if mv.account_id.internal_group == 'income':
+					name = "{} - {}".format(self.name, date_invoice)
+					product_id = combined_product[0].id
+					if combined_product[0].taxes_id:
+					# 	tax_ids = combined_product[0].taxes_id.filtered(lambda tax: tax.company_id == mv.move_id.company_id)
+						tax_ids = [combined_product[0].taxes_id[0].id]
+				if mv.account_id.internal_type == 'receivable':
+					continue
+				merged[mv.account_id.id] = {
+					'account_id':mv.account_id.id,
+					'name': name,
+					'debit':0,
+					'credit':0,
+					'partner_id':self.partner_id.id,
+					'exclude_from_invoice_tab':mv.exclude_from_invoice_tab,
+					'product_id':product_id,
+					'quantity': 1,
+					'tax_ids': [(6, 0, tax_ids)],
+				}
+			
+			merged[mv.account_id.id]['debit'] += mv.debit
+			merged[mv.account_id.id]['credit'] += mv.credit
+
+		## Fix debit / credit to keep 1 of the values and insert
+		moves.write({
+			'line_ids': [
+				(5, False, False) # Remove all existing lines
+			],
+			'invoice_line_ids': [
+				(5, False, False) # Remove all existing lines
+			],
+		})
+		new_line_ids = []
+		new_invoice_line_ids = []
+		for mrg in merged:
+			if merged[mrg]['debit'] > merged[mrg]['credit']:
+				merged[mrg]['debit'] = merged[mrg]['debit'] - merged[mrg]['credit']
+				merged[mrg]['credit'] = 0
+			else:
+				merged[mrg]['credit'] = merged[mrg]['credit'] - merged[mrg]['debit']
+				merged[mrg]['debit'] = 0
+			
+			if merged[mrg]['product_id'] and merged[mrg]['credit']>0:
+				merged[mrg]['price_unit'] = merged[mrg]['credit']
+				new_invoice_line_ids.append((0,0,merged[mrg]))
+			else:
+				new_line_ids.append((0,0, merged[mrg]))
+		
+		moves.write({
+			'invoice_line_ids': new_invoice_line_ids
+		})
+		moves.write({
+			'line_ids': new_line_ids
+		})
+
+		# invoice = self.env['account.move'].with_context(default_type='out_invoice').search([('id','=',moves.id)],limit=1)
+		# # invoice[0]._recompute_dynamic_lines(recompute_all_taxes=True)
+		# for line in invoice[0].invoice_line_ids:
+		# 	if line.product_id:
+		# 		product_id = line.product_id.id
+		# 		invoice[0].write({
+		# 			'line_ids': [
+		# 				(1, line.id, {
+		# 					'product_id': False
+		# 				})
+		# 			]
+		# 		})
+		# 		invoice[0].write({
+		# 			'line_ids': [
+		# 				(1, line.id, {
+		# 					'product_id': product_id
+		# 				})
+		# 			]
+		# 		})
 
 		return moves
 
