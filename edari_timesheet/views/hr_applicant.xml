@@ -8,14 +8,14 @@
             <field name="type">form</field>
 
             <field name="arch" type="xml">
-                <xpath expr="//header" position="inside">
+                <!-- <xpath expr="//header" position="inside">
                     <button name="generate_invite_token" string="Invite To Portal" type="object" class='oe_highlight' attrs="{'invisible':['|', ('portal_uid','!=', False), ('invite_token','!=', False)]}" />
                 </xpath>
                 <xpath expr="//field[@name='emp_id']" position="after">
                     <field name="invite_url" attrs="{'invisible':['|', ('portal_uid','!=', False), ('invite_token','=', False)]}" />
                     <field name="invite_token" invisible="1" />
                     <field name="portal_uid" invisible="1" />
-                </xpath>
+                </xpath> -->
             </field>
         </record>
     </data>
