@@ -256,7 +256,7 @@
 										</p>
 									</div>
 									<div class="right_div">
-										<p class="company_info" style="margin-top:57px;">
+										<p class="company_info" style="margin-top:69px;">
 											<span class="solid" style="color:#736c6c;">TRN:</span>
 											<span class="liquid3" t-esc="o.partner_id.vat"></span>
 										</p>
@@ -283,10 +283,10 @@
 												<span class="liquid3" t-esc="o.employee.name"></span>
 											</t>
 										</p>
-										<p class="company_info" style="color: white;">.
+										<p class="" style="color: white;">.
 											<!-- <span class="solid">NAME:</span> -->
 										</p>
-										<p class="company_info" style="color: white;">.
+										<p class="solid" style="color: white;">.
 											<!-- <span class="solid">NAME:</span> -->
 										</p>
 										<p class="company_info">

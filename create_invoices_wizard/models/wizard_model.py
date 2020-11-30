@@ -43,6 +43,8 @@ class CreateInvWizard(models.Model):
 							invoice_ids.append(invoice_id.id)
 						except UserError as e:
 							skip_reasons = str(e)
+						except ValidationError as e:
+							skip_reasons = str(e)
 					else:
 						skip_reasons = "Invoice Already Created for this month"
 
