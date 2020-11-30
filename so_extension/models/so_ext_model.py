@@ -780,20 +780,23 @@ class SaleOrderExt(models.Model):
 		combined_product = self.env['product.product'].search([('name','=','Net Revenue From Cost Card Invoice')],limit=1)
 		merged = {}
 		for mv in moves.line_ids:
-			if mv.account_id.id not in merged:
+			account_id = mv.account_id.id
+			if account_id not in merged:
 				name = mv.name
 				product_id = mv.product_id.id
 				tax_ids = mv.tax_ids
 				if mv.account_id.internal_group == 'income':
 					name = "{} - {}".format(self.name, date_invoice)
 					product_id = combined_product[0].id
+					# Replace whatever income account was used to be the combined product's income account
+					account_id = combined_product[0].property_account_income_id.id
 					if combined_product[0].taxes_id:
 					# 	tax_ids = combined_product[0].taxes_id.filtered(lambda tax: tax.company_id == mv.move_id.company_id)
 						tax_ids = [combined_product[0].taxes_id[0].id]
 				if mv.account_id.internal_type == 'receivable' or mv.name.startswith('VAT'):
 					continue
-				merged[mv.account_id.id] = {
-					'account_id':mv.account_id.id,
+				merged[account_id] = {
+					'account_id':account_id,
 					'name': name,
 					'debit':0,
 					'credit':0,
@@ -804,8 +807,8 @@ class SaleOrderExt(models.Model):
 					'tax_ids': [(6, 0, tax_ids)],
 				}
 			
-			merged[mv.account_id.id]['debit'] += mv.debit
-			merged[mv.account_id.id]['credit'] += mv.credit
+			merged[account_id]['debit'] += mv.debit
+			merged[account_id]['credit'] += mv.credit
 
 		## Fix debit / credit to keep 1 of the values and insert
 		moves.write({
