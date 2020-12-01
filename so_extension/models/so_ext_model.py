@@ -781,11 +781,11 @@ class SaleOrderExt(models.Model):
 		merged = {}
 		details = ''
 		for mv in moves.line_ids:
-			details += "{} - {} - {} - {}".format(mv.name, mv.account_id.name, mv.account_id.internal_group, mv.account_id.internal_type)
-		raise UserError(details)
+			details += "{} - {} - {} - {} - {}".format(mv.name, mv.account_id.id, mv.account_id.name, mv.account_id.internal_group, mv.account_id.internal_type)
 		for mv in moves.line_ids:
 			account_id = mv.account_id.id
 			if account_id not in merged:
+				details += "Not in merged: {}".format(account_id)
 				name = mv.name
 				product_id = mv.product_id.id
 				tax_ids = mv.tax_ids
@@ -814,6 +814,7 @@ class SaleOrderExt(models.Model):
 			merged[account_id]['debit'] += mv.debit
 			merged[account_id]['credit'] += mv.credit
 
+		raise UserError(details)
 		## Fix debit / credit to keep 1 of the values and insert
 		moves.write({
 			'line_ids': [
