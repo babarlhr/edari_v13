@@ -787,7 +787,7 @@ class SaleOrderExt(models.Model):
 				account_id = combined_product[0].property_account_income_id.id
 			if account_id not in merged:
 				name = mv.name
-				details = "{}".format(mv.name)
+				details += "{}".format(mv.name)
 				product_id = mv.product_id.id
 				tax_ids = mv.tax_ids
 				if mv.account_id.internal_group == 'income':
