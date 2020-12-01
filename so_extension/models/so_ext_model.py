@@ -779,7 +779,7 @@ class SaleOrderExt(models.Model):
 		# Update journal items to merge individual lines
 		combined_product = self.env['product.product'].search([('name','=','Net Revenue From Cost Card Invoice')],limit=1)
 		merged = {}
-		raise UserError(mv.line_ids)
+		raise UserError(moves.line_ids)
 		for mv in moves.line_ids:
 			account_id = mv.account_id.id
 			if account_id not in merged:
