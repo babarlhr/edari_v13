@@ -783,7 +783,7 @@ class SaleOrderExt(models.Model):
 		for mv in moves.line_ids:
 			details += "{} - {} - {} - {} - {}".format(mv.name, mv.account_id.id, mv.account_id.name, mv.account_id.internal_group, mv.account_id.internal_type)
 		for mv in moves.line_ids:
-			account_id = str(mv.account_id.id)
+			account_id = mv.account_id.id
 			if mv.account_id.internal_group == 'income':
 				# Replace whatever income account was used to be the combined product's income account
 				account_id = combined_product[0].property_account_income_id.id
