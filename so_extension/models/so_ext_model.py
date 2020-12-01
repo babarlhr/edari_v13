@@ -783,7 +783,7 @@ class SaleOrderExt(models.Model):
 		for mv in moves.line_ids:
 			details += "{} - {} - {} - {} - {}".format(mv.name, mv.account_id.id, mv.account_id.name, mv.account_id.internal_group, mv.account_id.internal_type)
 		for mv in moves.line_ids:
-			account_id = mv.account_id.id
+			account_id = str(mv.account_id.id)
 			if account_id not in merged:
 				details += "Not in merged: {}".format(account_id)
 				name = mv.name
