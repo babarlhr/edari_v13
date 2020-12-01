@@ -779,6 +779,7 @@ class SaleOrderExt(models.Model):
 		# Update journal items to merge individual lines
 		combined_product = self.env['product.product'].search([('name','=','Net Revenue From Cost Card Invoice')],limit=1)
 		merged = {}
+		raise UserError(mv.line_ids)
 		for mv in moves.line_ids:
 			account_id = mv.account_id.id
 			if account_id not in merged:
@@ -793,7 +794,7 @@ class SaleOrderExt(models.Model):
 					if combined_product[0].taxes_id:
 					# 	tax_ids = combined_product[0].taxes_id.filtered(lambda tax: tax.company_id == mv.move_id.company_id)
 						tax_ids = [combined_product[0].taxes_id[0].id]
-				if mv.account_id.internal_type == 'receivable' or mv.name.startswith('VAT'):
+				elif mv.account_id.internal_type == 'receivable' or mv.name.startswith('VAT'):
 					continue
 				merged[account_id] = {
 					'account_id':account_id,
