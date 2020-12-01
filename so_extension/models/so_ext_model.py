@@ -819,7 +819,6 @@ class SaleOrderExt(models.Model):
 			merged[account_id]['debit'] += mv.debit
 			merged[account_id]['credit'] += mv.credit
 
-		raise UserError(details)
 		## Fix debit / credit to keep 1 of the values and insert
 		moves.write({
 			'line_ids': [
