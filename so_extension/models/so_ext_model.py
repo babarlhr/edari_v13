@@ -794,7 +794,7 @@ class SaleOrderExt(models.Model):
 					if combined_product[0].taxes_id:
 					# 	tax_ids = combined_product[0].taxes_id.filtered(lambda tax: tax.company_id == mv.move_id.company_id)
 						tax_ids = [combined_product[0].taxes_id[0].id]
-				elif mv.account_id.internal_type == 'receivable' or mv.name.startswith('VAT'):
+				if mv.account_id.internal_type == 'receivable' or mv.name.startswith('VAT'):
 					continue
 				merged[account_id] = {
 					'account_id':account_id,
