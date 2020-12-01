@@ -779,6 +779,7 @@ class SaleOrderExt(models.Model):
 		# Update journal items to merge individual lines
 		combined_product = self.env['product.product'].search([('name','=','Net Revenue From Cost Card Invoice')],limit=1)
 		merged = {}
+		details = ''
 		for mv in moves.line_ids:
 			account_id = mv.account_id.id
 			if mv.account_id.internal_group == 'income':
@@ -786,6 +787,7 @@ class SaleOrderExt(models.Model):
 				account_id = combined_product[0].property_account_income_id.id
 			if account_id not in merged:
 				name = mv.name
+				details = "{}".format(mv.name)
 				product_id = mv.product_id.id
 				tax_ids = mv.tax_ids
 				if mv.account_id.internal_group == 'income':
@@ -795,6 +797,7 @@ class SaleOrderExt(models.Model):
 					# 	tax_ids = combined_product[0].taxes_id.filtered(lambda tax: tax.company_id == mv.move_id.company_id)
 						tax_ids = [combined_product[0].taxes_id[0].id]
 				if mv.account_id.internal_type == 'receivable' or mv.name.startswith('VAT'):
+					details += 'Skipping'
 					continue
 				merged[account_id] = {
 					'account_id':account_id,
@@ -807,10 +810,10 @@ class SaleOrderExt(models.Model):
 					'quantity': 1,
 					'tax_ids': [(6, 0, tax_ids)],
 				}
-			
+			details += "{} {}/{}".format(mv.name, mv.debit, mv.credit)
 			merged[account_id]['debit'] += mv.debit
 			merged[account_id]['credit'] += mv.credit
-
+		raise UserError(details)
 		## Fix debit / credit to keep 1 of the values and insert
 		moves.write({
 			'line_ids': [
