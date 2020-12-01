@@ -784,6 +784,9 @@ class SaleOrderExt(models.Model):
 			details += "{} - {} - {} - {} - {}".format(mv.name, mv.account_id.id, mv.account_id.name, mv.account_id.internal_group, mv.account_id.internal_type)
 		for mv in moves.line_ids:
 			account_id = str(mv.account_id.id)
+			if mv.account_id.internal_group == 'income':
+				# Replace whatever income account was used to be the combined product's income account
+				account_id = combined_product[0].property_account_income_id.id
 			if account_id not in merged:
 				details += "Not in merged: {}".format(account_id)
 				name = mv.name
@@ -792,8 +795,6 @@ class SaleOrderExt(models.Model):
 				if mv.account_id.internal_group == 'income':
 					name = "{} - {}".format(self.name, date_invoice)
 					product_id = combined_product[0].id
-					# Replace whatever income account was used to be the combined product's income account
-					account_id = combined_product[0].property_account_income_id.id
 					if combined_product[0].taxes_id:
 					# 	tax_ids = combined_product[0].taxes_id.filtered(lambda tax: tax.company_id == mv.move_id.company_id)
 						tax_ids = [combined_product[0].taxes_id[0].id]
